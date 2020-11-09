@@ -1,0 +1,86 @@
+{
+  "name": "vscode-swissknife",
+  "displayName": "Swissknife",
+  "description": "Scriptable extension to generate or manipulate data. Stop pasting sensitive data in webpages.",
+  "version": "0.0.1",
+  "author": "luisfontes19",
+  "publisher": "luisfontes19",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.50.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "swissknife.show",
+        "title": "Open Swissknife command pallete"
+      },
+      {
+        "command": "swissknife.reload",
+        "title": "Reload Swissknife scripts"
+      },
+      {
+        "command": "swissknife.openScript",
+        "title": "Open Swissknife user scripts folder"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "swissknife.show",
+        "key": "Ctrl+Shift+9",
+        "mac": "Cmd+Shift+9",
+        "when": "editorFocus"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "lint": "eslint src --ext ts",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "test": "node ./out/test/runTest.js",
+    "build:types": "tsc -d src/Interfaces.ts src/editorOperations --declarationDir types/ --emitDeclarationOnly"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.0.0",
+    "@types/node": "^12.11.7",
+    "@types/uuid": "^8.3.0",
+    "@types/vscode": "^1.50.0",
+    "@types/zxcvbn": "^4.4.0",
+    "@typescript-eslint/eslint-plugin": "^4.1.1",
+    "@typescript-eslint/parser": "^4.1.1",
+    "eslint": "^7.9.0",
+    "glob": "^7.1.6",
+    "mocha": "^8.1.3",
+    "typescript": "^4.0.2",
+    "vscode-test": "^1.4.0"
+  },
+  "dependencies": {
+    "@types/bip39": "^3.0.0",
+    "showdown": "^1.9.1",
+    "uuid": "^8.3.1",
+    "vscode-swissknife": "^0.0.2",
+    "zxcvbn": "^4.4.2"
+  },
+  "keywords": [
+    "swissknife",
+    "scriptable",
+    "encode",
+    "decode",
+    "convertion",
+    "script",
+    "template",
+    "insert",
+    "developer"
+  ],
+  "icon": "data/swissknife.png"
+}
