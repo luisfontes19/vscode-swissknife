@@ -1,4 +1,6 @@
-# Swissknife VSCode Extension
+# Swissknife
+
+![Demo](data/swissknife_banner.png)
 
 ![Demo](data/demo.gif)
 
