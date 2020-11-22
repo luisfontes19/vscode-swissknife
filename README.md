@@ -6,6 +6,8 @@
 
 Swissknife is a scriptable extension that provides features one usually looks for in online services.
 
+Available in the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=luisfontes19.vscode-swissknife)
+
 You can find here features to do different types of convertions to your text, or even generating content.
 
 If there's a feature that you want and the extension doesn't have, you can just write an easy script to extend it :).
