@@ -1,6 +1,16 @@
-import * as crypto from 'crypto';
 import * as bip39Lib from 'bip39';
+import * as crypto from 'crypto';
 import { IScript, ISwissKnifeContext } from '../Interfaces';
+import request = require('request');
+
+
+export let CRYPTO_CURRENCIES: string[] = [];
+console.log("Loading cryptocurrency list");
+request({ url: 'https://www.cryptonator.com/api/currencies' }, (err, httpResponse) => {
+  const crypto = JSON.parse(httpResponse.body).rows;
+  CRYPTO_CURRENCIES = crypto.map((c: any) => `${c.name} (${c.code})`);
+});
+
 
 export const toMd5 = async (text: string): Promise<string> => {
   return crypto.createHash('md5').update(text).digest('hex');
@@ -29,6 +39,48 @@ export const bip39 = () => {
 
   return { mnemonic, seed };
 };
+
+export const cryptoPrice = async (text: string, context: ISwissKnifeContext): Promise<string> => {
+  const reg = /([\d\.,]+)\s?(\w{3,5}) to (\w{3,5})/;
+
+  let from: string, to: string, value: number;
+  const m = text.match(reg); //try to see if we have something like: 10btc to usd. If not ask params to user
+
+  if (m) {
+    value = parseFloat(m[1]);
+    from = m[2].toLowerCase();
+    to = m[3].toLowerCase();
+  }
+  else {
+    const tmp = (await context.vscode.window.showQuickPick(CRYPTO_CURRENCIES, { placeHolder: "Currency you are converting from" }))?.match(/\((\w+)\)$/);
+    if (!tmp) return Promise.resolve("");
+
+    const tmp2 = (await context.vscode.window.showQuickPick(CRYPTO_CURRENCIES, { placeHolder: "Currency you are converting to" }))?.match(/\((\w+)\)$/);
+    if (!tmp2) return Promise.resolve("");
+
+    from = tmp[1];
+    to = tmp2[1];
+    value = parseFloat(text);
+  }
+
+  return new Promise((resolve, reject) => {
+
+    const pair = `${from}-${to}`;
+
+    request({ url: `https://api.cryptonator.com/api/ticker/${pair}` }, (err, response) => {
+      if (err) return reject(err);
+      const res = JSON.parse(response.body);
+      const price = parseFloat(res.ticker.price);
+
+      const converted = value * price;
+      const ret = `${value} ${from.toUpperCase()} is equal to ${converted} ${to.toUpperCase()}`;
+
+      resolve(ret);
+    });
+  });
+
+};
+
 
 export const generateRSAKeyPair = async (): Promise<string> => {
   const res = crypto.generateKeyPairSync('rsa', {
@@ -81,6 +133,11 @@ const scripts: IScript[] = [
     title: "RSA Key pair",
     detail: "Generates RSA public and private keys",
     cb: (context: ISwissKnifeContext) => context.insertRoutine(generateRSAKeyPair)
+  },
+  {
+    title: "Crypto currency value",
+    detail: "Converts value of crypto currency or fiat",
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(cryptoPrice)
   },
 
 
