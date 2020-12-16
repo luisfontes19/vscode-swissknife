@@ -26,6 +26,7 @@ The extension currently does conversions with (and not only):
 * RGB & HEX Colors
 * etc.
 
+
 ## Features
 
 It provides an easy to use quick picker (ctrl+shift+9 on windows/linux and cmd+shift+9 on mac) for you to choose from a set of different features.
