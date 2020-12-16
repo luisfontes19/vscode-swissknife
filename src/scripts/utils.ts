@@ -1,3 +1,4 @@
+import * as request from 'request';
 import { IScript, ISwissKnifeContext } from '../Interfaces';
 import { fromBase64 } from './encodings';
 import { fromString, toFetch } from './lib/requestUtils';
@@ -27,6 +28,22 @@ export const jwtDecode = async (str: string): Promise<string> => {
 
     return JSON.stringify(fullJson, null, 2);
   } catch (err) { throw new Error("Error parsing JWT"); }
+};
+
+export const textToString = async (str: string): Promise<string> => {
+  return JSON.stringify(textToString);
+};
+
+export const urlExpand = async (str: string): Promise<string> => {
+
+  return new Promise((resolve, reject) => {
+    request({ uri: str, followRedirect: false },
+      function (err, httpResponse) {
+        if (err) throw new Error(err);
+        resolve(httpResponse.headers.location || str);
+      }
+    );
+  });
 };
 
 export const requestToFetch = async (str: string): Promise<string> => {
@@ -106,6 +123,16 @@ const scripts: IScript[] = [
     title: "Unix/Linux Permission To Human Readable",
     detail: "Convert a unix permission (like 777) to a human readable text",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(linuxPermissions)
+  },
+  {
+    title: "Url Unshorten (url expand)",
+    detail: "Converts a shorten URL into the full url",
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(urlExpand)
+  },
+  {
+    title: "Text to String",
+    detail: "Converts text to string, escaping necessary characters",
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(textToString)
   },
 
 ];
