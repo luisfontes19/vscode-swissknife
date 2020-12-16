@@ -2,7 +2,7 @@
   "name": "vscode-swissknife",
   "displayName": "Swissknife",
   "description": "Scriptable extension to generate or manipulate data. Stop pasting sensitive data in webpages.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": "luisfontes19",
   "publisher": "luisfontes19",
   "license": "MIT",
@@ -48,9 +48,9 @@
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "vscode:package": "vsce package",
-    "compile": "ncc build -m src/extension.ts -o out",
+    "compile": "tsc -p ./",
     "lint": "eslint src --ext ts",
-    "watch": "ncc build -m src/extension.ts -o out --watch",
+    "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "test": "node ./out/test/runTest.js",
     "build:types": "tsc -d src/Interfaces.ts src/editorOperations --declarationDir types/ --emitDeclarationOnly"
@@ -65,7 +65,6 @@
     "@types/zxcvbn": "^4.4.0",
     "@typescript-eslint/eslint-plugin": "^4.1.1",
     "@typescript-eslint/parser": "^4.1.1",
-    "@vercel/ncc": "^0.25.1",
     "eslint": "^7.9.0",
     "mocha": "^8.1.3",
     "typescript": "^4.0.2",

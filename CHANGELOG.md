@@ -3,6 +3,12 @@
 All notable changes to the "swissknife" extension will be documented in this file.
 
 
+## 0.0.4
+
+### Bug Fixes
+
+* removed ncc as it was causing problems due to the script loading mechanism
+
 ## 0.0.3
 
 ### Added
