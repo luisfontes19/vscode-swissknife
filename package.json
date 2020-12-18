@@ -2,7 +2,7 @@
   "name": "vscode-swissknife",
   "displayName": "Swissknife",
   "description": "Scriptable extension to generate or manipulate data. Stop pasting sensitive data in webpages.",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "luisfontes19",
   "publisher": "luisfontes19",
   "license": "MIT",
