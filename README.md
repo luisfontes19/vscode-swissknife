@@ -8,7 +8,7 @@ Swissknife is a scriptable extension that provides features one usually looks fo
 
 Available in the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=luisfontes19.vscode-swissknife)
 
-You can find here features to do different types of convertions to your text, or even generating content.
+You can find here features to do different types of conversions to your text, or even generating content.
 
 If there's a feature that you want and the extension doesn't have, you can just write an easy script to extend it :).
 
@@ -25,6 +25,14 @@ The extension currently does conversions with (and not only):
 * Lorem Ipsum
 * RGB & HEX Colors
 * etc.
+
+## Privacy Note
+
+One of the main purposes of this extension is to stop pasting data, or trusting generated data from random websites.
+The extension avoids doing external web requests or logging data, for privacy. But there are two operations where external requests are needed:
+
+* **Crypto Currency Value** - Does a request to the cryptonator api to get the available cryptocurrencies and a request to get the current price for a specific pair. **The amount being converted is not sent**, this is calculated on the local machine.
+* **Url Unshorten** - This one really needs to do the request to the short url, so it can get the redirect (full) url. But keep in mind that the full url is never reached, the extension does not follow the redirect.
 
 
 ## Features

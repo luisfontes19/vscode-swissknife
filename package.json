@@ -74,6 +74,7 @@
     "@types/bip39": "^3.0.0",
     "glob": "^7.1.6",
     "request": "^2.88.2",
+    "selfsigned": "^1.10.8",
     "showdown": "^1.9.1",
     "uuid": "^8.3.1",
     "vscode-swissknife": "^0.0.2",

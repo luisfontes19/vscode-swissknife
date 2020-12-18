@@ -2,8 +2,7 @@ import * as bip39Lib from 'bip39';
 import * as crypto from 'crypto';
 import { IScript, ISwissKnifeContext } from '../Interfaces';
 import request = require('request');
-
-
+const selfsigned = require('selfsigned');
 export let CRYPTO_CURRENCIES: string[] = [];
 console.log("Loading cryptocurrency list");
 request({ url: 'https://www.cryptonator.com/api/currencies' }, (err, httpResponse) => {
@@ -38,6 +37,16 @@ export const bip39 = () => {
   const seed = bip39Lib.mnemonicToSeedSync(mnemonic).toString('hex');
 
   return { mnemonic, seed };
+};
+
+export const selfSignedCert = async (context: ISwissKnifeContext): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    context.vscode.window.showInputBox({ prompt: "What's the domain to generate the certificate to?" }).then(domain => {
+      const attrs = [{ name: 'commonName', value: domain }];
+      var pems = selfsigned.generate(attrs, { days: 365, keySize: 2048 });
+      resolve(`${pems.cert}\n\n\n\n\n\n${pems.private}\n\n\n\n\n\n${pems.public}`);
+    });
+  });
 };
 
 export const cryptoPrice = async (text: string, context: ISwissKnifeContext): Promise<string> => {
@@ -138,6 +147,11 @@ const scripts: IScript[] = [
     title: "Crypto currency value",
     detail: "Converts value of crypto currency or fiat",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(cryptoPrice)
+  },
+  {
+    title: "Generate a Self Signed Certificate",
+    detail: "Generates a self signed certificate for the provided domain, to be used for dev purposes",
+    cb: (context: ISwissKnifeContext) => context.insertRoutine(selfSignedCert)
   },
 
 
