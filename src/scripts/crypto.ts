@@ -145,7 +145,7 @@ const scripts: IScript[] = [
   },
   {
     title: "Crypto currency value",
-    detail: "Converts value of crypto currency or fiat",
+    detail: "Converts value of crypto currency or fiat(Can be used like: 1btc to dollar)",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(cryptoPrice)
   },
   {

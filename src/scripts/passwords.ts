@@ -1,5 +1,5 @@
-import * as zxcvbn from 'zxcvbn';
 import * as crypto from 'crypto';
+import * as zxcvbn from 'zxcvbn';
 import { IScript, ISwissKnifeContext } from '../Interfaces';
 
 
@@ -40,7 +40,7 @@ export const generatePassword = async (context: ISwissKnifeContext): Promise<str
 const scripts: IScript[] = [
   {
     title: "Check Password",
-    detail: "Check if strength of a password (using zxcvbn)",
+    detail: "Check the strength of a password (using zxcvbn)",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(checkPassword)
   },
   {
