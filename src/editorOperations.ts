@@ -44,10 +44,9 @@ export const replaceRoutine = (cb: TScriptCallback): Promise<void> => {
   return new Promise((resolve, reject) => {
 
     const editor = vscode.window.activeTextEditor;
-    if (!editor) reject;
+    if (!editor) reject();
     else {
       const selections = editor.selections;
-
       if (selections) {
         editor.selections.forEach(s => {
           const text = s.isEmpty ? editor.document.getText() : getTextAtSelection(s);
