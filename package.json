@@ -20,7 +20,7 @@
     "onCommand:swissknife.reload",
     "onCommand:swissknife.openScripts"
   ],
-  "main": "./out/index.js",
+  "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
