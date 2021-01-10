@@ -36,7 +36,51 @@ export const fromBinary = async (str: string): Promise<string> => {
   return str.replace(/\s/g, "").match(/[0-1]{8}/g)?.map(b => String.fromCharCode(parseInt(b, 2))).join("") || "";
 };
 
+export const fromUnicodeEscaped = async (str: string): Promise<string> => {
+  var unicodeRegex = /\\u([\d\w]{4})/gi;
+  return str.replace(unicodeRegex, (match, grp) => {
+    return String.fromCharCode(parseInt(grp, 16));
+  });
+};
+
+export const toMorseCode = async (str: string): Promise<string> => {
+  const convertion: any = {
+    "a": ".-", "b": "-...", "c": "-.-.", "d": "-..", "e": ".", "f": "..-.", "g": "--.",
+    "h": "....", "i": "..", "j": ".---", "k": "-.-", "l": ".-..", "m": "--", "n": "-.", "o": "---", "p": ".--.",
+    "q": "--.-", "r": ".-.", "s": "...", "t": "-", "u": "..-", "v": "...-", "w": ".--", "x": "-..-",
+    "y": "-.--", "z": "--..", "1": ".----", "2": "..---", "3": "...--", "4": "....-", "5": ".....", "6": "-....",
+    "7": "--...", "8": "---..", "9": "----.", "0": "-----", ".": ".-.-.-", ",": "--..--", "?": "..--..", "/": "-..-."
+  };
+
+  return str.toLowerCase().split("").map(c => {
+    return convertion[c] || c;
+  }).join("");
+};
+
+export const toUnicodeEscaped = async (str: string): Promise<string> => {
+
+  return str.split("").map(c => {
+    let unicode = c.codePointAt(0)?.toString(16) || "";
+    return "\\u" + "0".repeat(4 - unicode.length) + unicode;
+  }).join("");
+};
+
 const scripts: IScript[] = [
+  {
+    title: "Text to Morse code",
+    detail: "Converts text into morse code",
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(fromUnicodeEscaped)
+  },
+  {
+    title: "Unicode escaped to Text",
+    detail: "Decode unicode escaoed string. (ex: \\u00AA",
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(fromUnicodeEscaped)
+  },
+  {
+    title: "Text to Unicode escaped",
+    detail: "Converts text into unicode escaped charaters",
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(toUnicodeEscaped)
+  },
   {
     title: "Text to Base64",
     detail: "Convert text into base64 encoded string",
