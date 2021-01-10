@@ -4,7 +4,9 @@
 
 ![Demo](data/demo.gif)
 
-Swissknife is a scriptable extension that provides features one usually looks for in online services.
+![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/luisfontes19.vscode-swissknife?color=green&label=VS%20Code%20Marketplace&style=for-the-badge)
+
+Conversion swissknife and content generation, to stop pasting data on online services
 
 Available in the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=luisfontes19.vscode-swissknife)
 
@@ -26,6 +28,14 @@ The extension currently does conversions with (and not only):
 * RGB & HEX Colors
 * etc.
 
+
+## Features
+
+It provides an easy to use quick picker (ctrl+shift+9 on windows/linux and cmd+shift+9 on mac) for you to choose from a set of different features.
+
+On top of that it provides an easy scripting system for you to extend with your custom scripts, for whatever needs you may have.
+
+
 ## Privacy Note
 
 One of the main purposes of this extension is to stop pasting data, or trusting generated data from random websites.
@@ -34,12 +44,6 @@ The extension avoids doing external web requests or logging data, for privacy. B
 * **Crypto Currency Value** - Does a request to the cryptonator api to get the available cryptocurrencies and a request to get the current price for a specific pair. **The amount being converted is not sent**, this is calculated on the local machine.
 * **Url Unshorten** - This one really needs to do the request to the short url, so it can get the redirect (full) url. But keep in mind that the full url is never reached, the extension does not follow the redirect.
 
-
-## Features
-
-It provides an easy to use quick picker (ctrl+shift+9 on windows/linux and cmd+shift+9 on mac) for you to choose from a set of different features.
-
-On top of that it provides an easy scripting system for you to extend with your custom scripts, for whatever needs you may have.
 
 ## Writing Scripts
 
@@ -94,7 +98,7 @@ In context you have some nice methods to help you out, and you should use them w
 * replaceRoutine(cb) - This method will replace selected text in editor, with the resolved content from cb (if no text selected it replaces all text). It will call cb and send selected text in editor (all text if no selection) and context as a parameter. **cb is expected to be async**
 vscode - This variable holds the [vscode api](https://code.visualstudio.com/api).
 
-The use of this methods are option. If you fill that its easier to just work directly with vscode api you can also do it:
+The use of this methods is optional. If you fill that its easier to just work directly with vscode api you can also do it:
 
 ```js
 Object.defineProperty(exports, "__esModule", { value: true });
