@@ -36,12 +36,7 @@ export const fromBinary = async (str: string): Promise<string> => {
   return str.replace(/\s/g, "").match(/[0-1]{8}/g)?.map(b => String.fromCharCode(parseInt(b, 2))).join("") || "";
 };
 
-export const fromUnicodeEscaped = async (str: string): Promise<string> => {
-  var unicodeRegex = /\\u([\d\w]{4})/gi;
-  return str.replace(unicodeRegex, (match, grp) => {
-    return String.fromCharCode(parseInt(grp, 16));
-  });
-};
+
 
 export const toMorseCode = async (str: string): Promise<string> => {
   const convertion: any = {
@@ -57,11 +52,21 @@ export const toMorseCode = async (str: string): Promise<string> => {
   }).join("");
 };
 
-export const toUnicodeEscaped = async (str: string): Promise<string> => {
+//best article ever -> https://dmitripavlutin.com/what-every-javascript-developer-should-know-about-unicode/
+export const fromUnicodeEscaped = async (str: string): Promise<string> => {
+  const regex = /\\u\{(\w{1,6})\}|\\u(\w{1,6})/; //\w can improved
+  return str.match(new RegExp(regex, "g"))?.map(m => {
+    const finding = m.match(regex)!;
+    const unicodeChar = finding[1] || finding[2];
+    const codePoint = parseInt(unicodeChar, 16);
+    return String.fromCodePoint(codePoint);
+  }).join("") || "";
+};
 
-  return str.split("").map(c => {
-    let unicode = c.codePointAt(0)?.toString(16) || "";
-    return "\\u" + "0".repeat(4 - unicode.length) + unicode;
+export const toUnicodeEscaped = async (str: string): Promise<string> => {
+  return [...str].map(c => {
+    const u = c.codePointAt(0)!.toString(16);
+    return `\\u{${u}}`;
   }).join("");
 };
 
@@ -73,12 +78,12 @@ const scripts: IScript[] = [
   },
   {
     title: "Unicode escaped to Text",
-    detail: "Decode unicode escaoed string. (ex: \\u00AA",
+    detail: "Decode unicode escaoed string. (ex: \\u00AA or \\u{00AA}",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(fromUnicodeEscaped)
   },
   {
-    title: "Text to Unicode escaped",
-    detail: "Converts text into unicode escaped charaters",
+    title: "Text to Unicode escaped string",
+    detail: "Converts text into unicode escaped charaters for javascript",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(toUnicodeEscaped)
   },
   {
