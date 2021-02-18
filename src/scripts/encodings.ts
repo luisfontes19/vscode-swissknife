@@ -72,37 +72,37 @@ export const toUnicodeEscaped = async (str: string): Promise<string> => {
 
 const scripts: IScript[] = [
   {
-    title: "Text to Morse code",
+    title: "To Morse code",
     detail: "Converts text into morse code",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(fromUnicodeEscaped)
   },
   {
-    title: "Unicode escaped to Text",
+    title: "Unicode decode",
     detail: "Decode unicode escaoed string. (ex: \\u00AA or \\u{00AA}",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(fromUnicodeEscaped)
   },
   {
-    title: "Text to Unicode escaped string",
+    title: "Unicode encode (js format)",
     detail: "Converts text into unicode escaped charaters for javascript",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(toUnicodeEscaped)
   },
   {
-    title: "Text to Base64",
+    title: "Base64 encode",
     detail: "Convert text into base64 encoded string",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(toBase64)
   },
   {
-    title: "Base64 to Text",
+    title: "Base64 decode",
     detail: "Decode base64 strings",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(fromBase64)
   },
   {
-    title: "Hex to Text",
+    title: "Hex decode",
     detail: "Convert an hex encoded string into readable text",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(fromHex)
   },
   {
-    title: "Text to Hex",
+    title: "Hex encode",
     detail: "Convert a string tino hex encoded",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(toHex)
   },

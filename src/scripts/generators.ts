@@ -1,5 +1,5 @@
-import { v4 } from 'uuid';
 import * as crypto from 'crypto';
+import { v4 } from 'uuid';
 import { IScript, ISwissKnifeContext } from '../Interfaces';
 
 export const uuidv4 = async (): Promise<string> => {
@@ -24,7 +24,7 @@ const scripts: IScript[] = [
     cb: (context: ISwissKnifeContext) => context.insertRoutine(uuidv4)
   },
   {
-    title: "Generate Random String",
+    title: "Random String",
     detail: "Generates a cryptographically secure random string",
     cb: (context: ISwissKnifeContext) => context.insertRoutine(randomString)
   }

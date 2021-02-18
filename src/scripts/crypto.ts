@@ -149,7 +149,7 @@ const scripts: IScript[] = [
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(cryptoPrice)
   },
   {
-    title: "Generate a Self Signed Certificate",
+    title: "Self Signed Certificate",
     detail: "Generates a self signed certificate for the provided domain, to be used for dev purposes",
     cb: (context: ISwissKnifeContext) => context.insertRoutine(selfSignedCert)
   },

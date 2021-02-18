@@ -39,7 +39,7 @@ export const generatePassword = async (context: ISwissKnifeContext): Promise<str
 
 const scripts: IScript[] = [
   {
-    title: "Check Password",
+    title: "Password strength",
     detail: "Check the strength of a password (using zxcvbn)",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(checkPassword)
   },
