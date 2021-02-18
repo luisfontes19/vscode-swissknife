@@ -6,40 +6,43 @@
 
 ![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/luisfontes19.vscode-swissknife?color=green&label=VS%20Code%20Marketplace&style=for-the-badge)
 
-Conversion swissknife and content generation, to stop pasting data on online services
+The developers swissknife. Do convertions and generations right out of vs code. Extendable with user scripts
 
 Available in the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=luisfontes19.vscode-swissknife)
 
-You can find here features to do different types of conversions to your text, or even generating content.
+**Some of the built in options:**
 
-If there's a feature that you want and the extension doesn't have, you can just write an easy script to extend it :).
-
-The extension currently does conversions with (and not only):
-
-* Base64
-* JWT
-* HEX
+* Base64 encode/decode
+* JWT decode
+* HEX encode/decode
 * md5,sha1,sha256,sha512
-* URLEncode
-* Markdown
-* Passwords
+* Markdown to html
+* Passwords strnegth and generation
 * Timestamps
 * Lorem Ipsum
-* RGB & HEX Colors
-* etc.
+* RGB <=> HEX Colors converter
+* Text transformations (lower case, uppercase, capitalize, join lines)
+* Word and char count
+* CryptoCurrency convertion, Bip39 mnemonic
+* RSA keypair
+* Self Signed Certificates for dev servers
+* Random strings and UUID
+* HTTP Request to fetch call (JS)
+* Unix permissions convertor
 
+## Usage
 
-## Features
+You can invoke the dedicated command pallete with ```ctrl+shift+9``` for windows or ```cmd+shift+9``` for mac (when focusing the editor)
 
-It provides an easy to use quick picker (ctrl+shift+9 on windows/linux and cmd+shift+9 on mac) for you to choose from a set of different features.
+The conversions will only use the selected text. If no text is selected the entire content of the editor will be used.
 
-On top of that it provides an easy scripting system for you to extend with your custom scripts, for whatever needs you may have.
-
+There's currently an issue with multi selection, but the plan is to fully support it. 
 
 ## Privacy Note
 
 One of the main purposes of this extension is to stop pasting data, or trusting generated data from random websites.
-The extension avoids doing external web requests or logging data, for privacy. But there are two operations where external requests are needed:
+The extension avoids doing external web requests or logging data, for privacy. 
+But there are two operations where external requests are needed:
 
 * **Crypto Currency Value** - Does a request to the cryptonator api to get the available cryptocurrencies and a request to get the current price for a specific pair. **The amount being converted is not sent**, this is calculated on the local machine.
 * **Url Unshorten** - This one really needs to do the request to the short url, so it can get the redirect (full) url. But keep in mind that the full url is never reached, the extension does not follow the redirect.
@@ -52,7 +55,7 @@ Swissknife will automatically load all scripts in its user scripting folder and 
 This is the folder where you can create your custom scripts.
 .
 To start a new script you can also use a command provided by the extension. Open swissknife picker and type "New swissknife script".
-You can chose the TS or JS version according to what you're more comfortable with. TS will be more complicated as you need to transpile it to JS.
+You can chose the TS or JS version according to what you're more comfortable with. TS will be more complex as you need to transpile it to JS.
 
 We'll go with Javascript.
 
