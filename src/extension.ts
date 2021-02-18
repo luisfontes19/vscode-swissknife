@@ -4,6 +4,17 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { informationRoutine, insertRoutine, replaceRoutine } from './editorOperations';
 import { IScript, IScriptQuickPickItem, ISwissKnifeContext } from './Interfaces';
+import colors from './scripts/colors';
+import count from './scripts/count';
+import crypto from './scripts/crypto';
+import encodings from './scripts/encodings';
+import generators from './scripts/generators';
+import markdown from './scripts/markdown';
+import native from './scripts/native';
+import passwords from './scripts/passwords';
+import textBasic from './scripts/textBasic';
+import time from './scripts/time';
+import utils from './scripts/utils';
 
 
 let scripts: IScriptQuickPickItem[] = [];
@@ -50,17 +61,31 @@ const openUserScriptsFolder = () => {
 };
 
 
-
+//clear cache will only work for user scripts
 const loadScripts = (clearCache = false) => {
 
 	scripts = [];
+	let promises: any = [];
 
-	//load native scripts
-	const scriptsPath = path.join(__dirname, "/scripts/**/*.js");
-	loadScriptsAt(scriptsPath, clearCache);
+	//load internal scripts first, from modules
+	const defaultScriptModules = [colors, count, crypto, encodings, generators, markdown, native, passwords, textBasic, time, utils];
+	defaultScriptModules.forEach(m => {
+		const moduleScripts = createScriptsFromModule(m);
+		scripts = [...scripts, ...moduleScripts];
+	});
+
 
 	//load user scripts
-	loadScriptsAt(path.join(userScriptsFolder, "/**/*.js"), clearCache);
+	const userScriptPromises = loadScriptsAt(path.join(userScriptsFolder, "/**/*.js"), clearCache);
+	promises = [...promises, ...userScriptPromises];
+
+	Promise.all(promises).then(modules => {
+
+		modules.forEach((m: any) => {
+			const moduleScripts = createScriptsFromModule(m);
+			scripts = [...scripts, ...moduleScripts];
+		});
+	}).catch(err => console.log(err));
 
 };
 
@@ -79,19 +104,23 @@ const loadScriptsAt = (path: string, clearCache: boolean) => {
 		}
 	});
 
-	Promise.all(promises).then(modules => {
-
-		modules.forEach((m: any) => {
-			if (!m.default) return; //not compliant
-
-			m.default.forEach((s: IScript) => {
-				const item: IScriptQuickPickItem = { label: s.title, alwaysShow: true, detail: s.detail, cb: s.cb };
-				scripts.push(item);
-			});
-		});
-	}).catch(err => console.log(err));
+	return promises;
 };
 
+const createScriptsFromModule = (m: any) => {
+	const moduleScripts: IScriptQuickPickItem[] = [];
+
+	//default is for "require" loaded modules (user scripts)
+	m = m.default || m;
+
+	m.forEach((s: IScript) => {
+		const item: IScriptQuickPickItem = { label: s.title, alwaysShow: true, detail: s.detail, cb: s.cb };
+		console.log("Loading script " + s.title);
+		moduleScripts.push(item);
+	});
+
+	return moduleScripts;
+}
 
 const checkUserScriptsFolder = () => {
 	if (!fs.existsSync(extensionFolder))

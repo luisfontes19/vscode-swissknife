@@ -2,6 +2,14 @@
 
 All notable changes to the "swissknife" extension will be documented in this file.
 
+## 1.0.0
+
+* Renamed some scripts for better usage
+* Added Morse code convertion
+* Added Unicode convertions
+* Improved bundling process
+  * Core scripts are now loaded with default imports, which allows us to bundle the entire code into one single file
+
 ## 0.0.5
 
 ### Added
