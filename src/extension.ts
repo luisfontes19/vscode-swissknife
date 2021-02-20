@@ -65,28 +65,24 @@ const openUserScriptsFolder = () => {
 const loadScripts = (clearCache = false) => {
 
 	scripts = [];
-	let promises: any = [];
 
 	//load internal scripts first, from modules
 	const defaultScriptModules = [colors, count, crypto, encodings, generators, markdown, native, passwords, textBasic, time, utils];
 	defaultScriptModules.forEach(m => {
 		const moduleScripts = createScriptsFromModule(m);
-		scripts = [...scripts, ...moduleScripts];
+		scripts = moduleScripts;
 	});
 
 
 	//load user scripts
 	const userScriptPromises = loadScriptsAt(path.join(userScriptsFolder, "/**/*.js"), clearCache);
-	promises = [...promises, ...userScriptPromises];
 
-	Promise.all(promises).then(modules => {
-
+	Promise.all(userScriptPromises).then(modules => {
 		modules.forEach((m: any) => {
 			const moduleScripts = createScriptsFromModule(m);
 			scripts = [...scripts, ...moduleScripts];
 		});
 	}).catch(err => console.log(err));
-
 };
 
 
