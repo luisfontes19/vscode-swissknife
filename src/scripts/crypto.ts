@@ -1,8 +1,12 @@
 import * as bip39Lib from 'bip39';
 import * as crypto from 'crypto';
+import { ec } from 'elliptic';
 import { IScript, ISwissKnifeContext } from '../Interfaces';
 import request = require('request');
 const selfsigned = require('selfsigned');
+
+
+
 export let CRYPTO_CURRENCIES: string[] = [];
 console.log("Loading cryptocurrency list");
 request({ url: 'https://www.cryptonator.com/api/currencies' }, (err, httpResponse) => {
@@ -91,6 +95,17 @@ export const cryptoPrice = async (text: string, context: ISwissKnifeContext): Pr
 };
 
 
+export const generateElipticKeypair = async (context: ISwissKnifeContext): Promise<string> => {
+  const supportedCurves = ["secp256k1", "p192", "p224", "p256", "p384", "p521", "curve25519", "ed25519"];
+
+  const curve = (await context.vscode.window.showQuickPick(supportedCurves, { placeHolder: "Select Curve" })) || "";
+  if (!supportedCurves.includes(curve)) return Promise.reject("Curve not supported");
+
+  const keypair = new ec(curve).genKeyPair();
+
+  return `Private key:${keypair.getPrivate("hex")}\nPublic Key:${keypair.getPublic(true, "hex")}`;
+};
+
 export const generateRSAKeyPair = async (): Promise<string> => {
   const res = crypto.generateKeyPairSync('rsa', {
     modulusLength: 4096,
@@ -152,6 +167,11 @@ const scripts: IScript[] = [
     title: "Self Signed Certificate",
     detail: "Generates a self signed certificate for the provided domain, to be used for dev purposes",
     cb: (context: ISwissKnifeContext) => context.insertRoutine(selfSignedCert)
+  },
+  {
+    title: "Elliptic Curve Keypair",
+    detail: "Generates public and private keys with Eliptic Curve cryptography",
+    cb: (context: ISwissKnifeContext) => context.insertRoutine(generateElipticKeypair)
   },
 
 
