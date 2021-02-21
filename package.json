@@ -75,6 +75,7 @@
     "@types/bip39": "^3.0.0",
     "elliptic": "^6.5.4",
     "glob": "^7.1.6",
+    "hash-identifier": "^1.0.0",
     "request": "^2.88.2",
     "selfsigned": "^1.10.8",
     "showdown": "^1.9.1",

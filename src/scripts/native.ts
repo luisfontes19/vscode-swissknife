@@ -68,7 +68,6 @@ export const doSomething = async (text: string, context: ISwissKnifeContext): Pr
 //      Will display an information message with the return of cb
 // - vscode. This is the variable available for vscode extensions with the entire API. 
 //      Read the docs for more info (https://code.visualstudio.com/api)
-// TODO: REMOVE THIS BEFORE PR
 const scripts: IScript[] = [
   {
     title: "My Script",

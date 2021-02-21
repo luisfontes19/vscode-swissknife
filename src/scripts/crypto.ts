@@ -1,8 +1,11 @@
 import * as bip39Lib from 'bip39';
 import * as crypto from 'crypto';
 import { ec } from 'elliptic';
+// @ts-ignore
+import * as HashIdentifier from 'hash-identifier';
 import { IScript, ISwissKnifeContext } from '../Interfaces';
 import request = require('request');
+
 const selfsigned = require('selfsigned');
 
 
@@ -94,7 +97,6 @@ export const cryptoPrice = async (text: string, context: ISwissKnifeContext): Pr
 
 };
 
-
 export const generateElipticKeypair = async (context: ISwissKnifeContext): Promise<string> => {
   const supportedCurves = ["secp256k1", "p192", "p224", "p256", "p384", "p521", "curve25519", "ed25519"];
 
@@ -105,6 +107,15 @@ export const generateElipticKeypair = async (context: ISwissKnifeContext): Promi
 
   return `Private key:${keypair.getPrivate("hex")}\nPublic Key:${keypair.getPublic(true, "hex")}`;
 };
+
+export const hashIdentifier = async (input: string, context: ISwissKnifeContext): Promise<string> => {
+  const res = HashIdentifier.checkAlgorithm(input);
+  input += res.length > 0 ? `\nIdentified Algorithms:\n${res.join("\n")}` : "Could not identify an hash algorithm";
+
+  return input;
+};
+
+
 
 export const generateRSAKeyPair = async (): Promise<string> => {
   const res = crypto.generateKeyPairSync('rsa', {
@@ -169,9 +180,14 @@ const scripts: IScript[] = [
     cb: (context: ISwissKnifeContext) => context.insertRoutine(selfSignedCert)
   },
   {
-    title: "Elliptic Curve Keypair",
-    detail: "Generates public and private keys with Eliptic Curve cryptography",
+    title: "Self Signed Certificate",
+    detail: "Generates a self signed certificate for the provided domain, to be used for dev purposes",
     cb: (context: ISwissKnifeContext) => context.insertRoutine(generateElipticKeypair)
+  },
+  {
+    title: "Identify hash",
+    detail: "Tries to identify the algorithm that was used to generate the supplied hash",
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(hashIdentifier)
   },
 
 
