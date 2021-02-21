@@ -17,6 +17,7 @@ Available in the [Visual Studio Marketplace](https://marketplace.visualstudio.co
 * HEX encode/decode
 * md5,sha1,sha256,sha512
 * Markdown to html
+* Hash Identifier
 * Passwords strnegth and generation
 * Timestamps
 * Lorem Ipsum
@@ -29,6 +30,7 @@ Available in the [Visual Studio Marketplace](https://marketplace.visualstudio.co
 * Random strings and UUID
 * HTTP Request to fetch call (JS)
 * Unix permissions convertor
+* URL Shorten, unshorten
 
 ## Usage
 
@@ -48,6 +50,13 @@ You can specify conversions directly from the text like:
 ```
 1btc to eur
 ```
+
+For a list of supported currencies check [here](https://www.cryptonator.com/api/currencies)
+
+### Indeitify Hash
+
+The outcome of the operation may return multiple values, as a hashes from different algorithms have the same output format. 
+Still we organize the hashes from top down by most relevant.
 
 ## Privacy Note
 

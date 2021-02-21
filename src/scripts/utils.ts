@@ -34,6 +34,15 @@ export const textToString = async (str: string): Promise<string> => {
   return JSON.stringify(textToString);
 };
 
+export const urlShortener = async (str: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    request({ uri: "https://tinyurl.com/api-create.php?url=" + str, }, (err, httpResponse) => {
+      if (err) reject(err);
+      else resolve(httpResponse.body);
+    });
+  });
+};
+
 export const urlExpand = async (str: string): Promise<string> => {
 
   return new Promise((resolve, reject) => {
@@ -123,6 +132,11 @@ const scripts: IScript[] = [
     title: "Unix/Linux Permission To Human Readable",
     detail: "Convert a unix permission (like 777) to a human readable text",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(linuxPermissions)
+  },
+  {
+    title: "Url Shorten",
+    detail: "Shortens an URL (using tinyurl",
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(urlShortener)
   },
   {
     title: "Url Unshorten (url expand)",
