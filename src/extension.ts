@@ -70,9 +70,8 @@ const loadScripts = (clearCache = false) => {
 	const defaultScriptModules = [colors, count, crypto, encodings, generators, markdown, native, passwords, textBasic, time, utils];
 	defaultScriptModules.forEach(m => {
 		const moduleScripts = createScriptsFromModule(m);
-		scripts = moduleScripts;
+		scripts = [...scripts, ...moduleScripts];
 	});
-
 
 	//load user scripts
 	const userScriptPromises = loadScriptsAt(path.join(userScriptsFolder, "/**/*.js"), clearCache);
