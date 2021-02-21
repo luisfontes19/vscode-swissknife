@@ -9,14 +9,18 @@ export const informationRoutine = (cb: TScriptCallback): Promise<void> => {
 
     if (!editor) reject("No editor");
     else {
-      const text = editor.document.getText();
+      const selections = editor.selections;
+      if (selections) {
+        editor.selections.forEach(s => {
+          const text = s.isEmpty ? editor.document.getText() : getTextAtSelection(s);
 
-      cb(text, extensionContext).then(data => {
-        vscode.window.showInformationMessage(data);
-        resolve();
-      }).catch(err => { vscode.window.showErrorMessage(err); reject(); });
+          cb(text, extensionContext).then(data => {
+            vscode.window.showInformationMessage(data);
+            resolve();
+          }).catch(err => { vscode.window.showErrorMessage(err); reject(); });
+        });
+      }
     }
-
   });
 };
 
