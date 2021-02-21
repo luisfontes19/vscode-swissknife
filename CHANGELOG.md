@@ -2,6 +2,12 @@
 
 All notable changes to the "swissknife" extension will be documented in this file.
 
+## 1.1.0
+
+* Add bug that didn't use selected text in informationRoutine
+* Add script to identify hash algorithms
+* Add script for eliptic curve key pair generation
+
 ## 1.0.0
 
 * Renamed some scripts for better usage

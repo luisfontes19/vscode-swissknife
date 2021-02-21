@@ -38,6 +38,17 @@ The conversions will only use the selected text. If no text is selected the enti
 
 There's currently an issue with multi selection, but the plan is to fully support it. 
 
+## Scripts Details
+
+### Crypto currency value
+
+Uses the API from [Cryptonator](cryptonator.com).
+You can specify conversions directly from the text like:
+
+```
+1btc to eur
+```
+
 ## Privacy Note
 
 One of the main purposes of this extension is to stop pasting data, or trusting generated data from random websites.
