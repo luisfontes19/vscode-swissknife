@@ -1,3 +1,4 @@
+import * as bcrypt from 'bcrypt';
 import * as bip39Lib from 'bip39';
 import * as crypto from 'crypto';
 import { ec } from 'elliptic';
@@ -44,6 +45,21 @@ export const bip39 = () => {
   const seed = bip39Lib.mnemonicToSeedSync(mnemonic).toString('hex');
 
   return { mnemonic, seed };
+};
+
+const getBcryptSaltRound = (context: ISwissKnifeContext): Promise<number> => {
+  return new Promise((resolve, reject) => {
+    context.vscode.window.showInputBox({ prompt: "Number of salt rounds (leave empty for default (10)" }).then(rounds => {
+      const r = rounds ? (parseInt(rounds) || 10) : 10;
+      resolve(r);
+    });
+  });
+};
+
+export const toBcrypt = async (text: string, context: ISwissKnifeContext) => {
+  const rounds = await getBcryptSaltRound(context);
+
+  return bcrypt.hash(text, rounds);
 };
 
 export const selfSignedCert = async (context: ISwissKnifeContext): Promise<string> => {
@@ -110,7 +126,7 @@ export const generateElipticKeypair = async (context: ISwissKnifeContext): Promi
 
 export const hashIdentifier = async (input: string, context: ISwissKnifeContext): Promise<string> => {
   const res = HashIdentifier.checkAlgorithm(input);
-  input += res.length > 0 ? `\nIdentified Algorithms:\n${res.join("\n")}` : "Could not identify an hash algorithm";
+  input += res.length > 0 ? `\nIdentified Algorithms:\n${res.join("\n")}` : "\nCould not identify an hash algorithm";
 
   return input;
 };
@@ -157,7 +173,11 @@ const scripts: IScript[] = [
     detail: "Generate a SHA512 hash for the input",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(toSha512)
   },
-
+  {
+    title: "Bcrypt hash",
+    detail: "Generate a bcrypt hash for the input",
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(toBcrypt)
+  },
   {
     title: "Bip39 Mnemonic",
     detail: "Generates a secure Bip39 Mnemonic for crypto wallets",
