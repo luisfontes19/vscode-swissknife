@@ -6,7 +6,7 @@
 
 ![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/luisfontes19.vscode-swissknife?color=green&label=VS%20Code%20Marketplace&style=for-the-badge)
 
-The developers swissknife. Do convertions and generations right out of vs code. Extendable with user scripts
+The developers swissknife. Do conversions and generations right out of vs code. Extendable with user scripts
 
 Available in the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=luisfontes19.vscode-swissknife)
 
