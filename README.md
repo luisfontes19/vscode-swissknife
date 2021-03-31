@@ -38,7 +38,7 @@ You can invoke the dedicated command pallete with ```ctrl+shift+9``` for windows
 
 The conversions will only use the selected text. If no text is selected the entire content of the editor will be used.
 
-There's currently an issue with multi selection, but the plan is to fully support it. 
+There's currently an issue with multi selection, but the plan is to fully support it.
 
 ## Scripts Details
 
@@ -47,7 +47,7 @@ There's currently an issue with multi selection, but the plan is to fully suppor
 Uses the API from [Cryptonator](cryptonator.com).
 You can specify conversions directly from the text like:
 
-```
+```text
 1btc to eur
 ```
 
@@ -55,18 +55,17 @@ For a list of supported currencies check [here](https://www.cryptonator.com/api/
 
 ### Indeitify Hash
 
-The outcome of the operation may return multiple values, as a hashes from different algorithms have the same output format. 
+The outcome of the operation may return multiple values, as a hashes from different algorithms have the same output format.
 Still we organize the hashes from top down by most relevant.
 
 ## Privacy Note
 
 One of the main purposes of this extension is to stop pasting data, or trusting generated data from random websites.
-The extension avoids doing external web requests or logging data, for privacy. 
+The extension avoids doing external web requests or logging data, for privacy.
 But there are two operations where external requests are needed:
 
 * **Crypto Currency Value** - Does a request to the cryptonator api to get the available cryptocurrencies and a request to get the current price for a specific pair. **The amount being converted is not sent**, this is calculated on the local machine.
 * **Url Unshorten** - This one really needs to do the request to the short url, so it can get the redirect (full) url. But keep in mind that the full url is never reached, the extension does not follow the redirect.
-
 
 ## Writing Scripts
 
@@ -121,7 +120,7 @@ In context you have some nice methods to help you out, and you should use them w
 * replaceRoutine(cb) - This method will replace selected text in editor, with the resolved content from cb (if no text selected it replaces all text). It will call cb and send selected text in editor (all text if no selection) and context as a parameter. **cb is expected to be async**
 vscode - This variable holds the [vscode api](https://code.visualstudio.com/api).
 
-The use of this methods is optional. If you fill that its easier to just work directly with vscode api you can also do it:
+The use of this methods is optional. If you feel that its easier to just work directly with vscode api you can also do it:
 
 ```js
 Object.defineProperty(exports, "__esModule", { value: true });
