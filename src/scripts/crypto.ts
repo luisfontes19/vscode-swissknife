@@ -1,15 +1,12 @@
-import * as bcrypt from 'bcrypt';
 import * as bip39Lib from 'bip39';
 import * as crypto from 'crypto';
 import { ec } from 'elliptic';
-// @ts-ignore
+// @ts-ignore ADD TYPES
 import * as HashIdentifier from 'hash-identifier';
+// @ts-ignore TODO: ADD TYPES
+import { selfsigned } from 'selfsigned';
 import { IScript, ISwissKnifeContext } from '../Interfaces';
 import request = require('request');
-
-const selfsigned = require('selfsigned');
-
-
 
 export let CRYPTO_CURRENCIES: string[] = [];
 console.log("Loading cryptocurrency list");
@@ -47,20 +44,20 @@ export const bip39 = () => {
   return { mnemonic, seed };
 };
 
-const getBcryptSaltRound = (context: ISwissKnifeContext): Promise<number> => {
-  return new Promise((resolve, reject) => {
-    context.vscode.window.showInputBox({ prompt: "Number of salt rounds (leave empty for default (10)" }).then(rounds => {
-      const r = rounds ? (parseInt(rounds) || 10) : 10;
-      resolve(r);
-    });
-  });
-};
+// const getBcryptSaltRound = (context: ISwissKnifeContext): Promise<number> => {
+//   return new Promise((resolve, reject) => {
+//     context.vscode.window.showInputBox({ prompt: "Number of salt rounds (leave empty for default (10)" }).then(rounds => {
+//       const r = rounds ? (parseInt(rounds) || 10) : 10;
+//       resolve(r);
+//     });
+//   });
+// };
 
-export const toBcrypt = async (text: string, context: ISwissKnifeContext) => {
-  const rounds = await getBcryptSaltRound(context);
+// export const toBcrypt = async (text: string, context: ISwissKnifeContext) => {
+//   const rounds = await getBcryptSaltRound(context);
 
-  return bcrypt.hash(text, rounds);
-};
+//   return bcrypt.hash(text, rounds);
+// };
 
 export const selfSignedCert = async (context: ISwissKnifeContext): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -173,11 +170,11 @@ const scripts: IScript[] = [
     detail: "Generate a SHA512 hash for the input",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(toSha512)
   },
-  {
-    title: "Bcrypt hash",
-    detail: "Generate a bcrypt hash for the input",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(toBcrypt)
-  },
+  // {
+  //   title: "Bcrypt hash",
+  //   detail: "Generate a bcrypt hash for the input",
+  //   cb: (context: ISwissKnifeContext) => context.replaceRoutine(toBcrypt)
+  // },
   {
     title: "Bip39 Mnemonic",
     detail: "Generates a secure Bip39 Mnemonic for crypto wallets",
