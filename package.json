@@ -22,10 +22,19 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "menus": {
+      "touchBar": [
+        {
+          "command": "swissknife.show",
+          "group": "editing"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "swissknife.show",
-        "title": "Open Swissknife command pallete"
+        "title": "Open Swissknife command pallete",
+        "icon": "data/icon.png"
       },
       {
         "command": "swissknife.reload",
