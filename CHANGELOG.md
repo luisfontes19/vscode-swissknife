@@ -2,10 +2,14 @@
 
 All notable changes to the "swissknife" extension will be documented in this file.
 
+## 1.2.1
+
+* Temporarily removed bcrypt bcript as it was causing conflicts in the bundled solution
+
 ## 1.2.0
 
-* Add script to generate Argon2 hashes
-* Updated hash-identifier dependency to support Argon2 hashes
+* Add script to generate BCrypt hashes
+* Updated hash-identifier dependency to support Bcrypt hashes
 * Fixed multi-selection issue where only one would be processed
 * Added support for Mac TouchBar
 
