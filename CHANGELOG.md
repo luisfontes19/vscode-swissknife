@@ -2,9 +2,16 @@
 
 All notable changes to the "swissknife" extension will be documented in this file.
 
+## 1.2.0
+
+* Add script to generate Argon2 hashes
+* Updated hash-identifier dependency to support Argon2 hashes
+* Fixed multi-selection issue where only one would be processed
+* Added support for Mac TouchBar
+
 ## 1.1.0
 
-* Add bug that didn't use selected text in informationRoutine
+* Fix bug that didn't use selected text in informationRoutine
 * Add script to identify hash algorithms
 * Add script for eliptic curve key pair generation
 

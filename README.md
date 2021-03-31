@@ -36,9 +36,11 @@ Available in the [Visual Studio Marketplace](https://marketplace.visualstudio.co
 
 You can invoke the dedicated command pallete with ```ctrl+shift+9``` for windows or ```cmd+shift+9``` for mac (when focusing the editor)
 
-The conversions will only use the selected text. If no text is selected the entire content of the editor will be used.
+The conversions will only use the selected text by. If no text is selected the entire content of the editor will be used.
+It supports multi selection and will run the script for each selection individually
 
-There's currently an issue with multi selection, but the plan is to fully support it.
+**Macbook Touchbar Support**
+![Touchbar Support](data/touchbar_support.png)
 
 ## Scripts Details
 
@@ -53,7 +55,7 @@ You can specify conversions directly from the text like:
 
 For a list of supported currencies check [here](https://www.cryptonator.com/api/currencies)
 
-### Indeitify Hash
+### Identify Hash
 
 The outcome of the operation may return multiple values, as a hashes from different algorithms have the same output format.
 Still we organize the hashes from top down by most relevant.
