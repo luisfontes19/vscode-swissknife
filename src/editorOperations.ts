@@ -2,68 +2,54 @@ import * as vscode from 'vscode';
 import { extensionContext } from './extension';
 import { TScriptCallback, TScriptInsertCallback } from './Interfaces';
 
-export const informationRoutine = (cb: TScriptCallback): Promise<void> => {
-  return new Promise((resolve, reject) => {
+export const informationRoutine = async (cb: TScriptCallback): Promise<void> => {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) return Promise.reject("No editor");
 
-    const editor = vscode.window.activeTextEditor;
+  const selections = editor.selections;
+  if (!selections) return Promise.resolve();
 
-    if (!editor) reject("No editor");
-    else {
-      const selections = editor.selections;
-      if (selections) {
-        editor.selections.forEach(s => {
-          const text = s.isEmpty ? editor.document.getText() : getTextAtSelection(s);
+  for (const selection of selections) {
+    const text = selection.isEmpty ? editor.document.getText() : getTextAtSelection(selection);
 
-          cb(text, extensionContext).then(data => {
-            vscode.window.showInformationMessage(data);
-            resolve();
-          }).catch(err => { vscode.window.showErrorMessage(err); reject(); });
-        });
-      }
-    }
-  });
+    await cb(text, extensionContext)
+      .then(async data => await showInformationAsync(data))
+      .catch(err => vscode.window.showErrorMessage(err));
+  };
 };
 
-export const insertRoutine = (cb: TScriptInsertCallback): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    const editor = vscode.window.activeTextEditor;
+export const insertRoutine = async (cb: TScriptInsertCallback): Promise<void> => {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) return Promise.reject("No editor");
 
-    if (!editor) reject("No editor");
-    else {
-      cb(extensionContext).then(data => {
-        editor.edit((edit) => {
-          edit.insert(editor.selection.active, data);
-          resolve();
-        });
-      }).catch(err => {
-        vscode.window.showErrorMessage(err); reject();
-        reject();
-      });
+  const selections = editor.selections;
+  if (!selections) return Promise.resolve();
 
-    }
-  });
+  for (const selection of selections) {
+    await cb(extensionContext).then(async data => {
+      const p = new vscode.Position(selection.end.line, selection.end.character);
+      await editAsync((edit) => edit.insert(p, data));
+    }).catch(err => vscode.window.showErrorMessage(err));
+  }
+
 };
 
-export const replaceRoutine = (cb: TScriptCallback): Promise<void> => {
-  return new Promise((resolve, reject) => {
+export const replaceRoutine = async (cb: TScriptCallback): Promise<void> => {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) return Promise.reject("No editor");
 
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) reject();
-    else {
-      const selections = editor.selections;
-      if (selections) {
-        editor.selections.forEach(s => {
-          const text = s.isEmpty ? editor.document.getText() : getTextAtSelection(s);
+  const selections = editor.selections;
+  if (!selections) return Promise.resolve();
 
-          cb(text, extensionContext).then(data => {
-            const replaceAt = s.isEmpty ? documentRange() : s;
-            setTextAtRange(replaceAt, data);
-            resolve();
-          }).catch(err => { vscode.window.showErrorMessage(err); reject(); });
-        });
-      }
-    }
-  });
+  for (const selection of selections) {
+    const text = selection.isEmpty ? editor.document.getText() : getTextAtSelection(selection);
+
+    await cb(text, extensionContext).then(async data => {
+      const replaceAt = selection.isEmpty ? documentRange() : selection;
+      await setTextAtRange(replaceAt, data);
+    }).catch(err => { vscode.window.showErrorMessage(err); });
+  };
+
 };
 
 export const documentRange = (): vscode.Range => {
@@ -85,10 +71,24 @@ export const getTextAtSelection = (selection: vscode.Selection): string => {
   return vscode.window.activeTextEditor?.document.getText(new vscode.Range(selection.start, selection.end)) || "";
 };
 
-export const setTextAtRange = (selection: vscode.Selection | vscode.Range, text: string) => {
-  vscode.window.activeTextEditor?.edit((editBuilder: vscode.TextEditorEdit) => {
+export const setTextAtRange = (selection: vscode.Selection | vscode.Range, text: string): Promise<void> => {
+  return editAsync((editBuilder) => {
     if (selection !== undefined)
       editBuilder.replace(selection, text);
   });
-
 };
+
+
+export const editAsync = (cb: (editBuilder: vscode.TextEditorEdit) => void): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    vscode.window.activeTextEditor?.edit((editBuilder: vscode.TextEditorEdit) => {
+      cb(editBuilder);
+    }).then(() => resolve());
+  });
+}
+
+export const showInformationAsync = (str: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    vscode.window.showInformationMessage(str).then(() => resolve());
+  });
+}
