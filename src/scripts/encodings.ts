@@ -28,6 +28,17 @@ export const fromUrlEncode = async (str: string): Promise<string> => {
   return decodeURIComponent(str);
 };
 
+export const fullUrlEncode = async (str: string): Promise<string> => {
+  let encoded = '';
+
+  for (let i = 0; i < str.length; i++) {
+    const h = parseInt(str.charCodeAt(i).toString()).toString(16);
+    encoded += '%' + h;
+  }
+
+  return encoded;
+};
+
 export const toBinary = async (str: string): Promise<string> => {
   return str.split("").map(c => c.charCodeAt(0).toString(2)).join(" ");
 };
@@ -110,6 +121,11 @@ const scripts: IScript[] = [
     title: "Url Encode",
     detail: "Url Encode a string",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(toUrlEncode)
+  },
+  {
+    title: "Url Encode (All Characters)",
+    detail: "Url encode all characters in a string",
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(fullUrlEncode)
   },
   {
     title: "Url Decode",
