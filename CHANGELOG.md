@@ -4,7 +4,7 @@ All notable changes to the "swissknife" extension will be documented in this fil
 
 ## 1.2.1
 
-* Temporarily removed bcrypt bcript as it was causing conflicts in the bundled solution
+* Temporarily removed bcrypt script as it was causing conflicts in the bundled solution
 
 ## 1.2.0
 
