@@ -1,13 +1,12 @@
 
-import * as express from 'express';
 import * as request from 'request';
 import * as vscode from 'vscode';
-import { editAsync } from '../editorOperations';
 import { IScript, ISwissKnifeContext } from '../Interfaces';
+import { _selfSignedCert } from './crypto';
 import { fromBase64 } from './encodings';
-import { fromExpressRequest, fromString, toFetch } from './lib/requestUtils';
-
-let server: any;
+import { fromString, toFetch } from './lib/requestUtils';
+import * as Server from './lib/server';
+import { ServerConfig } from './lib/server';
 
 const words = ("dolor sit amet consectetur adipisicing elit sed do eiusmod tempor incididunt ut " +
   "labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris " +
@@ -91,46 +90,63 @@ export const loremIpsum = async (context: ISwissKnifeContext): Promise<string> =
 };
 
 
-export const startServer = (context: ISwissKnifeContext): Promise<void> => {
-  //TODO: set right types
-
-  if (server) {
+export const _startServer = async (https: boolean) => {
+  if (Server.exists) {
     vscode.window.showErrorMessage("Server already running, please stop it first");
     return Promise.resolve();
   }
 
-  context.vscode.window.showInputBox({ prompt: "Run server on which port? (default 3000)\n" }).then(p => {
-    const app = express();;
-    app.use(express.raw({ type: '*/*' }));
+  let key: string, cert: string;
+
+  if (https) {
+    const pems = await _selfSignedCert();
+    key = pems.private;
+    cert = pems.cert;
+  }
+
+  vscode.window.showInputBox({ prompt: "Run server on which port? (default 3000)\n" }).then(p => {
     const port = p ? parseInt(p) : 3000;
 
-    app.all("*", async (req: any, res: any) => {
-      await editAsync((editBuilder: vscode.TextEditorEdit) => {
-        const selection = context.vscode.window.activeTextEditor?.selection;
-        const p = new context.vscode.Position(selection!.end.line, selection!.end.character);
-        editBuilder.insert(p, fromExpressRequest(req) + "\n\n-----------\n");
-      });
 
-      res.send("VSCode Swissknife Rocks");
+    vscode.window.showQuickPick(["No", "Yes"], { placeHolder: "Do you want to serve a specific folder?" }).then(r => {
+      let serverOptions: ServerConfig = { port };
+      if (https) serverOptions = { ...serverOptions, key, cert };
+
+      if (r === "No")
+        Server.start(serverOptions);
+      else {
+        vscode.window.showOpenDialog(
+          {
+            canSelectFolders: true,
+            canSelectMany: false,
+            canSelectFiles: false,
+            title: "Select folder to serve"
+          }
+        ).then(folder => {
+
+          const f = (folder || "").toString().replace("file://", "");
+          serverOptions.staticFolder = f;
+          Server.start(serverOptions);
+        });
+      }
     });
-
-    try {
-      server = app.listen(port);
-      vscode.window.showInformationMessage("Server started at port " + port);
-    }
-    catch (ex) {
-      vscode.window.showErrorMessage("Couldn't start the server. Check if the port is already in use");
-    }
   });
 
   return Promise.resolve();
+}
+
+export const startServer = async (context: ISwissKnifeContext): Promise<void> => {
+  return await _startServer(false);
 };
 
-export const stopServer = (context: ISwissKnifeContext) => {
+export const startSecureServer = async (context: ISwissKnifeContext): Promise<void> => {
+  return await _startServer(true);
+};
+
+export const stopServer = (context: ISwissKnifeContext): Promise<void> => {
   try {
-    if (server) {
-      server.close();
-      server = undefined;
+    if (Server.exists) {
+      Server.stop();
       vscode.window.showInformationMessage("Server stopped");
     }
     else
@@ -138,8 +154,10 @@ export const stopServer = (context: ISwissKnifeContext) => {
   }
   catch (err) {
     vscode.window.showErrorMessage("Ups something went wrong");
-    console.log(err)
+    console.log(err);
   }
+
+  return Promise.resolve();
 };
 
 export const linuxPermissions = async (permission: string): Promise<string> => {
@@ -206,9 +224,14 @@ const scripts: IScript[] = [
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(textToString)
   },
   {
-    title: "Start HTTP Server",
-    detail: "Creates an HTTP Server and dumps the requests to the editor",
+    title: "Start Local HTTP Server",
+    detail: "Creates an HTTP Server and dumps the requests content. You can also serve folders",
     cb: (context: ISwissKnifeContext) => startServer(context)
+  },
+  {
+    title: "Start Local HTTPS Server",
+    detail: "Creates an HTTPS Server and dumps the requests content. You can also serve folders",
+    cb: (context: ISwissKnifeContext) => startSecureServer(context)
   },
   {
     title: "Stop HTTP Server",

@@ -96,8 +96,10 @@ export const fromExpressRequest = (req: Request) => {
   if (req.headers)
     Object.keys(req.headers).forEach(k => data += `${k}: ${req.headers[k]}\n`);
 
-  data += `\n\n`;
-  if (req.body) data += `${req.body.toString("utf8")}`;
+  data += `\n`;
+  const hasBody = Object.keys(req.body).length > 0;
+
+  if (hasBody) data += `${req.body.toString()}`;
 
   return data;
 }
