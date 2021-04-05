@@ -10,7 +10,7 @@ The developers swissknife. Do conversions and generations right out of vs code. 
 
 Available in the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=luisfontes19.vscode-swissknife)
 
-## Currently available scripts:
+## Currently available scripts
 
 * Base64 decode
 * Base64 encode
@@ -73,6 +73,8 @@ The conversions will only use the selected text by. If no text is selected the e
 It supports multi selection and will run the script for each selection individually
 
 **Macbook Touchbar Support**
+
+You can also invoke the swissknife extension directly from the macbook's touchbar
 ![Touchbar Support](data/touchbar_support.png)
 
 ## Scripts Details
@@ -102,17 +104,17 @@ But there are two operations where external requests are needed:
 * **Crypto Currency Value** - Does a request to the cryptonator api to get the available cryptocurrencies and a request to get the current price for a specific pair. **The amount being converted is not sent**, this is calculated on the local machine.
 * **Url Unshorten** - This one really needs to do the request to the short url, so it can get the redirect (full) url. But keep in mind that the full url is never reached, the extension does not follow the redirect.
 
+* **URL Shortening** - The shortening features uses https://tinyurl.com to register a new short URL.
+
 ## Writing Scripts
 
 Swissknife will automatically load all scripts in its user scripting folder and you can find it by executing a command. Open you command pallete and type "Open swissknife users script folder". Or just start typing it as it will eventually be suggested.
-
 This is the folder where you can create your custom scripts.
-.
+
 To start a new script you can also use a command provided by the extension. Open swissknife picker and type "New swissknife script".
 You can chose the TS or JS version according to what you're more comfortable with. TS will be more complex as you need to transpile it to JS.
 
 We'll go with Javascript.
-
 This is the base structure of the script:
 
 ```js
@@ -136,14 +138,10 @@ const scripts = [
 exports.default = scripts;
 ```
 
-The is the basic template to create scripts. In this file we created a script called "My Script". You can have as much scripts as you want per file. Its just a way of organization :)
-
+This is the basic template to create scripts. In this file we created a script called "My Script". You can have as much scripts as you want per file. Its just a way of organization :)
 As you can see at the end, the structure for a script consists on 3 properties: title, detail and cb.
-
 The first two are self explanatory.
-
 cb is the code that will be called when you script runs. And by default swissknife gives you a few methods to help getting started, through the variable 'context'.
-
 The method doSomething is just replacing a's with b's
 
 ### Context
@@ -203,3 +201,5 @@ const scripts = [
 
 exports.default = scripts;
 ```
+
+The best place to see examples is to check the [native scripts](https://github.com/luisfontes19/vscode-swissknife/tree/master/src/scripts) bundled with the extension.
