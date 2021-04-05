@@ -20,6 +20,11 @@ export const joinLines = async (text: string, context: ISwissKnifeContext): Prom
   });
 };
 
+export const sortAlphabetically = async (text: string, context: ISwissKnifeContext): Promise<string> => {
+  const lines = text.split("\n");
+  return lines.sort().join("\n");
+};
+
 const scripts: IScript[] = [
   {
     title: "To Lower Case",
@@ -36,11 +41,15 @@ const scripts: IScript[] = [
     detail: "Capitalizes the first letter of each word",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(toCamelCase)
   },
-
   {
     title: "Join lines",
     detail: "Join multiple lines delimited by a string of your choosing",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(joinLines)
+  },
+  {
+    title: "Sort Lines",
+    detail: "Sorts lines alphabetically",
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(sortAlphabetically)
   },
 ];
 
