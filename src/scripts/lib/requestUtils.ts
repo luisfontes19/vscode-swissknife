@@ -1,3 +1,4 @@
+import { Request } from "express";
 
 
 const forbiddenHeaders = [
@@ -81,10 +82,22 @@ export const fromString = (content: string): Data => {
   delete headers["Content-Length"];
   return { body, headers, method, url };
 
-}
+};
 
 export const toFetch = (data: Data) => {
   const allowedHeaders = filterAllowedHeaders(data.headers);
   return "fetch('" + data.url + "', {credentials: 'include', method: '" + data.method + "', headers: " + JSON.stringify(allowedHeaders) + ", body:'" + data.body + "'})";
-}
+};
 
+
+export const fromExpressRequest = (req: Request) => {
+  let data = `${req.method.toUpperCase()} ${req.url} HTTP/1.1\n`;
+
+  if (req.headers)
+    Object.keys(req.headers).forEach(k => data += `${k}: ${req.headers[k]}\n`);
+
+  data += `\n\n`;
+  if (req.body) data += `${req.body.toString("utf8")}`;
+
+  return data;
+}
