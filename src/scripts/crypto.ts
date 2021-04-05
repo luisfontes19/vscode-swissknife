@@ -197,8 +197,8 @@ const scripts: IScript[] = [
     cb: (context: ISwissKnifeContext) => context.insertRoutine(selfSignedCert)
   },
   {
-    title: "Self Signed Certificate",
-    detail: "Generates a self signed certificate for the provided domain, to be used for dev purposes",
+    title: "Eliptic Curve Key Pair",
+    detail: "Generates EC public and private keys",
     cb: (context: ISwissKnifeContext) => context.insertRoutine(generateElipticKeypair)
   },
   {
