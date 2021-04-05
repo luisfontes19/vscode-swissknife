@@ -97,6 +97,9 @@
     "zxcvbn": "^4.4.2"
   },
   "keywords": [
+    "server",
+    "serve",
+    "sort",
     "swissknife",
     "scriptable",
     "encode",

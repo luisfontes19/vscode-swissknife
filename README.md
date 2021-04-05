@@ -10,27 +10,60 @@ The developers swissknife. Do conversions and generations right out of vs code. 
 
 Available in the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=luisfontes19.vscode-swissknife)
 
-**Some of the built in options:**
+## Currently available scripts:
 
-* Base64 encode/decode
-* JWT decode
-* HEX encode/decode
-* md5,sha1,sha256,sha512
-* Markdown to html
-* Hash Identifier
-* Passwords strnegth and generation
-* Timestamps
+* Base64 decode
+* Base64 encode
+* Binary To Text
+* Bip39 Mnemonic
+* CSV to Markdown
+* Count characters
+* Count words
+* Crypto currency value
+* Date to Timestamp
+* Eliptic Curve Key Pair
+* Generate Password
+* HTML Encode (AlL)
+* Hex decode
+* Hex encode
+* Hex to RGB
+* Identify hash
+* JWT Decode
+* Join lines
 * Lorem Ipsum
-* RGB <=> HEX Colors converter
-* Text transformations (lower case, uppercase, capitalize, join lines)
-* Word and char count
-* CryptoCurrency convertion, Bip39 mnemonic
-* RSA keypair
-* Self Signed Certificates for dev servers
-* Random strings and UUID
-* HTTP Request to fetch call (JS)
-* Unix permissions convertor
-* URL Shorten, unshorten
+* Markdown to HTML
+* Md5 hash
+* New Swissknife Script (JS)
+* New Swissknife Script (TS)
+* Password strength
+* RGB To Hex
+* RSA Key pair
+* Random String
+* Request to fetch
+* SHA1 hash
+* SHA256 hash
+* SHA512 hash
+* Self Signed Certificate
+* Start Local HTTP Server
+* Start Local HTTPS Server
+* Stop HTTP Server
+* Text To Binary
+* Text to String
+* Timestamp to Date
+* To Camel Case
+* To Lower Case
+* To Morse code
+* To Upper Case
+* UUIDv4
+* Unicode decode
+* Unicode encode (js format)
+* Unix/Linux Permission To Human Readable
+* Url Decode
+* Url Encode
+* Url Encode (All Characters)
+* Url Shorten
+* Url Unshorten (url expand)
+
 
 ## Usage
 
