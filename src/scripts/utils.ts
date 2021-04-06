@@ -91,7 +91,7 @@ export const loremIpsum = async (context: ISwissKnifeContext): Promise<string> =
 
 
 export const _startServer = async (https: boolean) => {
-  if (Server.exists) {
+  if (Server.exists()) {
     vscode.window.showErrorMessage("Server already running, please stop it first");
     return Promise.resolve();
   }
@@ -145,7 +145,7 @@ export const startSecureServer = async (context: ISwissKnifeContext): Promise<vo
 
 export const stopServer = (context: ISwissKnifeContext): Promise<void> => {
   try {
-    if (Server.exists) {
+    if (Server.exists()) {
       Server.stop();
       vscode.window.showInformationMessage("Server stopped");
     }
@@ -235,7 +235,7 @@ const scripts: IScript[] = [
   },
   {
     title: "Stop HTTP Server",
-    detail: "Stops the http server started by this plugin",
+    detail: "Stops the http(s) server started by this extension",
     cb: (context: ISwissKnifeContext) => stopServer(context)
   },
 

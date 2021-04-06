@@ -45,4 +45,4 @@ export const stop = () => {
   server = undefined;
 };
 
-export const exists = server !== undefined;
+export const exists = () => server !== undefined;
