@@ -220,12 +220,12 @@ const scripts = [
   {
     title: "Ask Input",
     detail: "Asks user input and adds it to the editor",
-    cb: (context) => () => this.startServer(context)
+    cb: (context) => context.insertRoutine(this.askInput)
   },
   {
     title: "Start server on port 1234",
     detail: "Starts a server on port 1234",
-    cb: (context) => context.insertRoutine(this.startServer)
+    cb: (context) => this.startServer(context)
   },
   {
     title: "Call Another User script",
