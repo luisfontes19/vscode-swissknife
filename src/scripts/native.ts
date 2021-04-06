@@ -22,16 +22,19 @@ exports.doSomething = async (text, context) => {
 //the extension provides you with some methods to help you out through variable context:
 //
 // - insertRoutine(cb): will insert the return  of cb in editor at cursor
-// - replaceRoutine(cb) will call cb sending the text in editor. 
+// - replaceRoutine(cb): will call cb sending the text in editor. 
 //      If no text is selected will send entire content. 
 //      If editor has selections for each will call cb, 
 //      Will replace each supplied input with the return of cb
-// - informationRoutine(cb) will call cb sending the text in editor. 
+// - informationRoutine(cb): will call cb sending the text in editor. 
 //      If no text is selected will send entire content. 
 //      If editor has selections for each will call cb, 
 //      Will display an information message with the return of cb
-// - vscode. This is the variable available for vscode extensions with the entire API. 
+// - vscode: This is the variable available for vscode extensions with the entire API. 
 //      Read the docs for more info (https://code.visualstudio.com/api)
+// - modules: This variable is an array of all JS modules inside the script (and lib) folder. You can use them to call methods from the native scripts, to reuse code logic
+//          You can see them here: https://github.com/luisfontes19/vscode-swissknife/tree/master/src/scripts
+//          Usage examples: context.modules.passwords.generateSecureCharCode())
 const scripts = [
   {
     title: "My Script1",
@@ -58,16 +61,19 @@ export const doSomething = async (text: string, context: ISwissKnifeContext): Pr
 //the extension provides you with some methods to help you out through variable context:
 //
 // - insertRoutine(cb): will insert the return  of cb in editor at cursor
-// - replaceRoutine(cb) will call cb sending the text in editor. 
+// - replaceRoutine(cb): will call cb sending the text in editor. 
 //      If no text is selected will send entire content. 
 //      If editor has selections for each will call cb, 
 //      Will replace each supplied input with the return of cb
-// - informationRoutine(cb) will call cb sending the text in editor. 
+// - informationRoutine(cb): will call cb sending the text in editor. 
 //      If no text is selected will send entire content. 
 //      If editor has selections for each will call cb, 
 //      Will display an information message with the return of cb
-// - vscode. This is the variable available for vscode extensions with the entire API. 
+// - vscode: This is the variable available for vscode extensions with the entire API. 
 //      Read the docs for more info (https://code.visualstudio.com/api)
+// - modules: This variable is an array of all JS modules inside the script (and lib) folder. You can use them to call methods from the native scripts, to reuse code logic
+//          You can see them here: https://github.com/luisfontes19/vscode-swissknife/tree/master/src/scripts
+//          Usage examples: context.modules.passwords.generateSecureCharCode())
 const scripts: IScript[] = [
   {
     title: "My Script",

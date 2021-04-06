@@ -69,11 +69,10 @@ Available in the [Visual Studio Marketplace](https://marketplace.visualstudio.co
 
 You can invoke the dedicated command pallete with ```ctrl+shift+9``` for windows or ```cmd+shift+9``` for mac (when focusing the editor)
 
-The conversions will only use the selected text by. If no text is selected the entire content of the editor will be used.
+The conversions will only use the selected text by default. If no text is selected the entire content of the editor will be used.
 It supports multi selection and will run the script for each selection individually
 
 **Macbook Touchbar Support**
-
 You can also invoke the swissknife extension directly from the macbook's touchbar
 ![Touchbar Support](data/touchbar_support.png)
 
@@ -95,16 +94,21 @@ For a list of supported currencies check [here](https://www.cryptonator.com/api/
 The outcome of the operation may return multiple values, as a hashes from different algorithms have the same output format.
 Still we organize the hashes from top down by most relevant.
 
+
+### HTTP(S) Server
+
+The servers log all requests received into the "Output" window of VSCode (You can show it by going to view -> Output in the menu). Then on the right of the window (where usually has the value "Tasks"), filter by "Swissknife Server"
+
 ## Privacy Note
 
 One of the main purposes of this extension is to stop pasting data, or trusting generated data from random websites.
 The extension avoids doing external web requests or logging data, for privacy.
-But there are two operations where external requests are needed:
+But there are some operations where external requests are needed:
 
 * **Crypto Currency Value** - Does a request to the cryptonator api to get the available cryptocurrencies and a request to get the current price for a specific pair. **The amount being converted is not sent**, this is calculated on the local machine.
 * **Url Unshorten** - This one really needs to do the request to the short url, so it can get the redirect (full) url. But keep in mind that the full url is never reached, the extension does not follow the redirect.
 
-* **URL Shortening** - The shortening features uses https://tinyurl.com to register a new short URL.
+* **URL Shortening** - The shortening feature uses https://tinyurl.com to register a new short URL.
 
 ## Writing Scripts
 
@@ -112,8 +116,16 @@ Swissknife will automatically load all scripts in its user scripting folder and 
 This is the folder where you can create your custom scripts.
 
 To start a new script you can also use a command provided by the extension. Open swissknife picker and type "New swissknife script".
-You can chose the TS or JS version according to what you're more comfortable with. TS will be more complex as you need to transpile it to JS.
 
+### Script Reloading
+
+Scripts are loaded into the extension when initializing VS Code, so when you create a custom script you'll need to reload the scripts. To make it easier for development, the extension has a command "Reload Swissknife Scripts" that you can call from the VS Code command pallette (do not confuse with the swissknife's script launcher).
+
+Remember that everytime you do a change in a script in the user script folder you need to reload scripts.
+
+### Starting Template
+
+You can chose the TS or JS version according to what you're more comfortable with. TS will be more complex as you need to transpile it to JS.
 We'll go with Javascript.
 This is the base structure of the script:
 
@@ -151,7 +163,8 @@ In context you have some nice methods to help you out, and you should use them w
 * insertRoutine(cb) - This method will insert the resolved content into the cursor on editor. It will call cb and send context as a parameter. **cb is expected to be async**
 * informationRoutine(cb) - This method will create a notification with the resolved content. It will call cb and send selected text in editor (all text if no selection) and context as a parameter. **cb is expected to be async**
 * replaceRoutine(cb) - This method will replace selected text in editor, with the resolved content from cb (if no text selected it replaces all text). It will call cb and send selected text in editor (all text if no selection) and context as a parameter. **cb is expected to be async**
-vscode - This variable holds the [vscode api](https://code.visualstudio.com/api).
+* vscode - This variable holds the [vscode api](https://code.visualstudio.com/api).
+* modules - This variable is an array of all JS modules inside the [script (and lib) folder](https://github.com/luisfontes19/vscode-swissknife/tree/master/src/scripts). You can use them to call methods from the native scripts, to reuse code logic. Ex: context.modules.passwords.generateSecureCharCode())
 
 The use of this methods is optional. If you feel that its easier to just work directly with vscode api you can also do it:
 
@@ -177,25 +190,47 @@ exports.default = scripts;
 
 ## More Examples
 
-Inserting the input supplied by user
+
 
 ```js
 Object.defineProperty(exports, "__esModule", { value: true });
 
-doSomething = async (context) => {
-  return new Promise((resolve, reject) => {
+//Uses the context.modules to reuse existing code. Starts an http server
+exports.startServer = async (context) => {
+  context.modules.lib.server.start({ port: 1234 })
+}
 
+//uses context.userModules to invoke another user script
+//there will be an entry in context.userModules with the name of the file with scripts loaded
+//all exported methods are accessible... 
+//If  invoking a script remember to send the right params, like the context
+exports.anotherUserScript = async (context) => {
+  context.modules.othermodule.hellowWorld(context);
+}
+
+//Ask user for input
+exports.askInput = async (context) => {
+  return new Promise((resolve, reject) => {
     context.vscode.window.showInputBox({ prompt: "Say something" }).then(answer => {
       resolve(answer);
     });
-
   });
 }
 const scripts = [
   {
-    title: "My Script3",
-    detail: "This script does something",
-    cb: (context) => context.insertRoutine(doSomething)
+    title: "Ask Input",
+    detail: "Asks user input and adds it to the editor",
+    cb: (context) => () => this.startServer(context)
+  },
+  {
+    title: "Start server on port 1234",
+    detail: "Starts a server on port 1234",
+    cb: (context) => context.insertRoutine(this.startServer)
+  },
+  {
+    title: "Call Another User script",
+    detail: "Calls Another User script",
+    cb: (context) => context.insertRoutine(this.anotherUserScript)
   },
 ]
 
@@ -203,3 +238,9 @@ exports.default = scripts;
 ```
 
 The best place to see examples is to check the [native scripts](https://github.com/luisfontes19/vscode-swissknife/tree/master/src/scripts) bundled with the extension.
+
+## Future Plans
+
+* Create unit tests, specially for the scripts
+* Start doing proper error handlings
+* Create a place for user contributed scripts

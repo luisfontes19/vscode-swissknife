@@ -17,9 +17,11 @@ export interface IScript {
   cb: TCallback;
 }
 
+
 export interface ISwissKnifeContext {
   vscode: typeof vscode;
   insertRoutine: (cb: TScriptInsertCallback) => Promise<void>;
   replaceRoutine: (cb: TScriptCallback) => Promise<void>;
   informationRoutine: (cb: TScriptCallback) => Promise<void>;
+  modules: any
 }

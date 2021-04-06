@@ -18,4 +18,5 @@ export interface ISwissKnifeContext {
     insertRoutine: (cb: TScriptInsertCallback) => Promise<void>;
     replaceRoutine: (cb: TScriptCallback) => Promise<void>;
     informationRoutine: (cb: TScriptCallback) => Promise<void>;
+    modules: any;
 }
