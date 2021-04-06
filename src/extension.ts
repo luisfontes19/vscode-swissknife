@@ -18,7 +18,8 @@ import * as textBasic from './scripts/textBasic';
 import * as time from './scripts/time';
 import * as utils from './scripts/utils';
 
-export const modules = { colors, count, crypto, encodings, generators, markdown, native, passwords, textBasic, time, utils, lib: { requestUtils, server } };
+export const nativeModules = { colors, count, crypto, encodings, generators, markdown, native, passwords, textBasic, time, utils, lib: { requestUtils, server } };
+export const modules = { ...nativeModules };
 export const extensionContext: ISwissKnifeContext = { insertRoutine, replaceRoutine, informationRoutine, vscode, modules };
 
 let scripts: IScriptQuickPickItem[] = [];
@@ -77,7 +78,7 @@ const loadUserScripts = async (clearCache: boolean) => {
 
 		try {
 			if (clearCache) delete require.cache[require.resolve(modulePath)];
-			const mod = await Promise.all([require(modulePath)])
+			const mod = await Promise.all([require(modulePath)]);
 
 			//add loaded user script to the context var, to be accessible in other scripts
 			const moduleName = path.basename(modulePath).toString().replace(new RegExp(`${path.extname(modulePath)}$`), "");
@@ -97,7 +98,7 @@ const loadUserScripts = async (clearCache: boolean) => {
 const loadInternalScripts = () => {
 	let scripts: IScriptQuickPickItem[] = [];
 	//load internal scripts first, from modules
-	Object.keys(modules).forEach((k, n) => {
+	Object.keys(nativeModules).forEach((k, n) => {
 		if (k !== "lib" && k !== "userScripts") { //if so its not a script module...
 			const m = Object.values(modules)[n];
 			const moduleScripts = createScriptsFromModule(m);
