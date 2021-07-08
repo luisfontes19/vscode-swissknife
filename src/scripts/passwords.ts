@@ -16,8 +16,28 @@ export const checkPassword = async (text: string): Promise<string> => {
 };
 
 
+const _generateCharCode = (from: number, to: number): number => {
+  return ((crypto.randomBytes(1)[0]) % to) + from;
+}
+
+
+// fix module bias, using module to get a number won't get uniform numbers, there's a bias
+// we fix it with this logic
+// 256 is the number of possible outputs from crypto.randombytes(1)
+// cool explanation here: // https://donjon.ledger.com/kaspersky-password-manager/
 export const generateSecureCharCode = (): number => {
-  return (crypto.randomBytes(1)[0] + 33) % 125;
+  const from = 33;
+  const to = 125;
+  const length = to - from;
+  const moduleBias = 256 - (256 - length);
+
+  let n = 0;
+  do
+    n = _generateCharCode(33, 125);
+  while (n > moduleBias);
+
+  return n;
+
 };
 
 export const generatePassword = async (context: ISwissKnifeContext): Promise<string> => {
