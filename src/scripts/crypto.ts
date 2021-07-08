@@ -1,5 +1,6 @@
 import * as bip39Lib from 'bip39';
 import * as crypto from 'crypto';
+import * as eccrypto from 'eccrypto';
 import { ec } from 'elliptic';
 // @ts-ignore ADD TYPES
 import * as HashIdentifier from 'hash-identifier';
@@ -126,6 +127,17 @@ export const generateElipticKeypair = async (context: ISwissKnifeContext): Promi
   return `Private key:${keypair.getPrivate("hex")}\nPublic Key:${keypair.getPublic(true, "hex")}`;
 };
 
+export const ecPublic = async (input: string, context: ISwissKnifeContext): Promise<string> => {
+
+  try {
+    return eccrypto.getPublicCompressed(Buffer.from(input)).toString("hex");
+  }
+  catch (ex) {
+    context.vscode.window.showErrorMessage("Not a valid ec private key");
+    return input;
+  }
+}
+
 export const hashIdentifier = async (input: string, context: ISwissKnifeContext): Promise<string> => {
   const res = HashIdentifier.checkAlgorithm(input);
   input += res.length > 0 ? `\nIdentified Algorithms:\n${res.join("\n")}` : "\nCould not identify an hash algorithm";
@@ -205,6 +217,11 @@ const scripts: IScript[] = [
     title: "Eliptic Curve Key Pair",
     detail: "Generates EC public and private keys",
     cb: (context: ISwissKnifeContext) => context.insertRoutine(generateElipticKeypair)
+  },
+  {
+    title: "Eliptic Curve Public key from Private",
+    detail: "Gets the corresponding public key for the provided EC private key",
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(ecPublic)
   },
   {
     title: "Identify hash",
