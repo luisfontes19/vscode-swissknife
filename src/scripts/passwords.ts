@@ -33,7 +33,7 @@ export const generateSecureCharCode = (): number => {
 
   let n = 0;
   do
-    n = _generateCharCode(33, 125);
+    n = _generateCharCode(from, to);
   while (n > moduleBias);
 
   return n;
