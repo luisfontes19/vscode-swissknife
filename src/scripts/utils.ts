@@ -187,6 +187,12 @@ export const linuxPermissions = async (permission: string): Promise<string> => {
   return decoded;
 };
 
+export const randomLine = async (str: string): Promise<string> => {
+  const lines = str.split("\n");
+  const n = Math.floor(Math.random() * lines.length);
+  return lines[n];
+};
+
 const scripts: IScript[] = [
   {
     title: "JWT Decode",
@@ -237,6 +243,11 @@ const scripts: IScript[] = [
     title: "Stop HTTP Server",
     detail: "Stops the http(s) server started by this extension",
     cb: (context: ISwissKnifeContext) => stopServer(context)
+  },
+  {
+    title: "Pick random",
+    detail: "One option per line, chooses one line at random",
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(randomLine)
   },
 
 ];
