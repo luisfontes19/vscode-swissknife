@@ -85,7 +85,7 @@ const scripts: IScript[] = [
   {
     title: "To Morse code",
     detail: "Converts text into morse code",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(fromUnicodeEscaped)
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(toMorseCode)
   },
   {
     title: "Unicode decode",
