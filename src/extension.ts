@@ -87,7 +87,7 @@ const loadUserScripts = async (clearCache: boolean) => {
 			const moduleScripts = createScriptsFromModule(mod[0]);
 			scripts = [...scripts, ...moduleScripts];
 
-		} catch (ex) {
+		} catch (ex: any) {
 			console.log(ex.message);
 		}
 	};
