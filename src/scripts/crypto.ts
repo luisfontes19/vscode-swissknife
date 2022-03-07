@@ -11,7 +11,7 @@ import { IScript, ISwissKnifeContext } from '../Interfaces';
 import request = require('request');
 
 export let CRYPTO_CURRENCIES: string[] = [];
-console.log("Loading cryptocurrency list");
+console.log("[SWISSKNIFE] Loading cryptocurrency list");
 request({ url: 'https://www.cryptonator.com/api/currencies' }, (err, httpResponse) => {
   const crypto = JSON.parse(httpResponse.body).rows;
   CRYPTO_CURRENCIES = crypto.map((c: any) => `${c.name} (${c.code})`);

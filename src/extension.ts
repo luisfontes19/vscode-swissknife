@@ -29,8 +29,13 @@ let userScriptsFolder: string;
 
 const show = () => {
 	vscode.window.showQuickPick<IScriptQuickPickItem>(scripts).then((selectedItem: IScriptQuickPickItem | undefined) => {
-		if (selectedItem)
-			selectedItem.cb(extensionContext);
+		if (selectedItem) {
+			console.log("[SWISSKNIFE] Calling script: " + selectedItem.label)
+			selectedItem.cb(extensionContext).then(() => {
+				console.log("[SWISSKNIFE] Script call ended: " + selectedItem.label)
+			});
+		}
+
 	});
 };
 
@@ -74,7 +79,7 @@ const loadUserScripts = async (clearCache: boolean) => {
 	const matches = glob.sync(path.join(userScriptsFolder, "/**/*.js"));
 	for (let i = 0; i < matches.length; i++) {
 		const modulePath = matches[i];
-		console.log("Queueing script " + modulePath);
+		console.log("[SWISSKNIFE] Queueing script " + modulePath);
 
 		try {
 			if (clearCache) delete require.cache[require.resolve(modulePath)];
@@ -88,7 +93,7 @@ const loadUserScripts = async (clearCache: boolean) => {
 			scripts = [...scripts, ...moduleScripts];
 
 		} catch (ex: any) {
-			console.log(ex.message);
+			console.log("[SWISSKNIFE]", ex.message);
 		}
 	};
 
@@ -116,7 +121,7 @@ const createScriptsFromModule = (m: any) => {
 
 	m.default.forEach((s: IScript) => {
 		const item: IScriptQuickPickItem = { label: s.title, alwaysShow: true, detail: s.detail, cb: s.cb };
-		console.log("Loading script " + s.title);
+		console.log("[SWISSKNIFE] Loading script " + s.title);
 		moduleScripts.push(item);
 	});
 

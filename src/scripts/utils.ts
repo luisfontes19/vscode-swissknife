@@ -154,7 +154,7 @@ export const stopServer = (context: ISwissKnifeContext): Promise<void> => {
   }
   catch (err) {
     vscode.window.showErrorMessage("Ups something went wrong");
-    console.log(err);
+    console.log("[SWISSKNIFE]", err);
   }
 
   return Promise.resolve();
