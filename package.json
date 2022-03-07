@@ -2,7 +2,7 @@
   "name": "vscode-swissknife",
   "displayName": "Swissknife",
   "description": "The developers swissknife. Do convertions and generations right out of vs code. Extendable with user scripts",
-  "version": "1.3.0",
+  "version": "1.3.2",
   "author": "luisfontes19",
   "publisher": "luisfontes19",
   "license": "MIT",
@@ -20,7 +20,7 @@
     "onCommand:swissknife.reload",
     "onCommand:swissknife.openScripts"
   ],
-  "main": "./out/extension.js",
+  "main": "./out/index.js",
   "contributes": {
     "menus": {
       "touchBar": [
@@ -57,12 +57,11 @@
   "scripts": {
     "vscode:prepublish": "npm run bundle",
     "vscode:package": "vsce package",
-    "bundle": "ncc build src/extension.ts -o out/extension.js",
+    "bundle": "ncc build src/extension.ts -o out",
     "compile": "tsc -p ./",
     "lint": "eslint src --ext ts",
     "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
-    "test": "node ./out/test/runTest.js"
+    "pretest": "npm run compile && npm run lint"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
