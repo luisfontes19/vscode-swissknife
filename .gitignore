@@ -2,5 +2,5 @@ out
 node_modules
 .vscode-test/
 *.vsix
-
+.github
 .DS_Store

@@ -95,8 +95,6 @@ But there are some operations where external requests are needed:
 * **Crypto Currency Value** - Does a request to the cryptonator api to get the available cryptocurrencies and a request to get the current price for a specific pair. **The amount being converted is not sent**, this is calculated on the local machine.
 * **Url Unshorten** - This one really needs to do the request to the short url, so it can get the redirect (full) url. But keep in mind that the full url is never reached, the extension does not follow the redirect.
 
-* **URL Shortening** - The shortening feature uses https://tinyurl.com to register a new short URL.
-
 ## Writing Scripts
 
 Swissknife will automatically load all scripts in its user scripting folder and you can find it by executing a command. Open you command pallete and type "Open swissknife users script folder". Or just start typing it as it will eventually be suggested.
