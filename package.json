@@ -63,7 +63,7 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "tag": "git tag $(node -e \"console.log(require('./package.json').version)\")",
-    "publish": "npm run bundle && npm run package && vsce publish && npm run tag"
+    "publish": "npm run bundle && vsce package && vsce publish && npm run tag"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
