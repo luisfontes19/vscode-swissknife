@@ -1,6 +1,6 @@
 import * as bip39Lib from 'bip39';
 import * as crypto from 'crypto';
-import * as eccrypto from 'eccrypto';
+// import * as eccrypto from 'eccrypto';
 import { ec } from 'elliptic';
 // @ts-ignore ADD TYPES
 import * as HashIdentifier from 'hash-identifier';
@@ -10,12 +10,12 @@ import * as vscode from 'vscode';
 import { IScript, ISwissKnifeContext } from '../Interfaces';
 import request = require('request');
 
-export let CRYPTO_CURRENCIES: string[] = [];
-console.log("[SWISSKNIFE] Loading cryptocurrency list");
-request({ url: 'https://www.cryptonator.com/api/currencies' }, (err, httpResponse) => {
-  const crypto = JSON.parse(httpResponse.body).rows;
-  CRYPTO_CURRENCIES = crypto.map((c: any) => `${c.name} (${c.code})`);
-});
+// export let CRYPTO_CURRENCIES: string[] = [];
+// console.log("[SWISSKNIFE] Loading cryptocurrency list");
+// request({ url: 'https://www.cryptonator.com/api/currencies' }, (err, httpResponse) => {
+//   const crypto = JSON.parse(httpResponse.body).rows;
+//   CRYPTO_CURRENCIES = crypto.map((c: any) => `${c.name} (${c.code})`);
+// });
 
 
 export const toMd5 = async (text: string): Promise<string> => {
@@ -75,46 +75,46 @@ export const selfSignedCert = async (context: ISwissKnifeContext): Promise<strin
   return (`${pems.cert}\n\n\n\n\n\n${pems.private}\n\n\n\n\n\n${pems.public}`);
 };
 
-export const cryptoPrice = async (text: string, context: ISwissKnifeContext): Promise<string> => {
-  const reg = /([\d\.,]+)\s?(\w{3,5}) to (\w{3,5})/;
+// export const cryptoPrice = async (text: string, context: ISwissKnifeContext): Promise<string> => {
+//   const reg = /([\d\.,]+)\s?(\w{3,5}) to (\w{3,5})/;
 
-  let from: string, to: string, value: number;
-  const m = text.match(reg); //try to see if we have something like: 10btc to usd. If not ask params to user
+//   let from: string, to: string, value: number;
+//   const m = text.match(reg); //try to see if we have something like: 10btc to usd. If not ask params to user
 
-  if (m) {
-    value = parseFloat(m[1]);
-    from = m[2].toLowerCase();
-    to = m[3].toLowerCase();
-  }
-  else {
-    const tmp = (await context.vscode.window.showQuickPick(CRYPTO_CURRENCIES, { placeHolder: "Currency you are converting from" }))?.match(/\((\w+)\)$/);
-    if (!tmp) return Promise.resolve("");
+//   if (m) {
+//     value = parseFloat(m[1]);
+//     from = m[2].toLowerCase();
+//     to = m[3].toLowerCase();
+//   }
+//   else {
+//     const tmp = (await context.vscode.window.showQuickPick(CRYPTO_CURRENCIES, { placeHolder: "Currency you are converting from" }))?.match(/\((\w+)\)$/);
+//     if (!tmp) return Promise.resolve("");
 
-    const tmp2 = (await context.vscode.window.showQuickPick(CRYPTO_CURRENCIES, { placeHolder: "Currency you are converting to" }))?.match(/\((\w+)\)$/);
-    if (!tmp2) return Promise.resolve("");
+//     const tmp2 = (await context.vscode.window.showQuickPick(CRYPTO_CURRENCIES, { placeHolder: "Currency you are converting to" }))?.match(/\((\w+)\)$/);
+//     if (!tmp2) return Promise.resolve("");
 
-    from = tmp[1];
-    to = tmp2[1];
-    value = parseFloat(text);
-  }
+//     from = tmp[1];
+//     to = tmp2[1];
+//     value = parseFloat(text);
+//   }
 
-  return new Promise((resolve, reject) => {
+//   return new Promise((resolve, reject) => {
 
-    const pair = `${from}-${to}`;
+//     const pair = `${from}-${to}`;
 
-    request({ url: `https://api.cryptonator.com/api/ticker/${pair}` }, (err, response) => {
-      if (err) return reject(err);
-      const res = JSON.parse(response.body);
-      const price = parseFloat(res.ticker.price);
+//     request({ url: `https://api.cryptonator.com/api/ticker/${pair}` }, (err, response) => {
+//       if (err) return reject(err);
+//       const res = JSON.parse(response.body);
+//       const price = parseFloat(res.ticker.price);
 
-      const converted = value * price;
-      const ret = `${value} ${from.toUpperCase()} is equal to ${converted} ${to.toUpperCase()}`;
+//       const converted = value * price;
+//       const ret = `${value} ${from.toUpperCase()} is equal to ${converted} ${to.toUpperCase()}`;
 
-      resolve(ret);
-    });
-  });
+//       resolve(ret);
+//     });
+//   });
 
-};
+// };
 
 export const generateElipticKeypair = async (context: ISwissKnifeContext): Promise<string> => {
   const supportedCurves = ["secp256k1", "p192", "p224", "p256", "p384", "p521", "curve25519", "ed25519"];
@@ -127,16 +127,16 @@ export const generateElipticKeypair = async (context: ISwissKnifeContext): Promi
   return `Private key:${keypair.getPrivate("hex")}\nPublic Key:${keypair.getPublic(true, "hex")}`;
 };
 
-export const ecPublic = async (input: string, context: ISwissKnifeContext): Promise<string> => {
+// export const ecPublic = async (input: string, context: ISwissKnifeContext): Promise<string> => {
 
-  try {
-    return eccrypto.getPublicCompressed(Buffer.from(input)).toString("hex");
-  }
-  catch (ex) {
-    context.vscode.window.showErrorMessage("Not a valid ec private key");
-    return input;
-  }
-}
+//   try {
+//     return eccrypto.getPublicCompressed(Buffer.from(input)).toString("hex");
+//   }
+//   catch (ex) {
+//     context.vscode.window.showErrorMessage("Not a valid ec private key");
+//     return input;
+//   }
+// }
 
 export const hashIdentifier = async (input: string, context: ISwissKnifeContext): Promise<string> => {
   const res = HashIdentifier.checkAlgorithm(input);
@@ -203,26 +203,26 @@ const scripts: IScript[] = [
     detail: "Generates RSA public and private keys",
     cb: (context: ISwissKnifeContext) => context.insertRoutine(generateRSAKeyPair)
   },
-  {
-    title: "Crypto currency value",
-    detail: "Converts value of crypto currency or fiat(Can be used like: 1btc to dollar)",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(cryptoPrice)
-  },
+  // {
+  //   title: "Crypto currency value",
+  //   detail: "Converts value of crypto currency or fiat(Can be used like: 1btc to dollar)",
+  //   cb: (context: ISwissKnifeContext) => context.replaceRoutine(cryptoPrice)
+  // },
   {
     title: "Self Signed Certificate",
     detail: "Generates a self signed certificate for the provided domain, to be used for dev purposes",
     cb: (context: ISwissKnifeContext) => context.insertRoutine(selfSignedCert)
   },
-  {
-    title: "Eliptic Curve Key Pair",
-    detail: "Generates EC public and private keys",
-    cb: (context: ISwissKnifeContext) => context.insertRoutine(generateElipticKeypair)
-  },
-  {
-    title: "Eliptic Curve Public key from Private",
-    detail: "Gets the corresponding public key for the provided EC private key",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(ecPublic)
-  },
+  // {
+  //   title: "Eliptic Curve Key Pair",
+  //   detail: "Generates EC public and private keys",
+  //   cb: (context: ISwissKnifeContext) => context.insertRoutine(generateElipticKeypair)
+  // },
+  // {
+  //   title: "Eliptic Curve Public key from Private",
+  //   detail: "Gets the corresponding public key for the provided EC private key",
+  //   cb: (context: ISwissKnifeContext) => context.replaceRoutine(ecPublic)
+  // },
   {
     title: "Identify hash",
     detail: "Tries to identify the algorithm that was used to generate the supplied hash",
