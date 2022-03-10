@@ -19,9 +19,7 @@ Available in the [Visual Studio Marketplace](https://marketplace.visualstudio.co
 * CSV to Markdown
 * Count characters
 * Count words
-* Crypto currency value
 * Date to Timestamp
-* Eliptic Curve Key Pair
 * Generate Password
 * HTML Encode (AlL)
 * Hex decode
@@ -77,17 +75,6 @@ You can also invoke the swissknife extension directly from the macbook's touchba
 ![Touchbar Support](data/touchbar_support.png)
 
 ## Scripts Details
-
-### Crypto currency value
-
-Uses the API from [Cryptonator](cryptonator.com).
-You can specify conversions directly from the text like:
-
-```text
-1btc to eur
-```
-
-For a list of supported currencies check [here](https://www.cryptonator.com/api/currencies)
 
 ### Identify Hash
 
