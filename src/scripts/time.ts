@@ -1,6 +1,11 @@
 import { IScript, ISwissKnifeContext } from "../Interfaces";
 
 export const toTimestamp = async (text: string): Promise<string> => {
+  /* If timestamp is superior to the year 2969, let’s assume it is a milliseconds timestamp */
+  let intText = parseInt(text);
+  if (intText == text && intText > 31536000000) {
+    text = parseInt(text) / 1000;
+  }
   return (new Date(text).getTime() / 1000).toString();
 };
 
