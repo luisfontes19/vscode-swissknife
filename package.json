@@ -20,7 +20,7 @@
     "onCommand:swissknife.reload",
     "onCommand:swissknife.openScripts"
   ],
-  "main": "./out/index.js",
+  "main": "./out/extension.js",
   "contributes": {
     "menus": {
       "touchBar": [
@@ -57,7 +57,8 @@
   "scripts": {
     "vscode:prepublish": "npm run bundle",
     "vscode:package": "vsce package",
-    "bundle": "ncc build src/extension.ts -o out",
+    "rename": "node -e \"require('fs').rename('out/index.js', 'out/extension.js', function(err) { if (err) console.log(err); console.log('File successfully renamed!') })\"",
+    "bundle": "ncc build src/extension.ts -o out && npm run rename",
     "compile": "tsc -p ./",
     "lint": "eslint src --ext ts",
     "watch": "tsc -watch -p ./",
