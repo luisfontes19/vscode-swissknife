@@ -5,7 +5,11 @@ export const toTimestamp = async (text: string): Promise<string> => {
 };
 
 export const fromTimestamp = async (text: string): Promise<string> => {
-  return new Date(parseInt(text) * 1000).toUTCString();
+  /* If timestamp is superior to the year 2969, let’s assume it is a milliseconds timestamp */
+  let intText = parseInt(text);
+  intText = intText > 31536000000 ?  intText : intText * 1000;
+
+  return new Date(parseInt(intText) * 1000).toUTCString();
 };
 
 
