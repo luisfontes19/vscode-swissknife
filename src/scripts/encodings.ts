@@ -82,14 +82,20 @@ export const toUnicodeEscaped = async (str: string): Promise<string> => {
 };
 
 // From here: https://github.com/mathiasbynens/quoted-printable/blob/master/src/quoted-printable.js
+// And here: https://gist.github.com/MarcelloDiSimone/933a13c6a5b6458ce29d972644bb5892
 export const fromQuotedPrintable = async (str: string): Promise<string> => {
   return str
     .replace(/[\t\x20]$/gm, '')
     .replace(/=(?:\r\n?|\n|$)/g, '')
-    .replace(/=([a-fA-F0-9]{2})/g, function($0, $1) {
-        var codePoint = parseInt($1, 16);
-        return String.fromCharCode(codePoint);
-      });
+    .replace(/=([a-fA-F0-9]{2})/g, ($0, $1) => {
+      return String.fromCharCode(parseInt($1, 16));
+    })
+    .replace(/[\u00e0-\u00ef][\u0080-\u00bf][\u0080-\u00bf]/g, (c) => {
+      return String.fromCharCode(((c.charCodeAt(0)&0x0f)<<12) | ((c.charCodeAt(1)&0x3f)<<6) | ( c.charCodeAt(2)&0x3f));
+    })
+    .replace(/[\u00c0-\u00df][\u0080-\u00bf]/g, (c) => {
+      return String.fromCharCode((c.charCodeAt(0)&0x1f)<<6 | c.charCodeAt(1)&0x3f);
+    })
 };
 
 const scripts: IScript[] = [
