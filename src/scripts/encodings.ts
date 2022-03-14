@@ -81,6 +81,17 @@ export const toUnicodeEscaped = async (str: string): Promise<string> => {
   }).join("");
 };
 
+// From here: https://github.com/mathiasbynens/quoted-printable/blob/master/src/quoted-printable.js
+export const fromQuotedPrintable = async (str: string): Promise<string> => {
+  return str
+    .replace(/[\t\x20]$/gm, '')
+    .replace(/=(?:\r\n?|\n|$)/g, '')
+    .replace(/=([a-fA-F0-9]{2})/g, function($0, $1) {
+        var codePoint = parseInt($1, 16);
+        return String.fromCharCode(codePoint);
+      });
+};
+
 const scripts: IScript[] = [
   {
     title: "To Morse code",
@@ -116,6 +127,11 @@ const scripts: IScript[] = [
     title: "Hex encode",
     detail: "Convert a string tino hex encoded",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(toHex)
+  },
+  {
+    title: "Quoted Printable Decode",
+    detail: "Decode a “Quoted Printable” (QP encoding) string",
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(fromQuotedPrintable)
   },
   {
     title: "Url Encode",
