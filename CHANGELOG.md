@@ -2,6 +2,12 @@
 
 All notable changes to the "swissknife" extension will be documented in this file.
 
+## 1.5.0
+
+* Added "Copy file path with line" on context menu in the editor. Will copy to clipboard the relative file path with line number like: app/src/android/java/com/myorg/app/ui/File.kt#83
+* Added "checked" (✓) decorator to Explorer. User can check/uncheck any file/folder. This can be helpful for example when reviewing code, to mark files reviewed for example.
+* Extension is now loaded when vscode loads, instead of when a swissknife command was triggered. This is needed for the above feature
+
 ## 1.4.0
 
 * Improved log messages

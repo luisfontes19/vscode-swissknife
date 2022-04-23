@@ -2,15 +2,18 @@
 
 ![Demo](data/swissknife_banner.png)
 
+The developers swissknife. Do conversions and generations right out of vs code. Extendable with user scripts
+
 ![Demo](data/demo.gif)
 
 ![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/luisfontes19.vscode-swissknife?color=green&label=VS%20Code%20Marketplace&style=for-the-badge)
 
-The developers swissknife. Do conversions and generations right out of vs code. Extendable with user scripts
 
 Available in the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=luisfontes19.vscode-swissknife)
 
-## Currently available scripts
+Swissknife is a collection of scripts/routines to manipulate data in the vs code editor. It has its own script engine which allows you to extend it with your own scripts easily.
+
+## Some of the available scripts
 
 * Base64 decode
 * Base64 encode
@@ -21,19 +24,22 @@ Available in the [Visual Studio Marketplace](https://marketplace.visualstudio.co
 * Count words
 * Date to Timestamp
 * Generate Password
-* HTML Encode (AlL)
+* HTML Encode (ALL)
 * Hex decode
 * Hex encode
 * Hex to RGB
 * Identify hash
 * JWT Decode
 * Join lines
+* Local DateTime
 * Lorem Ipsum
 * Markdown to HTML
 * Md5 hash
 * New Swissknife Script (JS)
 * New Swissknife Script (TS)
 * Password strength
+* Pick random
+* Quoted Printable Decode
 * RGB To Hex
 * RSA Key pair
 * Random String
@@ -42,6 +48,7 @@ Available in the [Visual Studio Marketplace](https://marketplace.visualstudio.co
 * SHA256 hash
 * SHA512 hash
 * Self Signed Certificate
+* Sort Lines
 * Start Local HTTP Server
 * Start Local HTTPS Server
 * Stop HTTP Server
@@ -52,6 +59,7 @@ Available in the [Visual Studio Marketplace](https://marketplace.visualstudio.co
 * To Lower Case
 * To Morse code
 * To Upper Case
+* UTC DateTime
 * UUIDv4
 * Unicode decode
 * Unicode encode (js format)
@@ -62,7 +70,6 @@ Available in the [Visual Studio Marketplace](https://marketplace.visualstudio.co
 * Url Shorten
 * Url Unshorten (url expand)
 
-
 ## Usage
 
 You can invoke the dedicated command pallete with ```ctrl+shift+9``` for windows or ```cmd+shift+9``` for mac (when focusing the editor)
@@ -70,7 +77,13 @@ You can invoke the dedicated command pallete with ```ctrl+shift+9``` for windows
 The conversions will only use the selected text by default. If no text is selected the entire content of the editor will be used.
 It supports multi selection and will run the script for each selection individually
 
-**Macbook Touchbar Support**
+On top of the scripts provided swissknife now offers two new features:
+
+* **Copy relative file path with line number** - right click on a line in the editor and select "Copy file path with line". Ex output: app/src/android/java/com/myorg/app/ui/File.kt#83
+* **Ability to check/uncheck files/folders in the explorer**. Right click on a file and select "Toggle check file" or "Toggle check folder". A '✓' will show up, identifying that you checked the file/folder
+
+### Macbook Touchbar Support
+
 You can also invoke the swissknife extension directly from the macbook's touchbar
 ![Touchbar Support](data/touchbar_support.png)
 
@@ -80,7 +93,6 @@ You can also invoke the swissknife extension directly from the macbook's touchba
 
 The outcome of the operation may return multiple values, as a hashes from different algorithms have the same output format.
 Still we organize the hashes from top down by most relevant.
-
 
 ### HTTP(S) Server
 
@@ -92,7 +104,6 @@ One of the main purposes of this extension is to stop pasting data, or trusting 
 The extension avoids doing external web requests or logging data, for privacy.
 But there are some operations where external requests are needed:
 
-* **Crypto Currency Value** - Does a request to the cryptonator api to get the available cryptocurrencies and a request to get the current price for a specific pair. **The amount being converted is not sent**, this is calculated on the local machine.
 * **Url Unshorten** - This one really needs to do the request to the short url, so it can get the redirect (full) url. But keep in mind that the full url is never reached, the extension does not follow the redirect.
 
 ## Writing Scripts

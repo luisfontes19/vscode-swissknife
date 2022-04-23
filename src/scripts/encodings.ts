@@ -1,51 +1,51 @@
-import { IScript, ISwissKnifeContext } from '../Interfaces';
+import { IScript, ISwissKnifeContext } from '../Interfaces'
 
 export const toBase64 = async (str: string): Promise<string> => {
-  return Buffer.from(str, 'utf-8').toString("base64");
-};
+  return Buffer.from(str, 'utf-8').toString("base64")
+}
 
 export const fromBase64 = async (str: string): Promise<string> => {
-  return Buffer.from(str, 'base64').toString();
-};
+  return Buffer.from(str, 'base64').toString()
+}
 
 export const fromHex = async (str: string): Promise<string> => {
-  return Buffer.from(str, 'hex').toString();
-};
+  return Buffer.from(str, 'hex').toString()
+}
 
 export const toHex = async (str: string): Promise<string> => {
-  return Buffer.from(str, 'utf-8').toString("hex");
-};
+  return Buffer.from(str, 'utf-8').toString("hex")
+}
 
 export const toHTMLEncodeAll = async (str: string): Promise<string> => {
-  return str.split("").map(c => `&#${c.charCodeAt(0)}`).join("");
-};
+  return str.split("").map(c => `&#${c.charCodeAt(0)}`).join("")
+}
 
 export const toUrlEncode = async (str: string): Promise<string> => {
-  return encodeURIComponent(str);
-};
+  return encodeURIComponent(str)
+}
 
 export const fromUrlEncode = async (str: string): Promise<string> => {
-  return decodeURIComponent(str);
-};
+  return decodeURIComponent(str)
+}
 
 export const fullUrlEncode = async (str: string): Promise<string> => {
-  let encoded = '';
+  let encoded = ''
 
   for (let i = 0; i < str.length; i++) {
-    const h = parseInt(str.charCodeAt(i).toString()).toString(16);
-    encoded += '%' + h;
+    const h = parseInt(str.charCodeAt(i).toString()).toString(16)
+    encoded += '%' + h
   }
 
-  return encoded;
-};
+  return encoded
+}
 
 export const toBinary = async (str: string): Promise<string> => {
-  return str.split("").map(c => c.charCodeAt(0).toString(2)).join(" ");
-};
+  return str.split("").map(c => c.charCodeAt(0).toString(2)).join(" ")
+}
 
 export const fromBinary = async (str: string): Promise<string> => {
-  return str.replace(/\s/g, "").match(/[0-1]{8}/g)?.map(b => String.fromCharCode(parseInt(b, 2))).join("") || "";
-};
+  return str.replace(/\s/g, "").match(/[0-1]{8}/g)?.map(b => String.fromCharCode(parseInt(b, 2))).join("") || ""
+}
 
 
 
@@ -56,30 +56,30 @@ export const toMorseCode = async (str: string): Promise<string> => {
     "q": "--.-", "r": ".-.", "s": "...", "t": "-", "u": "..-", "v": "...-", "w": ".--", "x": "-..-",
     "y": "-.--", "z": "--..", "1": ".----", "2": "..---", "3": "...--", "4": "....-", "5": ".....", "6": "-....",
     "7": "--...", "8": "---..", "9": "----.", "0": "-----", ".": ".-.-.-", ",": "--..--", "?": "..--..", "/": "-..-."
-  };
+  }
 
   return str.toLowerCase().split("").map(c => {
-    return convertion[c] || c;
-  }).join("");
-};
+    return convertion[c] || c
+  }).join("")
+}
 
 //best article ever -> https://dmitripavlutin.com/what-every-javascript-developer-should-know-about-unicode/
 export const fromUnicodeEscaped = async (str: string): Promise<string> => {
-  const regex = /\\u\{(\w{1,6})\}|\\u(\w{1,6})/; //\w can improved
+  const regex = /\\u\{(\w{1,6})\}|\\u(\w{1,6})/ //\w can improved
   return str.match(new RegExp(regex, "g"))?.map(m => {
-    const finding = m.match(regex)!;
-    const unicodeChar = finding[1] || finding[2];
-    const codePoint = parseInt(unicodeChar, 16);
-    return String.fromCodePoint(codePoint);
-  }).join("") || "";
-};
+    const finding = m.match(regex)!
+    const unicodeChar = finding[1] || finding[2]
+    const codePoint = parseInt(unicodeChar, 16)
+    return String.fromCodePoint(codePoint)
+  }).join("") || ""
+}
 
 export const toUnicodeEscaped = async (str: string): Promise<string> => {
   return [...str].map(c => {
-    const u = c.codePointAt(0)!.toString(16);
-    return `\\u{${u}}`;
-  }).join("");
-};
+    const u = c.codePointAt(0)!.toString(16)
+    return `\\u{${u}}`
+  }).join("")
+}
 
 // From here: https://github.com/mathiasbynens/quoted-printable/blob/master/src/quoted-printable.js
 // And here: https://gist.github.com/MarcelloDiSimone/933a13c6a5b6458ce29d972644bb5892
@@ -88,15 +88,15 @@ export const fromQuotedPrintable = async (str: string): Promise<string> => {
     .replace(/[\t\x20]$/gm, '')
     .replace(/=(?:\r\n?|\n|$)/g, '')
     .replace(/=([a-fA-F0-9]{2})/g, ($0, $1) => {
-      return String.fromCharCode(parseInt($1, 16));
+      return String.fromCharCode(parseInt($1, 16))
     })
     .replace(/[\u00e0-\u00ef][\u0080-\u00bf][\u0080-\u00bf]/g, (c) => {
-      return String.fromCharCode(((c.charCodeAt(0)&0x0f)<<12) | ((c.charCodeAt(1)&0x3f)<<6) | ( c.charCodeAt(2)&0x3f));
+      return String.fromCharCode(((c.charCodeAt(0) & 0x0f) << 12) | ((c.charCodeAt(1) & 0x3f) << 6) | (c.charCodeAt(2) & 0x3f))
     })
     .replace(/[\u00c0-\u00df][\u0080-\u00bf]/g, (c) => {
-      return String.fromCharCode((c.charCodeAt(0)&0x1f)<<6 | c.charCodeAt(1)&0x3f);
+      return String.fromCharCode((c.charCodeAt(0) & 0x1f) << 6 | c.charCodeAt(1) & 0x3f)
     })
-};
+}
 
 const scripts: IScript[] = [
   {
@@ -155,7 +155,7 @@ const scripts: IScript[] = [
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(fromUrlEncode)
   },
   {
-    title: "HTML Encode (AlL)",
+    title: "HTML Encode (ALL)",
     detail: "Html encode all characters",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(toHTMLEncodeAll)
   },
@@ -169,6 +169,6 @@ const scripts: IScript[] = [
     detail: "Converts binary to Text",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(fromBinary)
   },
-];
+]
 
-export default scripts;
+export default scripts

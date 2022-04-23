@@ -7,11 +7,18 @@ export const toTimestamp = async (text: string): Promise<string> => {
 export const fromTimestamp = async (text: string): Promise<string> => {
   /* If timestamp is superior to the year 2969, let’s assume it is a milliseconds timestamp */
   let intText = parseInt(text);
-  intText = intText > 31536000000 ?  intText : intText * 1000;
+  intText = intText > 31536000000 ? intText : intText * 1000;
 
   return new Date(intText * 1000).toUTCString();
 };
 
+export const insertUtcDate = async (): Promise<string> => {
+  return new Date().toUTCString();
+}
+
+export const insertLocalDate = async (): Promise<string> => {
+  return new Date().toString();
+}
 
 
 const scripts: IScript[] = [
@@ -24,6 +31,16 @@ const scripts: IScript[] = [
     title: "Timestamp to Date",
     detail: "Converts a unix timestamp to UTC date",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(fromTimestamp)
+  },
+  {
+    title: "UTC DateTime",
+    detail: "Inserts current date/time in UTC format",
+    cb: (context: ISwissKnifeContext) => context.insertRoutine(insertUtcDate)
+  },
+  {
+    title: "Local DateTime",
+    detail: "Inserts current date/time for local timezone",
+    cb: (context: ISwissKnifeContext) => context.insertRoutine(insertLocalDate)
   },
 
 ];
