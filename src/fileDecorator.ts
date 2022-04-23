@@ -27,36 +27,33 @@ export class FileDecorator implements FileDecorationProvider {
 
   public provideFileDecoration(uri: Uri): ProviderResult<FileDecoration> {
     const workspace = workspacePathForUri(uri)
-    const checkedFile = this.checkedFilesForWorkspace(workspace)
+    const checkedFilesInWS = this.checkedFilesForWorkspace(workspace)
 
-    if (checkedFile.includes(relativePathForUri(uri))) {
-      return {
-        badge: "✓",
-        //color: new vscode.ThemeColor("button.background"),
-      }
-    }
+    if (checkedFilesInWS.includes(relativePathForUri(uri)))
+      //color: new vscode.ThemeColor("button.background"),
+      return { badge: "✓" }
+
   }
 
   private toggleFiles(uris: Uri[], folder = false) {
+    // multiple uris only show up when togling a folder. so the workspace is the same for all
     const workspace = workspacePathForUri(uris[0])
-    const checkedFile = this.checksFilePathForWorkspace(workspace)
-
     this.ensureVscodeFolder(workspace)
 
     let checks: Array<any> = this.checkedFilesForWorkspace(workspace)
 
     let toAdd: string[] = []
     let toRemove: string[] = []
-    let folderOperationRemove = false
+    let shouldRemoveChecks = false
 
     uris.forEach((uri, i) => {
       const relativePath = relativePathForUri(uri)
-      const fileAlreadyChecked = checks.includes(relativePath)
+      const fileIsChecked = checks.includes(relativePath)
 
-      //if its a folder it will check or uncheck all based on the parent folder status
-      if (i === 0) folderOperationRemove = fileAlreadyChecked
-      if (folder) folderOperationRemove ? toRemove.push(relativePath) : toAdd.push(relativePath)
-      else fileAlreadyChecked ? toRemove.push(relativePath) : toAdd.push(relativePath)
+      //if its a folder it will check or uncheck all children based on the that folder status
+      if (i === 0) shouldRemoveChecks = fileIsChecked // the folder should be the firt item in the array
+      if (folder) shouldRemoveChecks ? toRemove.push(relativePath) : toAdd.push(relativePath)
+      else fileIsChecked ? toRemove.push(relativePath) : toAdd.push(relativePath)
     })
 
     checks = [...toAdd, ...checks.filter(file => !toRemove.includes(file))]
@@ -71,7 +68,6 @@ export class FileDecorator implements FileDecorationProvider {
   }
 
   public async toggleCheckedFile(args: any) {
-    console.log(args)
     const selectedFile = Uri.file(args.path)
     this.toggleFiles([selectedFile])
   }
@@ -79,6 +75,7 @@ export class FileDecorator implements FileDecorationProvider {
   private checkedFilesForWorkspace(workspace: string) {
     const settingsFile = this.checksFilePathForWorkspace(workspace)
 
+    // if the checks file doesn't exist we can assume the user has never checked anything in this workspace
     if (!Object.keys(this.checkedFiles).includes(workspace))
       this.checkedFiles[workspace] = fs.existsSync(settingsFile) ? JSON.parse(fs.readFileSync(settingsFile).toString()) : []
 
@@ -90,8 +87,10 @@ export class FileDecorator implements FileDecorationProvider {
     const settingsFile = this.checksFilePathForWorkspace(workspace)
     this.checkedFiles[workspace] = checks
 
+    // trigger event for vscode to update the file decorations
     this.eventEmitter.fire(uris)
 
+    // save file with checks
     this.ensureVscodeFolder(workspace)
     fs.writeFile(settingsFile, JSON.stringify(checks, null, 2), () => { })
   }

@@ -1,20 +1,20 @@
-import { IScript, ISwissKnifeContext } from "../Interfaces";
+import { IScript, ISwissKnifeContext } from "../Interfaces"
 
 export const countWords = async (text: string): Promise<string> => {
-  return `${_countWords(text)} words found`;
-};
+  return `${_countWords(text)} words found`
+}
 
 export const countChars = async (text: string): Promise<string> => {
-  return `${_countChars(text)} characters`;
-};
+  return `${_countChars(text)} characters`
+}
 
 export const _countWords = (text: string): number => {
-  return (text.trim().match(/\S+/g) || "").length;
-};
+  return (text.trim().match(/\S+/g) || "").length
+}
 
 export const _countChars = (text: string): number => {
-  return text.length;
-};
+  return text.length
+}
 
 const scripts: IScript[] = [
   {
@@ -27,6 +27,6 @@ const scripts: IScript[] = [
     detail: "Count the number of characters in the text",
     cb: (context: ISwissKnifeContext) => context.informationRoutine(countChars)
   },
-];
+]
 
-export default scripts;
+export default scripts

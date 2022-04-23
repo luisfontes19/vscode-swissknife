@@ -57,6 +57,7 @@ export function activate(ctx: vscode.ExtensionContext) {
 	ctx.subscriptions.push(...disposables)
 }
 
+// show swissknife's script launcher and event to handle script selection
 const show = () => {
 	vscode.window.showQuickPick<IScriptQuickPickItem>(scripts).then((selectedItem: IScriptQuickPickItem | undefined) => {
 		if (selectedItem) {
@@ -68,6 +69,7 @@ const show = () => {
 	})
 }
 
+// Reload scripts. Necessary for developing user scripts
 const reload = () => {
 	loadScripts(true)
 }
@@ -76,7 +78,7 @@ const openUserScriptsFolder = () => {
 	vscode.env.openExternal(Uri.file(userScriptsFolder))
 }
 
-//clear cache will only work for user scripts
+// clear cache will only work for user scripts
 const loadScripts = async (clearCache = false) => {
 	scripts = [...loadInternalScripts(), ...(await loadUserScripts(clearCache))]
 }
@@ -95,7 +97,7 @@ const loadUserScripts = async (clearCache: boolean) => {
 			const mod = await Promise.all([require(modulePath)])
 
 			//add loaded user script to the context var, to be accessible in other scripts
-			const moduleName = path.basename(modulePath).toString().replace(new RegExp(`${path.extname(modulePath)}$`), "")
+			const moduleName = path.basename(modulePath).toString().replace(new RegExp(`${path.extname(modulePath)}$`), "") //remove extension from file name
 			extensionContext.modules[moduleName] = mod[0]
 
 			const moduleScripts = createScriptsFromModule(mod[0])
@@ -123,6 +125,7 @@ const loadInternalScripts = () => {
 	return scripts
 }
 
+// A module is a file that contains multiple scripts
 const createScriptsFromModule = (m: any) => {
 	const moduleScripts: IScriptQuickPickItem[] = []
 

@@ -14,7 +14,7 @@
         "eqeqeq": "warn",
         "no-throw-literal": "warn",
         "semi": [
-            "warn",
+            "error",
             "never"
         ]
     }

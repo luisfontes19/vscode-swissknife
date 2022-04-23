@@ -1,41 +1,41 @@
-import { IScript, ISwissKnifeContext } from "../Interfaces";
+import { IScript, ISwissKnifeContext } from "../Interfaces"
 
 export const rgbToHex = async (text: string): Promise<string> => {
-  const rgbArray = text.includes(",") ? text.split(",") : text.split(" ");
+  const rgbArray = text.includes(",") ? text.split(",") : text.split(" ")
 
-  if (rgbArray.length !== 3) throw (new Error("Invalid RGB format"));
+  if (rgbArray.length !== 3) throw (new Error("Invalid RGB format"))
 
-  let hex = "#";
+  let hex = "#"
 
   try {
     rgbArray.forEach(c => {
-      hex += parseInt(c).toString(16);
-    });
+      hex += parseInt(c).toString(16)
+    })
   }
   catch (error) {
     throw (new Error("Invalid RGB value"));;
   }
 
-  return hex.toUpperCase();
+  return hex.toUpperCase()
 
-};
+}
 
 
 export const hexToRgb = async (text: string): Promise<string> => {
-  const match = text.toUpperCase().match(/^#?[0-9A-F]{6}$/);
-  if (!match) throw (new Error("Invalid Hex color"));
+  const match = text.toUpperCase().match(/^#?[0-9A-F]{6}$/)
+  if (!match) throw (new Error("Invalid Hex color"))
 
-  text = text.replace("#", "");
+  text = text.replace("#", "")
 
-  let rgb: Array<number> = [];
+  let rgb: Array<number> = []
   for (let i = 0; i < 3; i++) {
-    const n = text.substring(i * 2, (i * 2) + 2);
-    rgb.push(parseInt(n, 16));
+    const n = text.substring(i * 2, (i * 2) + 2)
+    rgb.push(parseInt(n, 16))
   }
 
-  return rgb.join(",");
+  return rgb.join(",")
 
-};
+}
 
 
 const scripts: IScript[] = [
@@ -52,6 +52,6 @@ const scripts: IScript[] = [
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(hexToRgb)
   },
 
-];
+]
 
-export default scripts;
+export default scripts

@@ -1,29 +1,29 @@
-import { IScript, ISwissKnifeContext } from "../Interfaces";
+import { IScript, ISwissKnifeContext } from "../Interfaces"
 
 export const toLowerCase = async (text: string): Promise<string> => {
-  return text.toLowerCase();
-};
+  return text.toLowerCase()
+}
 
 export const toUpperCase = async (text: string): Promise<string> => {
-  return text.toUpperCase();
-};
+  return text.toUpperCase()
+}
 
 export const toCamelCase = async (text: string): Promise<string> => {
-  return text.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
-};
+  return text.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase())
+}
 
 export const joinLines = async (text: string, context: ISwissKnifeContext): Promise<string> => {
   return new Promise((resolve, reject) => {
     context.vscode.window.showInputBox({ prompt: "What do you want to delimit the lines with? (press enter for none)" }).then(answer => {
-      resolve(text.replace(/\n/g, answer || ""));
-    });
-  });
-};
+      resolve(text.replace(/\n/g, answer || ""))
+    })
+  })
+}
 
 export const sortAlphabetically = async (text: string, context: ISwissKnifeContext): Promise<string> => {
-  const lines = text.split("\n");
-  return lines.sort().join("\n");
-};
+  const lines = text.split("\n")
+  return lines.sort().join("\n")
+}
 
 const scripts: IScript[] = [
   {
@@ -51,6 +51,6 @@ const scripts: IScript[] = [
     detail: "Sorts lines alphabetically",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(sortAlphabetically)
   },
-];
+]
 
-export default scripts;
+export default scripts

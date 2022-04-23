@@ -1,6 +1,6 @@
-import * as vscode from 'vscode';
-import { extensionContext } from './extension';
-import { TScriptCallback, TScriptInsertCallback } from './Interfaces';
+import * as vscode from 'vscode'
+import { extensionContext } from './extension'
+import { TScriptCallback, TScriptInsertCallback } from './Interfaces'
 
 // we cant use async stuff inside vscode.window.activeTextEditor?.edit (which all our scripts are)
 // and if we want to process all the selected changes as one operation
@@ -11,88 +11,93 @@ import { TScriptCallback, TScriptInsertCallback } from './Interfaces';
 // check https://github.com/luisfontes19/vscode-swissknife/issues/3
 
 export const informationRoutine = async (cb: TScriptCallback): Promise<void> => {
-  const editor = vscode.window.activeTextEditor;
-  if (!editor) return Promise.reject("No editor");
+  const editor = vscode.window.activeTextEditor
+  if (!editor) return Promise.reject("No editor")
 
-  const selections = editor.selections;
-  if (!selections) return Promise.resolve();
+  const selections = editor.selections
+  if (!selections) return Promise.resolve()
 
   for (const selection of selections) {
-    const text = selection.isEmpty ? editor.document.getText() : getTextAtSelection(selection);
+    const text = selection.isEmpty ? editor.document.getText() : getTextAtSelection(selection)
 
     await cb(text, extensionContext)
       .then(async data => await showInformationAsync(data))
-      .catch(err => vscode.window.showErrorMessage(err));
+      .catch(err => vscode.window.showErrorMessage(err))
   };
-};
+}
 
 export const insertRoutine = async (cb: TScriptInsertCallback): Promise<void> => {
-  const editor = vscode.window.activeTextEditor;
-  if (!editor) return Promise.reject("No editor");
+  const editor = vscode.window.activeTextEditor
+  if (!editor) return Promise.reject("No editor")
 
-  const selections = editor.selections;
-  if (!selections) return Promise.resolve();
+  const selections = editor.selections
+  if (!selections) return Promise.resolve()
 
-  const changeData: { position: vscode.Position, data: string }[] = []
+  const changeData: { position: vscode.Position, result: string }[] = []
 
+  // Process replace scripts and store results
   for (const selection of selections) {
-    const position = new vscode.Position(selection.end.line, selection.end.character);
-    const data = await cb(extensionContext)
-    changeData.push({ position, data });
+    const position = new vscode.Position(selection.end.line, selection.end.character)
+    const result = await cb(extensionContext)
+    changeData.push({ position, result })
   }
 
+  // apply all changes at once
   vscode.window.activeTextEditor?.edit(editor => {
     for (const d of changeData)
-      vscode.window.activeTextEditor?.edit((editor: vscode.TextEditorEdit) => editor.insert(d.position, d.data))
-  });
-};
+      vscode.window.activeTextEditor?.edit((editor: vscode.TextEditorEdit) => editor.insert(d.position, d.result))
+  })
+}
 
 export const replaceRoutine = async (cb: TScriptCallback): Promise<void> => {
-  const editor = vscode.window.activeTextEditor;
-  if (!editor) return Promise.reject("No editor");
+  const editor = vscode.window.activeTextEditor
+  if (!editor) return Promise.reject("No editor")
 
-  const selections = editor.selections;
-  if (!selections) return Promise.resolve();
+  const selections = editor.selections
+  if (!selections) return Promise.resolve()
 
-  const changeData: { range: vscode.Range, data: string }[] = []
+  const changeData: { range: vscode.Range, result: string }[] = []
 
   try {
+
+    // Process replace scripts and store results
     for (const selection of selections) {
-      const text = selection.isEmpty ? editor.document.getText() : getTextAtSelection(selection);
-      const range = selection.isEmpty ? documentRange() : selection;
-      const data = await cb(text, extensionContext);
-      changeData.push({ range, data });
+      const text = selection.isEmpty ? editor.document.getText() : getTextAtSelection(selection)
+      const range = selection.isEmpty ? documentRange() : selection
+      const result = await cb(text, extensionContext)
+      changeData.push({ range, result })
     }
 
+    // apply all changes at once
     vscode.window.activeTextEditor?.edit(editor => {
       for (const d of changeData)
-        editor.replace(d.range, d.data)
+        editor.replace(d.range, d.result)
     })
   }
   catch (ex: any) {
-    vscode.window.showErrorMessage(ex);
+    vscode.window.showErrorMessage(ex)
   }
-};
+}
 
 export const documentRange = (): vscode.Range => {
-  const textEditor = vscode.window.activeTextEditor;
-  const firstLine = textEditor?.document.lineAt(0);
-  const lastLine = textEditor?.document.lineAt(textEditor.document.lineCount - 1);
+  const textEditor = vscode.window.activeTextEditor
+  const firstLine = textEditor?.document.lineAt(0)
+  const lastLine = textEditor?.document.lineAt(textEditor.document.lineCount - 1)
   if (firstLine && lastLine)
-    return new vscode.Range(firstLine.range.start, lastLine.range.end);
+    return new vscode.Range(firstLine.range.start, lastLine.range.end)
   else //this should never happen
   {
-    const p = new vscode.Position(0, 0);
-    return new vscode.Range(p, p);
+    const p = new vscode.Position(0, 0)
+    return new vscode.Range(p, p)
   }
-};
+}
 
 export const getTextAtSelection = (selection: vscode.Selection): string => {
-  return vscode.window.activeTextEditor?.document.getText(new vscode.Range(selection.start, selection.end)) || "";
-};
+  return vscode.window.activeTextEditor?.document.getText(new vscode.Range(selection.start, selection.end)) || ""
+}
 
 export const showInformationAsync = (str: string): Promise<void> => {
   return new Promise((resolve, reject) => {
-    vscode.window.showInformationMessage(str).then(() => resolve());
-  });
+    vscode.window.showInformationMessage(str).then(() => resolve())
+  })
 }

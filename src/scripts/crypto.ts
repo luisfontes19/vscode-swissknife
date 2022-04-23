@@ -1,14 +1,14 @@
-import * as bip39Lib from 'bip39';
-import * as crypto from 'crypto';
+import * as bip39Lib from 'bip39'
+import * as crypto from 'crypto'
 // import * as eccrypto from 'eccrypto';
-import { ec } from 'elliptic';
+import { ec } from 'elliptic'
 // @ts-ignore ADD TYPES
-import * as HashIdentifier from 'hash-identifier';
+import * as HashIdentifier from 'hash-identifier'
 // @ts-ignore TODO: ADD TYPES
-import * as selfsigned from 'selfsigned';
-import * as vscode from 'vscode';
-import { IScript, ISwissKnifeContext } from '../Interfaces';
-import request = require('request');
+import * as selfsigned from 'selfsigned'
+import * as vscode from 'vscode'
+import { IScript, ISwissKnifeContext } from '../Interfaces'
+import request = require('request')
 
 // export let CRYPTO_CURRENCIES: string[] = [];
 // console.log("[SWISSKNIFE] Loading cryptocurrency list");
@@ -19,32 +19,32 @@ import request = require('request');
 
 
 export const toMd5 = async (text: string): Promise<string> => {
-  return crypto.createHash('md5').update(text).digest('hex');
-};
+  return crypto.createHash('md5').update(text).digest('hex')
+}
 
 export const toSha1 = async (text: string): Promise<string> => {
-  return crypto.createHash('sha1').update(text).digest('hex');
-};
+  return crypto.createHash('sha1').update(text).digest('hex')
+}
 
 export const toSha256 = async (text: string): Promise<string> => {
-  return crypto.createHash('sha256').update(text).digest('hex');
-};
+  return crypto.createHash('sha256').update(text).digest('hex')
+}
 
 export const toSha512 = async (text: string): Promise<string> => {
-  return crypto.createHash('sha512').update(text).digest('hex');
-};
+  return crypto.createHash('sha512').update(text).digest('hex')
+}
 
 export const bip39Output = async (): Promise<string> => {
-  const { mnemonic, seed } = bip39();
-  return "Mnemonic: " + mnemonic + "\n" + "Seed: " + seed;
-};
+  const { mnemonic, seed } = bip39()
+  return "Mnemonic: " + mnemonic + "\n" + "Seed: " + seed
+}
 
 export const bip39 = () => {
-  const mnemonic = bip39Lib.generateMnemonic();
-  const seed = bip39Lib.mnemonicToSeedSync(mnemonic).toString('hex');
+  const mnemonic = bip39Lib.generateMnemonic()
+  const seed = bip39Lib.mnemonicToSeedSync(mnemonic).toString('hex')
 
-  return { mnemonic, seed };
-};
+  return { mnemonic, seed }
+}
 
 // const getBcryptSaltRound = (context: ISwissKnifeContext): Promise<number> => {
 //   return new Promise((resolve, reject) => {
@@ -64,16 +64,16 @@ export const bip39 = () => {
 export const _selfSignedCert = (): Promise<any> => {
   return new Promise((resolve, reject) => {
     vscode.window.showInputBox({ prompt: "What's the domain to generate the certificate to?" }).then(domain => {
-      const attrs = [{ name: 'commonName', value: domain }];
-      resolve(selfsigned.generate(attrs, { days: 365, keySize: 2048 }));
-    });
-  });
-};
+      const attrs = [{ name: 'commonName', value: domain }]
+      resolve(selfsigned.generate(attrs, { days: 365, keySize: 2048 }))
+    })
+  })
+}
 
 export const selfSignedCert = async (context: ISwissKnifeContext): Promise<string> => {
-  const pems = await _selfSignedCert();
-  return (`${pems.cert}\n\n\n\n\n\n${pems.private}\n\n\n\n\n\n${pems.public}`);
-};
+  const pems = await _selfSignedCert()
+  return (`${pems.cert}\n\n\n\n\n\n${pems.private}\n\n\n\n\n\n${pems.public}`)
+}
 
 // export const cryptoPrice = async (text: string, context: ISwissKnifeContext): Promise<string> => {
 //   const reg = /([\d\.,]+)\s?(\w{3,5}) to (\w{3,5})/;
@@ -117,15 +117,15 @@ export const selfSignedCert = async (context: ISwissKnifeContext): Promise<strin
 // };
 
 export const generateElipticKeypair = async (context: ISwissKnifeContext): Promise<string> => {
-  const supportedCurves = ["secp256k1", "p192", "p224", "p256", "p384", "p521", "curve25519", "ed25519"];
+  const supportedCurves = ["secp256k1", "p192", "p224", "p256", "p384", "p521", "curve25519", "ed25519"]
 
-  const curve = (await context.vscode.window.showQuickPick(supportedCurves, { placeHolder: "Select Curve" })) || "";
-  if (!supportedCurves.includes(curve)) return Promise.reject("Curve not supported");
+  const curve = (await context.vscode.window.showQuickPick(supportedCurves, { placeHolder: "Select Curve" })) || ""
+  if (!supportedCurves.includes(curve)) return Promise.reject("Curve not supported")
 
-  const keypair = new ec(curve).genKeyPair();
+  const keypair = new ec(curve).genKeyPair()
 
-  return `Private key:${keypair.getPrivate("hex")}\nPublic Key:${keypair.getPublic(true, "hex")}`;
-};
+  return `Private key:${keypair.getPrivate("hex")}\nPublic Key:${keypair.getPublic(true, "hex")}`
+}
 
 // export const ecPublic = async (input: string, context: ISwissKnifeContext): Promise<string> => {
 
@@ -139,11 +139,11 @@ export const generateElipticKeypair = async (context: ISwissKnifeContext): Promi
 // }
 
 export const hashIdentifier = async (input: string, context: ISwissKnifeContext): Promise<string> => {
-  const res = HashIdentifier.checkAlgorithm(input);
-  input += res.length > 0 ? `\nIdentified Algorithms:\n${res.join("\n")}` : "\nCould not identify an hash algorithm";
+  const res = HashIdentifier.checkAlgorithm(input)
+  input += res.length > 0 ? `\nIdentified Algorithms:\n${res.join("\n")}` : "\nCould not identify an hash algorithm"
 
-  return input;
-};
+  return input
+}
 
 
 
@@ -158,12 +158,12 @@ export const generateRSAKeyPair = async (): Promise<string> => {
       type: 'pkcs8',
       format: 'pem',
     }
-  });
+  })
 
   //TODO: open each in a new tab?
   //TODO: ask for size and password
-  return res.publicKey + "\n\n\n\n" + res.privateKey;
-};
+  return res.publicKey + "\n\n\n\n" + res.privateKey
+}
 
 
 const scripts: IScript[] = [
@@ -230,6 +230,6 @@ const scripts: IScript[] = [
   },
 
 
-];
+]
 
-export default scripts;
+export default scripts

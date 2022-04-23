@@ -1,10 +1,10 @@
-import * as crypto from 'crypto';
-import * as zxcvbn from 'zxcvbn';
-import { IScript, ISwissKnifeContext } from '../Interfaces';
+import * as crypto from 'crypto'
+import * as zxcvbn from 'zxcvbn'
+import { IScript, ISwissKnifeContext } from '../Interfaces'
 
 
 export const checkPassword = async (text: string): Promise<string> => {
-  const result = zxcvbn(text);
+  const result = zxcvbn(text)
 
   return `Password: ${text}\n` +
     `Score (from 1-5): ${result.score + 1}\n` +
@@ -12,12 +12,12 @@ export const checkPassword = async (text: string): Promise<string> => {
     `Suggestion: ${result.feedback.suggestions}\n` +
     `Estimated guesses to crack: ${result.guesses}\n` +
     `Estimated time to crack the password on a single machine can go from ` +
-    `${result.crack_times_display.offline_fast_hashing_1e10_per_second} to ${result.crack_times_display.offline_slow_hashing_1e4_per_second}\n`;
-};
+    `${result.crack_times_display.offline_fast_hashing_1e10_per_second} to ${result.crack_times_display.offline_slow_hashing_1e4_per_second}\n`
+}
 
 
 const _generateCharCode = (from: number, to: number): number => {
-  return ((crypto.randomBytes(1)[0]) % to) + from;
+  return ((crypto.randomBytes(1)[0]) % to) + from
 }
 
 
@@ -26,35 +26,35 @@ const _generateCharCode = (from: number, to: number): number => {
 // 256 is the number of possible outputs from crypto.randombytes(1)
 // cool explanation here: // https://donjon.ledger.com/kaspersky-password-manager/
 export const generateSecureCharCode = (): number => {
-  const from = 33;
-  const to = 125;
-  const length = to - from;
-  const moduleBias = 256 - (256 - length);
+  const from = 33
+  const to = 125
+  const length = to - from
+  const moduleBias = 256 - (256 - length)
 
-  let n = 0;
+  let n = 0
   do
-    n = _generateCharCode(from, to);
-  while (n > moduleBias);
+    n = _generateCharCode(from, to)
+  while (n > moduleBias)
 
-  return n;
+  return n
 
-};
+}
 
 export const generatePassword = async (context: ISwissKnifeContext): Promise<string> => {
   return new Promise((resolve, reject) => {
     context.vscode.window.showInputBox({ prompt: "How many character do you want in the password? (default 20)\n" }).then(answer => {
 
-      let size = 20;
-      if (answer) size = parseInt(answer);
+      let size = 20
+      if (answer) size = parseInt(answer)
 
-      let charCodes: number[] = [];
+      let charCodes: number[] = []
       for (let i = 0; i < size; i++)
-        charCodes.push(generateSecureCharCode());
+        charCodes.push(generateSecureCharCode())
 
-      resolve(String.fromCharCode(...charCodes));
-    });
-  });
-};
+      resolve(String.fromCharCode(...charCodes))
+    })
+  })
+}
 
 
 const scripts: IScript[] = [
@@ -68,6 +68,6 @@ const scripts: IScript[] = [
     detail: "Generates a secure, strong password",
     cb: (context: ISwissKnifeContext) => context.insertRoutine(generatePassword)
   },
-];
+]
 
-export default scripts;
+export default scripts

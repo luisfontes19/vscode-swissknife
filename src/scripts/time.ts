@@ -1,23 +1,23 @@
-import { IScript, ISwissKnifeContext } from "../Interfaces";
+import { IScript, ISwissKnifeContext } from "../Interfaces"
 
 export const toTimestamp = async (text: string): Promise<string> => {
-  return (new Date(text).getTime() / 1000).toString();
-};
+  return (new Date(text).getTime() / 1000).toString()
+}
 
 export const fromTimestamp = async (text: string): Promise<string> => {
   /* If timestamp is superior to the year 2969, let’s assume it is a milliseconds timestamp */
-  let intText = parseInt(text);
-  intText = intText > 31536000000 ? intText : intText * 1000;
+  let intText = parseInt(text)
+  intText = intText > 31536000000 ? intText : intText * 1000
 
-  return new Date(intText * 1000).toUTCString();
-};
+  return new Date(intText * 1000).toUTCString()
+}
 
 export const insertUtcDate = async (): Promise<string> => {
-  return new Date().toUTCString();
+  return new Date().toUTCString()
 }
 
 export const insertLocalDate = async (): Promise<string> => {
-  return new Date().toString();
+  return new Date().toString()
 }
 
 
@@ -43,6 +43,6 @@ const scripts: IScript[] = [
     cb: (context: ISwissKnifeContext) => context.insertRoutine(insertLocalDate)
   },
 
-];
+]
 
-export default scripts;
+export default scripts
