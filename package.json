@@ -67,11 +67,11 @@
       },
       {
         "command": "swissknife.toggleCheckedFile",
-        "title": "Toggle check file"
+        "title": "Toggle: Check File"
       },
       {
         "command": "swissknife.toggleCheckedFolder",
-        "title": "Toggle check folder"
+        "title": "Toggle: Check Folder"
       }
     ],
     "keybindings": [

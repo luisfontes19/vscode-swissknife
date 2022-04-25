@@ -2,6 +2,10 @@
 
 All notable changes to the "swissknife" extension will be documented in this file.
 
+## 1.5.1
+
+* Changed text option name "Toggle check folder" to "Toggle: check folder" and "Toggle check tile" to "Toggle: check tile"
+
 ## 1.5.0
 
 * Added "Copy file path with line" on context menu in the editor. Will copy to clipboard the relative file path with line number like: app/src/android/java/com/myorg/app/ui/File.kt#83
