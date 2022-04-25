@@ -80,7 +80,7 @@ It supports multi selection and will run the script for each selection individua
 On top of the scripts provided swissknife now offers two new features:
 
 * **Copy relative file path with line number** - right click on a line in the editor and select "Copy file path with line". Ex output: app/src/android/java/com/myorg/app/ui/File.kt#83
-* **Ability to check/uncheck files/folders in the explorer**. Right click on a file and select "Toggle check file" or "Toggle check folder". A '✓' will show up, identifying that you checked the file/folder
+* **Ability to check/uncheck files/folders in the explorer**. Right click on a file and select "Toggle: Check File" or "Toggle: Check Folder". A '✓' will show up, identifying that you checked the file/folder
 
 ### Macbook Touchbar Support
 
@@ -159,7 +159,7 @@ In context you have some nice methods to help you out, and you should use them w
 * insertRoutine(cb) - This method will insert the resolved content into the cursor on editor. It will call cb and send context as a parameter. **cb is expected to be async**
 * informationRoutine(cb) - This method will create a notification with the resolved content. It will call cb and send selected text in editor (all text if no selection) and context as a parameter. **cb is expected to be async**
 * replaceRoutine(cb) - This method will replace selected text in editor, with the resolved content from cb (if no text selected it replaces all text). It will call cb and send selected text in editor (all text if no selection) and context as a parameter. **cb is expected to be async**
-* vscode - This variable holds the [vscode api](https://code.visualstudio.com/api).
+* vscode - This variable holds the [vscode api](https://code.visualstudio.com/api/references/vscode-api).
 * modules - This variable is an array of all JS modules inside the [script (and lib) folder](https://github.com/luisfontes19/vscode-swissknife/tree/master/src/scripts). You can use them to call methods from the native scripts, to reuse code logic. Ex: context.modules.passwords.generateSecureCharCode())
 
 The use of this methods is optional. If you feel that its easier to just work directly with vscode api you can also do it:
