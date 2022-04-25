@@ -5,3 +5,4 @@ node_modules
 .github
 .DS_Store
 Icon
+.vscode/swissknifeCheckedFiles.json
