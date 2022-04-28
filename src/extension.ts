@@ -149,7 +149,7 @@ const copyPathWithLine = () => {
 	const editor = vscode.window.activeTextEditor
 	if (editor) {
 		const filePath = relativePathForUri(editor.document.uri)
-		const pos = editor.document.lineAt(editor.selection.active).range.start.line
+		const pos = editor.document.lineAt(editor.selection.active).range.start.line + 1 //range.start.line is zero indexed
 		vscode.env.clipboard.writeText(`${filePath}#${pos}`)
 	}
 }
