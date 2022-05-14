@@ -55,7 +55,8 @@ export function activate(ctx: vscode.ExtensionContext) {
 		vscode.commands.registerCommand("swissknife.decorators.eyes", (args) => { fileDecorator.decorate(args, FileDecorator.DECORATOR_EYES) }),
 		vscode.commands.registerCommand("swissknife.decorators.custom", (args, b) => {
 			vscode.window.showInputBox({ prompt: "Provide a custom decorator (1 character only)" }).then(dec => {
-				if (dec?.length !== 1) return vscode.window.showErrorMessage("Custom decorator must be 1 character long")
+				dec ||= ""
+				if ([...dec].length !== 1) return vscode.window.showErrorMessage("Custom decorator must be 1 character long")
 
 				fileDecorator.decorate(args, dec)
 			})

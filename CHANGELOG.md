@@ -2,6 +2,10 @@
 
 All notable changes to the "swissknife" extension will be documented in this file.
 
+## 1.6.1
+
+* Fix decorator length with some unicode chars like specific emojis where length was bigger then 1
+
 ## 1.6.0
 
 * Extended explorer decorators. Now you can have by default a check, a cross and some eyes. You can also add your own decorators.
