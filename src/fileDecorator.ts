@@ -3,6 +3,15 @@ import * as path from 'path'
 import { Event, EventEmitter, FileDecoration, FileDecorationProvider, ProviderResult, Uri } from 'vscode'
 import { getAllFilesInFolder, relativePathForUri, vscodeFolderPathForWorkspace, workspacePathForUri } from './utils'
 
+interface DecoratorEntry {
+  file: string
+  decorator: string
+}
+
+enum DecoratorOp {
+  ADD, REMOVE, UPDATE
+}
+
 export class FileDecorator implements FileDecorationProvider {
 
   private eventEmitter: EventEmitter<Uri | Uri[]>
@@ -13,94 +22,142 @@ export class FileDecorator implements FileDecorationProvider {
   // instead of checking with the OS for every file
   private vscodeFolderExistsForWorkspace: Record<string, boolean> = {}
 
-  //cached check files settings. same logic as im vscodeFolderExistsForWorkspace
+  // cached decoreted files settings. same logic as im vscodeFolderExistsForWorkspace
   // instead of reading the file every time, we read it once and cache it
-  private checkedFiles: Record<string, string[]> = {}
+  // ex: {workspace1: [{file:"/some/file", decorator: "x" }]}
 
-  private vscodeFolderChecked
+  private decorators: Record<string, DecoratorEntry[]> = {}
+
+
+  public static DECORATOR_CHECK = "✓"
+  public static DECORATOR_REJECT = "✗"
+  public static DECORATOR_EYES = "👀"
+
+  private DECORATORS_FILE = "swissknifeDecorators.json"
+  private OLD_DECORATORS_FILE = "swissknifeCheckedFiles.json" // TODO: REMOVE IN NEWER VERSIONS
 
   public constructor() {
     this.eventEmitter = new EventEmitter()
     this.onDidChangeFileDecorations = this.eventEmitter.event
-    this.vscodeFolderChecked = false
   }
 
   public provideFileDecoration(uri: Uri): ProviderResult<FileDecoration> {
     const workspace = workspacePathForUri(uri)
-    const checkedFilesInWS = this.checkedFilesForWorkspace(workspace)
+    const decoratorsForWorkspace = this.decoratedFilesForWorkspace(workspace)
 
-    if (checkedFilesInWS.includes(relativePathForUri(uri)))
+    const decorator = decoratorsForWorkspace.find(f => f.file === relativePathForUri(uri))
+
+    if (decorator)
       //color: new vscode.ThemeColor("button.background"),
-      return { badge: "✓" }
-
+      return { badge: decorator.decorator }
   }
 
-  private toggleFiles(uris: Uri[], folder = false) {
+  private determinateDecorateOperationForUri = (decorators: DecoratorEntry[], uri: Uri, decorator: string) => {
+    let op: DecoratorOp
+    const relativePath = relativePathForUri(uri)
+    const decoratedFile = decorators.find(f => f.file === relativePath)
+
+    if (!decoratedFile) op = DecoratorOp.ADD
+    else if (decoratedFile.decorator === decorator) op = DecoratorOp.REMOVE // has decorator and is the same,  remove
+    else op = DecoratorOp.UPDATE // has decorator and is different, update
+
+    return op
+  }
+
+  // this method should only have multiple files when the user is selecting a folder
+  private decorateFiles(uris: Uri[], decorator: string, folder: boolean) {
     // multiple uris only show up when togling a folder. so the workspace is the same for all
     const workspace = workspacePathForUri(uris[0])
-    this.ensureVscodeFolder(workspace)
+    this.ensureVscodeFolderExists(workspace)
 
-    let checks: Array<any> = this.checkedFilesForWorkspace(workspace)
-
-    let toAdd: string[] = []
+    let decorators: DecoratorEntry[] = this.decoratedFilesForWorkspace(workspace)
+    let toAdd: DecoratorEntry[] = []
     let toRemove: string[] = []
-    let shouldRemoveChecks = false
+
+    let op: DecoratorOp
+
+    //if its a folder all files inside will have the same decorator as the one determinated for the folder
+    if (folder) op = this.determinateDecorateOperationForUri(decorators, uris[0], decorator)
 
     uris.forEach((uri, i) => {
       const relativePath = relativePathForUri(uri)
-      const fileIsChecked = checks.includes(relativePath)
 
-      //if its a folder it will check or uncheck all children based on the that folder status
-      if (i === 0) shouldRemoveChecks = fileIsChecked // the folder should be the firt item in the array
-      if (folder) shouldRemoveChecks ? toRemove.push(relativePath) : toAdd.push(relativePath)
-      else fileIsChecked ? toRemove.push(relativePath) : toAdd.push(relativePath)
+      const decoratedFile = decorators.find(f => f.file === relativePathForUri(uri))
+      const fileIsDecorated = decoratedFile ? true : false // just for sugar syntax :) 
+      const fileHasSameDecorator = (decoratedFile && decorator === decoratedFile.decorator) || false
+
+      const entry = { file: relativePath, decorator } as DecoratorEntry
+
+      if (!folder) op = this.determinateDecorateOperationForUri(decorators, uri, decorator)
+
+      if (op === DecoratorOp.ADD)
+        toAdd.push(entry)
+      else if (op === DecoratorOp.REMOVE)
+        toRemove.push(relativePath)
+      else if (op === DecoratorOp.UPDATE) { //remove existing decorator and add new one
+        toRemove.push(relativePath)
+        toAdd.push(entry)
+      }
+
     })
 
-    checks = [...toAdd, ...checks.filter(file => !toRemove.includes(file))]
+    decorators = [...decorators.filter(de => !toRemove.includes(de.file)), ...toAdd]
 
-    this.updateCheckedFilesForWorkspace(uris, checks)
+    this.updateDecoratorsForWorkspace(uris, decorators)
   }
 
-  public toggleCheckedFolder(args: any) {
-    const selectedFolder = Uri.file(args.path)
-    const files = [selectedFolder.path, ...getAllFilesInFolder(selectedFolder.path)]
-    this.toggleFiles(files.map(file => Uri.file(file)), true)
-  }
-
-  public async toggleCheckedFile(args: any) {
+  public decorate(args: any, decorator: string) {
     const selectedFile = Uri.file(args.path)
-    this.toggleFiles([selectedFile])
+    let isFolder = fs.lstatSync(args.path).isDirectory()
+
+    if (isFolder) {
+      const files = [selectedFile.path, ...getAllFilesInFolder(selectedFile.path)]
+      this.decorateFiles(files.map(file => Uri.file(file)), decorator, true)
+    }
+    else
+      this.decorateFile(selectedFile, decorator)
   }
 
-  private checkedFilesForWorkspace(workspace: string) {
-    const settingsFile = this.checksFilePathForWorkspace(workspace)
+  public async decorateFile(args: any, decorator: string) {
+    const selectedFile = Uri.file(args.path)
+    this.decorateFiles([selectedFile], decorator, false)
+  }
+
+  private decoratedFilesForWorkspace(workspace: string) {
+    const decoratorsFile = this.decoratorsFilePath(workspace)
 
     // if the checks file doesn't exist we can assume the user has never checked anything in this workspace
-    if (!Object.keys(this.checkedFiles).includes(workspace))
-      this.checkedFiles[workspace] = fs.existsSync(settingsFile) ? JSON.parse(fs.readFileSync(settingsFile).toString()) : []
+    if (!Object.keys(this.decorators).includes(workspace))
+      this.decorators[workspace] = fs.existsSync(decoratorsFile) ? this.readDecoratorsFile(decoratorsFile) : []
 
-    return this.checkedFiles[workspace]
+    return this.decorators[workspace]
   }
 
-  private async updateCheckedFilesForWorkspace(uris: Uri[], checks: string[]) {
+  private async updateDecoratorsForWorkspace(uris: Uri[], decorators: DecoratorEntry[]) {
     const workspace = workspacePathForUri(uris[0])
-    const settingsFile = this.checksFilePathForWorkspace(workspace)
-    this.checkedFiles[workspace] = checks
+    const decoratorsFile = this.decoratorsFilePath(workspace)
+    this.decorators[workspace] = decorators
 
     // trigger event for vscode to update the file decorations
     this.eventEmitter.fire(uris)
 
     // save file with checks
-    this.ensureVscodeFolder(workspace)
-    fs.writeFile(settingsFile, JSON.stringify(checks, null, 2), () => { })
+    this.ensureVscodeFolderExists(workspace)
+    this.writeDecoratorsFile(decoratorsFile, decorators)
   }
 
-  private checksFilePathForWorkspace(workspace: string) {
+  private decoratorsFilePath(workspace: string) {
     const vscodeFolder = vscodeFolderPathForWorkspace(workspace)
-    return path.join(vscodeFolder, "swissknifeCheckedFiles.json")
+
+    //TODO: remove in newer versions
+    const oldFile = path.join(vscodeFolder, this.OLD_DECORATORS_FILE)
+    const newFile = path.join(vscodeFolder, this.DECORATORS_FILE)
+    if (fs.existsSync(oldFile)) this.migrateDecoratorsFile(oldFile, newFile)
+
+    return newFile
   }
 
-  private ensureVscodeFolder(workspace: string) {
+  private ensureVscodeFolderExists(workspace: string) {
     const vscodeFolder = vscodeFolderPathForWorkspace(workspace)
 
     if (!Object.keys(this.vscodeFolderExistsForWorkspace).includes(workspace)) {
@@ -108,8 +165,25 @@ export class FileDecorator implements FileDecorationProvider {
       else this.vscodeFolderExistsForWorkspace[workspace] = true
     }
   }
+
+  private readDecoratorsFile(filePath: string) {
+    return JSON.parse(fs.readFileSync(filePath).toString()) || []
+  }
+
+  private writeDecoratorsFile(filePath: string, content: any) {
+    fs.writeFileSync(filePath, JSON.stringify(content, null, 2))
+  }
+
+  private migrateDecoratorsFile(oldFilePath: string, newFilePath: string) {
+    const content = this.readDecoratorsFile(oldFilePath)
+
+    const newFormat = content.map((c: string) => ({ file: c, decorator: FileDecorator.DECORATOR_CHECK }) as DecoratorEntry)
+    this.writeDecoratorsFile(newFilePath, newFormat)
+
+    fs.unlinkSync(oldFilePath)
+
+  }
 }
-function pathgetAllFilesInFolder(path: string) {
-  throw new Error('Function not implemented.')
-}
+
+
 

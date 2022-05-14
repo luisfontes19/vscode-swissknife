@@ -50,8 +50,16 @@ export function activate(ctx: vscode.ExtensionContext) {
 		vscode.commands.registerCommand('swissknife.copyPathWithLine', copyPathWithLine),
 
 		vscode.window.registerFileDecorationProvider(fileDecorator),
-		vscode.commands.registerCommand("swissknife.toggleCheckedFile", (args) => { fileDecorator.toggleCheckedFile(args) }),
-		vscode.commands.registerCommand("swissknife.toggleCheckedFolder", (args) => { fileDecorator.toggleCheckedFolder(args) }),
+		vscode.commands.registerCommand("swissknife.decorators.check", (args) => { fileDecorator.decorate(args, FileDecorator.DECORATOR_CHECK) }),
+		vscode.commands.registerCommand("swissknife.decorators.reject", (args) => { fileDecorator.decorate(args, FileDecorator.DECORATOR_REJECT) }),
+		vscode.commands.registerCommand("swissknife.decorators.eyes", (args) => { fileDecorator.decorate(args, FileDecorator.DECORATOR_EYES) }),
+		vscode.commands.registerCommand("swissknife.decorators.custom", (args, b) => {
+			vscode.window.showInputBox({ prompt: "Provide a custom decorator (1 character only)" }).then(dec => {
+				if (dec?.length !== 1) return vscode.window.showErrorMessage("Custom decorator must be 1 character long")
+
+				fileDecorator.decorate(args, dec)
+			})
+		})
 	]
 
 	ctx.subscriptions.push(...disposables)

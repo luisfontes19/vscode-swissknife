@@ -2,9 +2,15 @@
 
 All notable changes to the "swissknife" extension will be documented in this file.
 
+## 1.6.0
+
+* Extended explorer decorators. Now you can have by default a check, a cross and some eyes. You can also add your own decorators.
+
+
 ## 1.5.1
 
 * Changed text option name "Toggle check folder" to "Toggle: check folder" and "Toggle check tile" to "Toggle: check tile"
+* Fixed wrong line number of "Copy file path with line" option as vscode returns the line with 0 based index
 
 ## 1.5.0
 
