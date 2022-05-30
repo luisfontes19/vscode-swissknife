@@ -2,7 +2,7 @@
   "name": "vscode-swissknife",
   "displayName": "Swissknife",
   "description": "The developers swissknife. Do conversions and generations right out of vs code. Extendable with user scripts",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "author": "luisfontes19",
   "publisher": "luisfontes19",
   "license": "MIT",

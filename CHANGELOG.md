@@ -2,6 +2,10 @@
 
 All notable changes to the "swissknife" extension will be documented in this file.
 
+## 1.6.2
+
+* Fix insertRoutine with multi cursors (#7)
+
 ## 1.6.1
 
 * Fix decorator length with some unicode chars like specific emojis where length was bigger then 1
