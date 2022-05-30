@@ -44,8 +44,11 @@ export const insertRoutine = async (cb: TScriptInsertCallback): Promise<void> =>
 
   // apply all changes at once
   vscode.window.activeTextEditor?.edit(editor => {
-    for (const d of changeData)
-      vscode.window.activeTextEditor?.edit((editor: vscode.TextEditorEdit) => editor.insert(d.position, d.result))
+    for (const d of changeData) {
+      console.log(d.position)
+      editor.insert(d.position, d.result)
+    }
+
   })
 }
 
