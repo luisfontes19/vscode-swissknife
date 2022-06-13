@@ -19,7 +19,7 @@ export const rgbToHex = async (text: string): Promise<string> => {
     if (text.match(new RegExp(`^${reg.source}$`))) return convertToHex(text)
 
     // if the text has more then just a color, search for something like rgb(255,255,255) and replace it
-    text.match(new RegExp(`rgba?\(${reg.source}\)`, "g"))?.forEach(m => {
+    text.match(new RegExp(`rgba?\\\(${reg.source}\\\)`, "gi"))?.forEach(m => {
       const v = m.match(reg)![0]
       text = text.replace(m, convertToHex(v))
     })
@@ -40,7 +40,10 @@ export const hexToRgb = async (text: string): Promise<string> => {
     let rgb: Array<number> = []
     for (let i = 0; i < hex.length / 2; i++) {
       const n = hex.substring(i * 2, (i * 2) + 2)
-      rgb.push(parseInt(n, 16))
+
+      //in case we are using rgba, value should be between 0 and 1, so divide by 255
+      const c = i === 3 ? Math.round(parseInt(n, 16) / 255 * 100) / 100 : parseInt(n, 16)
+      rgb.push(c)
     }
 
     // rgba
