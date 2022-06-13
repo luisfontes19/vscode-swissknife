@@ -1,4 +1,5 @@
 import { IScript, ISwissKnifeContext } from "../Interfaces"
+import { leftPad } from './utils'
 
 export const rgbToHex = async (text: string): Promise<string> => {
   const rgbArray = text.includes(",") ? text.split(",") : text.split(" ")
@@ -9,8 +10,7 @@ export const rgbToHex = async (text: string): Promise<string> => {
     return "#" + rgbArray.map((c, i) => {
       let n = parseInt(c)
       if (i === 3) n = n * 255 // rgba
-
-      return n.toString(16)
+      return leftPad(n.toString(16), 2)
     }).join("").toUpperCase()
   }
   catch (error) {

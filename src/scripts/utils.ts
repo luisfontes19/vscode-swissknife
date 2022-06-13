@@ -136,6 +136,8 @@ export const _startServer = async (https: boolean) => {
   return Promise.resolve()
 }
 
+export const leftPad = (n: number | string, size: number) => ("0".repeat(size) + n.toString()).slice(-size)
+
 export const startServer = async (context: ISwissKnifeContext): Promise<void> => {
   return await _startServer(false)
 }
