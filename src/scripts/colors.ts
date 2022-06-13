@@ -60,7 +60,7 @@ const scripts: IScript[] = [
   {
 
     title: "RGB(a) To Hex",
-    detail: "Convert an RGB(A) (ex: 255,255,255) into Hex Color format",
+    detail: "Convert an RGB(A) like rgb(255,255,255) into Hex Color format",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(rgbToHex)
   },
   {
