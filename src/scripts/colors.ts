@@ -2,8 +2,7 @@ import { IScript, ISwissKnifeContext } from "../Interfaces"
 import { leftPad } from './utils'
 
 export const rgbToHex = async (text: string): Promise<string> => {
-  const reg1 = /rgba?\(\s?\d{1,3}\s?,\s?\d{1,3}\s?,\s?\d{1,3},?\s?\d{0,3}\)/g
-  const reg2 = /\s?\d{1,3}\s?,\s?\d{1,3}\s?,\s?\d{1,3}\s?,?\s?\d{0,3}/
+  const reg = /\s?\d{1,3}\s?,\s?\d{1,3}\s?,\s?\d{1,3}\s?,?\s?\d\.?\d{0,3}/
 
   const convertToHex = (str: string) => {
     const colorArray = str.split(",")
@@ -17,11 +16,11 @@ export const rgbToHex = async (text: string): Promise<string> => {
   try {
 
     // if the entire text is just an RGB(A) color, like 255,255,255 just convert it
-    if (text.match(new RegExp(`^${reg2.source}$`))) return convertToHex(text)
+    if (text.match(new RegExp(`^${reg.source}$`))) return convertToHex(text)
 
     // if the text has more then just a color, search for something like rgb(255,255,255) and replace it
-    text.match(reg1)?.forEach(m => {
-      const v = m.match(reg2)![0]
+    text.match(new RegExp(`rgba?\(${reg.source}\)`, "g"))?.forEach(m => {
+      const v = m.match(reg)![0]
       text = text.replace(m, convertToHex(v))
     })
   }
