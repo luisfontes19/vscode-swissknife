@@ -9,7 +9,7 @@ export const fromTimestamp = async (text: string): Promise<string> => {
   let intText = parseInt(text)
   intText = intText > 31536000000 ? intText : intText * 1000
 
-  return new Date(intText * 1000).toUTCString()
+  return new Date(intText).toUTCString()
 }
 
 export const insertUtcDate = async (): Promise<string> => {
