@@ -1,4 +1,5 @@
 import { IScript, ISwissKnifeContext } from "../Interfaces"
+import { readInputAsync } from '../utils'
 
 export const toLowerCase = async (text: string): Promise<string> => {
   return text.toLowerCase()
@@ -12,12 +13,14 @@ export const toCamelCase = async (text: string): Promise<string> => {
   return text.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase())
 }
 
+export const _joinLines = (text: string, replace: string): string => {
+  return text.replace(/\n/g, replace)
+}
+
 export const joinLines = async (text: string, context: ISwissKnifeContext): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    context.vscode.window.showInputBox({ prompt: "What do you want to delimit the lines with? (press enter for none)" }).then(answer => {
-      resolve(text.replace(/\n/g, answer || ""))
-    })
-  })
+
+  const answer = await readInputAsync("What do you want to delimit the lines with? (press enter for none)")
+  return _joinLines(text, answer || "")
 }
 
 export const sortAlphabetically = async (text: string, context: ISwissKnifeContext): Promise<string> => {

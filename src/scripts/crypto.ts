@@ -6,8 +6,8 @@ import { ec } from 'elliptic'
 import * as HashIdentifier from 'hash-identifier'
 // @ts-ignore TODO: ADD TYPES
 import * as selfsigned from 'selfsigned'
-import * as vscode from 'vscode'
 import { IScript, ISwissKnifeContext } from '../Interfaces'
+import { readInputAsync } from '../utils'
 import request = require('request')
 
 // export let CRYPTO_CURRENCIES: string[] = [];
@@ -61,19 +61,18 @@ export const bip39 = () => {
 //   return bcrypt.hash(text, rounds);
 // };
 
-export const _selfSignedCert = (): Promise<any> => {
-  return new Promise((resolve, reject) => {
-    vscode.window.showInputBox({ prompt: "What's the domain to generate the certificate to?" }).then(domain => {
-      const attrs = [{ name: 'commonName', value: domain }]
-      resolve(selfsigned.generate(attrs, { days: 365, keySize: 2048 }))
-    })
-  })
+export const _selfSignedCert = (domain: string): any => {
+  const attrs = [{ name: 'commonName', value: domain }]
+  return selfsigned.generate(attrs, { days: 365, keySize: 2048 })
 }
 
 export const selfSignedCert = async (context: ISwissKnifeContext): Promise<string> => {
-  const pems = await _selfSignedCert()
-  return (`${pems.cert}\n\n\n\n\n\n${pems.private}\n\n\n\n\n\n${pems.public}`)
+
+  const domain = await readInputAsync("What's the domain to generate the certificate to?")
+  const pems = _selfSignedCert(domain || "localhost")
+  return `${pems.cert}\n\n\n\n\n\n${pems.private}\n\n\n\n\n\n${pems.public}`
 }
+
 
 // export const cryptoPrice = async (text: string, context: ISwissKnifeContext): Promise<string> => {
 //   const reg = /([\d\.,]+)\s?(\w{3,5}) to (\w{3,5})/;

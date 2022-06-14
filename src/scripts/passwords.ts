@@ -1,6 +1,7 @@
 import * as crypto from 'crypto'
 import * as zxcvbn from 'zxcvbn'
 import { IScript, ISwissKnifeContext } from '../Interfaces'
+import { readInputAsync } from '../utils'
 
 
 export const checkPassword = async (text: string): Promise<string> => {
@@ -40,20 +41,20 @@ export const generateSecureCharCode = (): number => {
 
 }
 
+export const _generatePassword = (size: number) => {
+  let charCodes: number[] = []
+  for (let i = 0; i < size; i++)
+    charCodes.push(generateSecureCharCode())
+
+  return String.fromCharCode(...charCodes)
+}
+
 export const generatePassword = async (context: ISwissKnifeContext): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    context.vscode.window.showInputBox({ prompt: "How many character do you want in the password? (default 20)\n" }).then(answer => {
 
-      let size = 20
-      if (answer) size = parseInt(answer)
+  const answer = await readInputAsync("How many character do you want in the password? (default 20)\n")
+  const size = answer ? parseInt(answer) : 20
 
-      let charCodes: number[] = []
-      for (let i = 0; i < size; i++)
-        charCodes.push(generateSecureCharCode())
-
-      resolve(String.fromCharCode(...charCodes))
-    })
-  })
+  return _generatePassword(size)
 }
 
 

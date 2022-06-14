@@ -14,3 +14,9 @@ export const getAllFilesInFolder = (dir: string): string[] => {
     return isDirectory ? [...files, name, ...getAllFilesInFolder(name)] : [...files, name]
   }, [])
 }
+
+export const readInputAsync = async (prompt: string): Promise<string | undefined> => {
+  return new Promise((resolve, reject) => {
+    vscode.window.showInputBox({ prompt }).then(answer => resolve(answer))
+  })
+}

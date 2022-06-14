@@ -2,6 +2,7 @@
 import * as request from 'request'
 import * as vscode from 'vscode'
 import { IScript, ISwissKnifeContext } from '../Interfaces'
+import { readInputAsync } from '../utils'
 import { _selfSignedCert } from './crypto'
 import { fromBase64 } from './encodings'
 import { fromString, toFetch } from './lib/requestUtils'
@@ -66,32 +67,38 @@ export const requestToFetch = async (str: string): Promise<string> => {
   return toFetch(parsedRequest)
 }
 
+export const _loremIpsum = (nWords: number): string => {
+  let li = ""
+  if (Math.floor(Math.random() * 5)) {
+    //To throw Lorem ipsum some times :)
+    li = "Lorem ipsum "
+    nWords -= 2
+  }
+
+  for (let i = 0; i < nWords; i++) {
+    const n = Math.floor(Math.random() * words.length)
+    li += words[n] + " "
+  }
+
+  return li
+}
 
 export const loremIpsum = async (context: ISwissKnifeContext): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    context.vscode.window.showInputBox({ prompt: "How many words do you want? (default 30)\n" }).then(answer => {
-      let nWords = 30
-      if (answer) nWords = parseInt(answer)
+  const answer = await readInputAsync("How many words do you want? (default 30)\n")
+  const nWords = answer ? parseInt(answer) : 30
 
-      let li = ""
-      if (Math.floor(Math.random() * 5)) {
-        //To throw Lorem ipsum some times :)
-        li = "Lorem ipsum "
-        nWords -= 2
-      }
-
-      for (let i = 0; i < nWords; i++) {
-        const n = Math.floor(Math.random() * words.length)
-        li += words[n] + " "
-      }
-
-      resolve(li)
-    })
-  })
+  return _loremIpsum(nWords)
 }
 
 
 export const _startServer = async (https: boolean) => {
+  const getDomain = async (): Promise<string | undefined> => {
+    return new Promise((resolve, reject) => {
+      vscode.window.showInputBox({ prompt: "What's the domain to generate the certificate to?" }).then(domain => resolve(domain))
+    })
+
+  }
+
   if (Server.exists()) {
     vscode.window.showErrorMessage("Server already running, please stop it first")
     return Promise.resolve()
@@ -100,7 +107,8 @@ export const _startServer = async (https: boolean) => {
   let key: string, cert: string
 
   if (https) {
-    const pems = await _selfSignedCert()
+    const domain = (await getDomain()) || "localhost"
+    const pems = await _selfSignedCert(domain)
     key = pems.private
     cert = pems.cert
   }
