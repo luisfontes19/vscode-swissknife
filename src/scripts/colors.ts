@@ -8,7 +8,11 @@ export const rgbToHex = async (text: string): Promise<string> => {
     const colorArray = str.split(",")
     return "#" + colorArray.map((c, i) => {
       let n = parseInt(c)
-      if (i === 3) n = n * 255 // rgba
+      if (i === 3) {  // rgba
+        n = parseFloat(c)
+        n = Math.round(n * 255)
+      }
+
       return leftPad(n.toString(16), 2)
     }).join("").toUpperCase()
   }
