@@ -3,7 +3,7 @@ import { countChars, countWords } from '../../scripts/count'
 
 suite('[Scripts] Count', () => {
 
-  suite('[Scripts] Count - countWords', () => {
+  suite('countWords', () => {
 
     test('Should count words', async () => {
       let text = `do enim duis dolore ad nostrud officia laboris mollit esse adipisicing ut ex aliquip ex et in dolor nostrud deserunt`
@@ -19,7 +19,7 @@ suite('[Scripts] Count', () => {
     })
   })
 
-  suite('[Scripts] Count - countChars', () => {
+  suite('countChars', () => {
 
     test('Should count chars', async () => {
       let text = `12345 789 . 11 12 a e c v t `

@@ -3,7 +3,7 @@ import { hexToRgb, rgbToHex } from '../../scripts/colors'
 
 suite('[Scripts] Colors', () => {
 
-  suite('[Scripts] Colors - rgbToHex', () => {
+  suite('rgbToHex', () => {
 
     test('Should convert RGB TO HEX', async () => {
       const text = `rgb(67, 255, 100)`
@@ -31,7 +31,7 @@ suite('[Scripts] Colors', () => {
     })
   })
 
-  suite('[Scripts] Colors - hexToRgb', () => {
+  suite('hexToRgb', () => {
 
     test('Should convert hex to rgb', async () => {
       const text = `#FFFFFF`
