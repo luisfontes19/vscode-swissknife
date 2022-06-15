@@ -119,7 +119,7 @@
     "watch": "tsc -watch -p ./",
     "test": "npm run compile && node out/test/runTest.js",
     "tag": "git tag v$(node -e \"console.log(require('./package.json').version)\")",
-    "publish": "npm run bundle && vsce package && vsce publish && npm run tag && git push origin master"
+    "publish": "npm run test && npm run bundle && vsce package && vsce publish && npm run tag && git push origin master"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
