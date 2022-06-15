@@ -1,4 +1,5 @@
 import { IScript, ISwissKnifeContext } from '../Interfaces'
+import { leftPad } from './utils'
 
 export const toBase64 = async (str: string): Promise<string> => {
   return Buffer.from(str, 'utf-8').toString("base64")
@@ -13,7 +14,7 @@ export const fromHex = async (str: string): Promise<string> => {
 }
 
 export const toHex = async (str: string): Promise<string> => {
-  return Buffer.from(str, 'utf-8').toString("hex")
+  return Buffer.from(str, 'utf-8').toString("hex").toUpperCase()
 }
 
 export const toHTMLEncodeAll = async (str: string): Promise<string> => {
@@ -40,7 +41,7 @@ export const fullUrlEncode = async (str: string): Promise<string> => {
 }
 
 export const toBinary = async (str: string): Promise<string> => {
-  return str.split("").map(c => c.charCodeAt(0).toString(2)).join(" ")
+  return str.split("").map(c => leftPad(c.charCodeAt(0).toString(2), 8)).join(" ")
 }
 
 export const fromBinary = async (str: string): Promise<string> => {
@@ -55,12 +56,14 @@ export const toMorseCode = async (str: string): Promise<string> => {
     "h": "....", "i": "..", "j": ".---", "k": "-.-", "l": ".-..", "m": "--", "n": "-.", "o": "---", "p": ".--.",
     "q": "--.-", "r": ".-.", "s": "...", "t": "-", "u": "..-", "v": "...-", "w": ".--", "x": "-..-",
     "y": "-.--", "z": "--..", "1": ".----", "2": "..---", "3": "...--", "4": "....-", "5": ".....", "6": "-....",
-    "7": "--...", "8": "---..", "9": "----.", "0": "-----", ".": ".-.-.-", ",": "--..--", "?": "..--..", "/": "-..-."
+    "7": "--...", "8": "---..", "9": "----.", "0": "-----", ".": ".-.-.-", ",": "--..--", "?": "..--..", "/": "-..-.",
+    "!": "-.-.--", "\"": ".-..-.", "$": "...-..-", "&": ".-...", "(": "-.--.", ")": "-.--.-", "=": "-...-", "'": ".----.",
+    "+": ".-.-.", "-": "-....-", "_": "..--.-", ";": "-.-.-.", ":": "---..."
   }
 
   return str.toLowerCase().split("").map(c => {
     return convertion[c] || c
-  }).join("")
+  }).join(" ")
 }
 
 //best article ever -> https://dmitripavlutin.com/what-every-javascript-developer-should-know-about-unicode/
