@@ -4,6 +4,11 @@ All notable changes to the "swissknife" extension will be documented in this fil
 
 ## 1.6.2
 
+* Multiple bug fixes
+* Added unit tests for some of the scripts
+
+## 1.6.2
+
 * Fix insertRoutine with multi cursors (#7)
 
 ## 1.6.1
