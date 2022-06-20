@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 export interface IScriptQuickPickItem {
-    label: string
+    title: string
     alwaysShow: boolean
     detail: string
     cb: TCallback

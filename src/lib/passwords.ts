@@ -1,10 +1,8 @@
 import * as crypto from 'crypto'
 import * as zxcvbn from 'zxcvbn'
-import { IScript, ISwissKnifeContext } from '../Interfaces'
-import { readInputAsync } from '../utils'
 
 
-export const checkPassword = async (text: string): Promise<string> => {
+export const checkPassword = (text: string): string => {
   const result = zxcvbn(text)
 
   return `Password: ${text}\n` +
@@ -20,7 +18,6 @@ export const checkPassword = async (text: string): Promise<string> => {
 const _generateCharCode = (from: number, to: number): number => {
   return ((crypto.randomBytes(1)[0]) % to) + from
 }
-
 
 // fix module bias, using module to get a number won't get uniform numbers, there's a bias
 // we fix it with this logic
@@ -41,34 +38,10 @@ export const generateSecureCharCode = (): number => {
 
 }
 
-export const _generatePassword = (size: number) => {
+export const generatePassword = (size: number) => {
   let charCodes: number[] = []
   for (let i = 0; i < size; i++)
     charCodes.push(generateSecureCharCode())
 
   return String.fromCharCode(...charCodes)
 }
-
-export const generatePassword = async (context: ISwissKnifeContext): Promise<string> => {
-
-  const answer = await readInputAsync("How many character do you want in the password? (default 20)\n")
-  const size = answer ? parseInt(answer) : 20
-
-  return _generatePassword(size)
-}
-
-
-const scripts: IScript[] = [
-  {
-    title: "Password strength",
-    detail: "Check the strength of a password (using zxcvbn)",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(checkPassword)
-  },
-  {
-    title: "Generate Password",
-    detail: "Generates a secure, strong password",
-    cb: (context: ISwissKnifeContext) => context.insertRoutine(generatePassword)
-  },
-]
-
-export default scripts

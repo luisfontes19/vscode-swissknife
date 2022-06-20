@@ -122,4 +122,4 @@ const scripts = [
 exports.default = scripts;
 ```
 
-The best place to see examples is to check the [native scripts](https://github.com/luisfontes19/vscode-swissknife/tree/master/src/scripts) bundled with the extension.
+The best place to see examples is to check the [native scripts](https://github.com/luisfontes19/vscode-swissknife/tree/master/src/scripts.ts) bundled with the extension.

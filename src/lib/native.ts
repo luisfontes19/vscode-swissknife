@@ -1,6 +1,5 @@
-import { IScript, ISwissKnifeContext } from "../Interfaces"
 
-export const scriptTemplateJs = async (): Promise<string> => {
+export const scriptTemplateJs = (): string => {
   return `Object.defineProperty(exports, "__esModule", { value: true });
 
 
@@ -47,7 +46,7 @@ exports.default = scripts;`
 }
 
 
-export const scriptTemplateTs = async (): Promise<string> => {
+export const scriptTemplateTs = (): string => {
   return `import { IScript, ISwissKnifeContext } from '../Interfaces';
 
 export const doSomething = async (text: string, context: ISwissKnifeContext): Promise<string> => {
@@ -84,18 +83,3 @@ const scripts: IScript[] = [
 
 export default scripts;`
 }
-
-const scripts: IScript[] = [
-  {
-    title: "New Swissknife Script (JS)",
-    detail: "Generates a boilerplate code for a Swissknife script",
-    cb: (context: ISwissKnifeContext) => context.insertRoutine(scriptTemplateJs)
-  },
-  {
-    title: "New Swissknife Script (TS)",
-    detail: "Generates a boilerplate Typescript code for a Swissknife script (needs to be transpiled)",
-    cb: (context: ISwissKnifeContext) => context.insertRoutine(scriptTemplateTs)
-  },
-]
-
-export default scripts

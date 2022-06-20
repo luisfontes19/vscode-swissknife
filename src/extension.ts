@@ -6,20 +6,21 @@ import { Uri } from 'vscode'
 import { informationRoutine, insertRoutine, replaceRoutine } from './editorOperations'
 import { FileDecorator } from './fileDecorator'
 import { IScript, IScriptQuickPickItem, ISwissKnifeContext } from './Interfaces'
-import * as colors from './scripts/colors'
-import * as count from './scripts/count'
-import * as crypto from './scripts/crypto'
-import * as encodings from './scripts/encodings'
-import * as generators from './scripts/generators'
-import * as requestUtils from './scripts/lib/requestUtils'
-import * as server from './scripts/lib/server'
-import * as markdown from './scripts/markdown'
-import * as native from './scripts/native'
-import * as passwords from './scripts/passwords'
-import * as textBasic from './scripts/textBasic'
-import * as time from './scripts/time'
-import * as utils from './scripts/utils'
-import * as yaml from './scripts/yaml'
+import * as colors from './lib/colors'
+import * as count from './lib/count'
+import * as crypto from './lib/crypto'
+import * as encodings from './lib/encodings'
+import * as generators from './lib/generators'
+import * as markdown from './lib/markdown'
+import * as native from './lib/native'
+import * as passwords from './lib/passwords'
+import * as requestUtils from './lib/requestUtils'
+import * as server from './lib/server'
+import * as textBasic from './lib/textBasic'
+import * as time from './lib/time'
+import * as utils from './lib/utils'
+import * as yaml from './lib/yaml'
+import { default as _scripts } from './scripts'
 import { relativePathForUri } from './utils'
 
 export const nativeModules = { colors, count, crypto, encodings, generators, markdown, native, passwords, textBasic, time, utils, lib: { requestUtils, server }, yaml }
@@ -47,7 +48,7 @@ export function activate(ctx: vscode.ExtensionContext) {
 	loadScripts().then(() => {
 		// So that i can print a markdown table with the scripts to include in the readme :) 
 		if (ctx.extensionMode === vscode.ExtensionMode.Development)
-			listScriptsTable()
+			printScriptsTable()
 
 	})
 
@@ -75,13 +76,14 @@ export function activate(ctx: vscode.ExtensionContext) {
 	ctx.subscriptions.push(...disposables)
 }
 
-const listScriptsTable = async () => {
+const printScriptsTable = async () => {
 	let data = ";;\n" //empty headers
+	const sortedScripts = internalScripts.sort((a, b) => a.label.localeCompare(b.label))
 
-	for (let i = 0; i < internalScripts.length; i += 3)
-		data += `${internalScripts[i]?.label};${internalScripts[i + 1]?.label || ""};${internalScripts[i + 2]?.label || ""}\n`
+	for (let i = 0; i < sortedScripts.sort().length; i += 3)
+		data += `${sortedScripts[i]?.label};${sortedScripts[i + 1]?.label || ""};${sortedScripts[i + 2]?.label || ""}\n`
 
-	console.log(await markdown._fromCsv(data, ";"))
+	console.log(await markdown.fromCsv(data, ";"))
 }
 
 // show swissknife's script launcher and event to handle script selection
@@ -117,7 +119,7 @@ const loadUserScripts = async (clearCache: boolean) => {
 	const matches = glob.sync(path.join(userScriptsFolder, "/**/*.js"))
 	for (let i = 0; i < matches.length; i++) {
 		const modulePath = matches[i]
-		console.log("[SWISSKNIFE] Queueing script " + modulePath)
+		console.log("[SWISSKNIFE] Queueing scripts module" + modulePath)
 
 		try {
 			if (clearCache) delete require.cache[require.resolve(modulePath)]
@@ -125,31 +127,34 @@ const loadUserScripts = async (clearCache: boolean) => {
 
 			//add loaded user script to the context var, to be accessible in other scripts
 			const moduleName = path.basename(modulePath).toString().replace(new RegExp(`${path.extname(modulePath)}$`), "") //remove extension from file name
-			extensionContext.modules[moduleName] = mod[0]
+
+
+			// if a module doesn't override an existing module we add it, otherwise we will append the scripts
+			const newModule = extensionContext.modules[moduleName] === undefined
+			if (newModule)
+				extensionContext.modules[moduleName] = mod[0]
 
 			const moduleScripts = createScriptsFromModule(mod[0])
 			scripts = [...scripts, ...moduleScripts]
 
+			// if a module with the same name already exists
+			// lets just push the new scripts to it
+			if (!newModule)
+				extensionContext.modules[moduleName] = { ...extensionContext.modules[moduleName], ...mod[0] }
+
 		} catch (ex: any) {
 			console.log("[SWISSKNIFE]", ex.message)
 		}
-	};
+	}
 
 	return scripts
 }
 
-const loadInternalScripts = () => {
-	let scripts: IScriptQuickPickItem[] = []
-	//load internal scripts first, from modules
-	Object.keys(nativeModules).forEach((k, n) => {
-		if (k !== "lib" && k !== "userScripts") { //if so its not a script module...
-			const m = Object.values(modules)[n]
-			const moduleScripts = createScriptsFromModule(m)
-			scripts = [...scripts, ...moduleScripts]
-		}
+const loadInternalScripts = (): IScriptQuickPickItem[] => {
+	return _scripts.map(s => {
+		const item: IScriptQuickPickItem = { alwaysShow: true, cb: s.cb, detail: s.detail, label: s.title }
+		return item
 	})
-
-	return scripts
 }
 
 // A module is a file that contains multiple scripts

@@ -1,7 +1,6 @@
-import { IScript, ISwissKnifeContext } from "../Interfaces"
 import { leftPad } from './utils'
 
-export const rgbToHex = async (text: string): Promise<string> => {
+export const rgbToHex = (text: string): string => {
   const reg = /\s?\d{1,3}\s?,\s?\d{1,3}\s?,\s?\d{1,3}\s?,?\s?\d\.?\d{0,3}/
 
   const convertToHex = (str: string) => {
@@ -34,7 +33,7 @@ export const rgbToHex = async (text: string): Promise<string> => {
 }
 
 
-export const hexToRgb = async (text: string): Promise<string> => {
+export const hexToRgb = (text: string): string => {
   const matches = text.match(/#?[0-9A-F]{8}|#?[0-9A-F]{6}/ig)
 
   const convertToHex = (hex: string) => {
@@ -60,22 +59,3 @@ export const hexToRgb = async (text: string): Promise<string> => {
 
   return text
 }
-
-
-const scripts: IScript[] = [
-  {
-
-    title: "RGB(a) To Hex",
-    detail: "Convert an RGB(A) like rgb(255,255,255) into Hex Color format",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(rgbToHex)
-  },
-  {
-
-    title: "Hex to RGB",
-    detail: "Convert an Hex Color (ex #FFFFFF) into RGB(A)",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(hexToRgb)
-  },
-
-]
-
-export default scripts

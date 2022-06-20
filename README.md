@@ -16,27 +16,27 @@ Swissknife is the developers' toolbox. It provides a set of features (scripts) t
 ![Demo](data/demo.gif)
 
 ## Some of the available scripts
-|                             |                            |                                         |
-| --------------------------- | -------------------------- | --------------------------------------- |
-| RGB(a) To Hex               | Hex to RGB                 | Count words                             |
-| Count characters            | Md5 hash                   | SHA1 hash                               |
-| SHA256 hash                 | SHA512 hash                | Bip39 Mnemonic                          |
-| RSA Key pair                | Self Signed Certificate    | Identify hash                           |
-| To Morse code               | Unicode decode             | Unicode encode (js format)              |
-| Base64 encode               | Base64 decode              | Hex decode                              |
-| Hex encode                  | Quoted Printable Decode    | Url Encode                              |
-| Url Encode (All Characters) | Url Decode                 | HTML Encode (ALL)                       |
-| Text To Binary              | Binary To Text             | UUIDv4                                  |
-| Random String               | CSV to Markdown            | Markdown to HTML                        |
-| New Swissknife Script (JS)  | New Swissknife Script (TS) | Password strength                       |
-| Generate Password           | To Lower Case              | To Upper Case                           |
-| Capitalize                  | To Camel Case              | Join lines                              |
-| Sort Lines                  | Date to Timestamp          | Timestamp to Date                       |
-| UTC DateTime                | Local DateTime             | JWT Decode                              |
-| Request to fetch            | Lorem Ipsum                | Unix/Linux Permission To Human Readable |
-| Url Shorten                 | Url Unshorten (url expand) | Text to String                          |
-| Start Local HTTP Server     | Start Local HTTPS Server   | Stop HTTP Server                        |
-| Pick random                 | JSON to YAML               | YAML to JSON                            |
+|                                         |                            |                            |
+| --------------------------------------- | -------------------------- | -------------------------- |
+| Base64 decode                           | Base64 encode              | Binary To Text             |
+| Bip39 Mnemonic                          | Capitalize                 | Count characters           |
+| Count words                             | CSV to Markdown            | Date to Timestamp          |
+| Generate Password                       | Hex decode                 | Hex encode                 |
+| Hex to RGB                              | HTML Encode (ALL)          | Identify hash              |
+| Join lines                              | JSON to YAML               | JWT Decode                 |
+| Local DateTime                          | Lorem Ipsum                | Markdown to HTML           |
+| Md5 hash                                | New Swissknife Script (JS) | New Swissknife Script (TS) |
+| Password strength                       | Pick random line           | Quoted Printable Decode    |
+| Random String                           | Request to fetch           | RGB(a) To Hex              |
+| RSA Key pair                            | Self Signed Certificate    | SHA1 hash                  |
+| SHA256 hash                             | SHA512 hash                | Sort Lines                 |
+| Start Local HTTP Server                 | Start Local HTTPS Server   | Stop HTTP Server           |
+| Text To Binary                          | Text to String (Escape)    | Timestamp to Date          |
+| To Camel Case                           | To Lower Case              | To Morse code              |
+| To Upper Case                           | Unicode decode             | Unicode encode (js format) |
+| Unix/Linux Permission To Human Readable | Url Decode                 | Url Encode                 |
+| Url Encode (All Characters)             | Url Shorten                | Url Unshorten (url expand) |
+| UTC DateTime                            | UUIDv4                     | YAML to JSON               |
 
 
 ## Usage

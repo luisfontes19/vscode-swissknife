@@ -1,4 +1,3 @@
-import { IScript, ISwissKnifeContext } from "../Interfaces"
 
 //type for showdown was getting errors :) 
 const showdown = require('showdown')
@@ -6,7 +5,7 @@ const showdown = require('showdown')
 
 //adapted from https://github.com/IvanMathy/Boop/blob/0e7864b30e83d69283e081d302b7bb66aeff4cfb/Scripts/convertToMarkdownTable.js
 //All credits to 'xshoji'
-export const _fromCsv = async (input: string, delimiter: string | undefined = undefined): Promise<string> => {
+export const fromCsv = (input: string, delimiter: string | undefined = undefined): string => {
 
   const list = input.trim().replace(/^(\r?\n)+$/g, "\n").split("\n").map(v => v.replace(/^\||\|$/g, ""))
 
@@ -47,24 +46,7 @@ export const _fromCsv = async (input: string, delimiter: string | undefined = un
   return formattedTableElements.map(record => "| " + record.join(" | ") + " |").join("\n")
 }
 
-export const fromCsv = async (input: string): Promise<string> => _fromCsv(input)
-
-export const toHtml = async (input: string): Promise<string> => {
+export const toHtml = (input: string): string => {
   const converter = new showdown.Converter()
   return converter.makeHtml(input)
 }
-
-const scripts: IScript[] = [
-  {
-    title: "CSV to Markdown",
-    detail: "Generates a markdown table from the supplied CSV",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(fromCsv)
-  },
-  {
-    title: "Markdown to HTML",
-    detail: "Converts Markdown to renderable HTML code",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(toHtml)
-  },
-]
-
-export default scripts
