@@ -27,6 +27,8 @@ export const modules = { ...nativeModules }
 export const extensionContext: ISwissKnifeContext = { insertRoutine, replaceRoutine, informationRoutine, vscode, modules }
 
 let scripts: IScriptQuickPickItem[] = []
+let internalScripts: IScriptQuickPickItem[] = []
+let userScripts: IScriptQuickPickItem[] = []
 let context: vscode.ExtensionContext
 let extensionFolder: string
 let userScriptsFolder: string
@@ -41,7 +43,13 @@ export function activate(ctx: vscode.ExtensionContext) {
 	fileDecorator = new FileDecorator()
 
 	checkUserScriptsFolder()
-	loadScripts()
+
+	loadScripts().then(() => {
+		// So that i can print a markdown table with the scripts to include in the readme :) 
+		if (ctx.extensionMode === vscode.ExtensionMode.Development)
+			listScriptsTable()
+
+	})
 
 	const disposables = [
 		vscode.commands.registerCommand('swissknife.show', show),
@@ -67,6 +75,15 @@ export function activate(ctx: vscode.ExtensionContext) {
 	ctx.subscriptions.push(...disposables)
 }
 
+const listScriptsTable = async () => {
+	let data = ";;\n" //empty headers
+
+	for (let i = 0; i < internalScripts.length; i += 3)
+		data += `${internalScripts[i]?.label};${internalScripts[i + 1]?.label || ""};${internalScripts[i + 2]?.label || ""}\n`
+
+	console.log(await markdown._fromCsv(data, ";"))
+}
+
 // show swissknife's script launcher and event to handle script selection
 const show = () => {
 	vscode.window.showQuickPick<IScriptQuickPickItem>(scripts).then((selectedItem: IScriptQuickPickItem | undefined) => {
@@ -80,9 +97,7 @@ const show = () => {
 }
 
 // Reload scripts. Necessary for developing user scripts
-const reload = () => {
-	loadScripts(true)
-}
+const reload = () => loadScripts(true)
 
 const openUserScriptsFolder = () => {
 	vscode.env.openExternal(Uri.file(userScriptsFolder))
@@ -90,7 +105,9 @@ const openUserScriptsFolder = () => {
 
 // clear cache will only work for user scripts
 const loadScripts = async (clearCache = false) => {
-	scripts = [...loadInternalScripts(), ...(await loadUserScripts(clearCache))]
+	internalScripts = loadInternalScripts()
+	userScripts = (await loadUserScripts(clearCache))
+	scripts = [...internalScripts, ...userScripts]
 }
 
 const loadUserScripts = async (clearCache: boolean) => {
