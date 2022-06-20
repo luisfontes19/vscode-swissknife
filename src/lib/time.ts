@@ -1,9 +1,9 @@
 
-export const toTimestamp = (text: string): string => {
+export const formattedDateToTimestamp = (text: string): string => {
   return (new Date(text).getTime() / 1000).toString()
 }
 
-export const fromTimestamp = (text: string): string => {
+export const timestampToFormattedDate = (text: string): string => {
   /* If timestamp is superior to the year 2969, let’s assume it is a milliseconds timestamp */
   let intText = parseInt(text)
   intText = intText > 31536000000 ? intText : intText * 1000

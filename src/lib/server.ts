@@ -2,7 +2,7 @@ import * as express from 'express'
 import * as http from 'http'
 import * as https from 'https'
 import * as vscode from 'vscode'
-import { fromExpressRequest } from './requestUtils'
+import { expressRequestToRawString } from './requestUtils'
 
 let server: any = undefined
 
@@ -22,7 +22,7 @@ export const start = (serverOptions: ServerConfig) => {
   const output = vscode.window.createOutputChannel("Swissknife Server")
 
   app.all("*", async (req: any, res: any) => {
-    output.append(fromExpressRequest(req) + "\n\n")
+    output.append(expressRequestToRawString(req) + "\n\n")
     res.send("VSCode Swissknife Rocks")
   })
 

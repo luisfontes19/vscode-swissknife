@@ -49,7 +49,7 @@ const filterAllowedHeaders = (headers: Record<string, string>) => {
 
 
 
-export const fromString = (content: string): Data => {
+export const parseRawRequest = (content: string): Data => {
 
   content = content.replace(/(\r\n|\n|\r)/gm, "\n")
   let firstNewLineIndex = content.indexOf("\n")
@@ -84,13 +84,13 @@ export const fromString = (content: string): Data => {
 
 }
 
-export const toFetch = (data: Data) => {
+export const rawRequestToJSFetch = (data: Data) => {
   const allowedHeaders = filterAllowedHeaders(data.headers)
   return "fetch('" + data.url + "', {credentials: 'include', method: '" + data.method + "', headers: " + JSON.stringify(allowedHeaders) + ", body:'" + data.body + "'})"
 }
 
 
-export const fromExpressRequest = (req: Request) => {
+export const expressRequestToRawString = (req: Request) => {
   let data = `${req.method.toUpperCase()} ${req.url} HTTP/1.1\n`
 
   if (req.headers)

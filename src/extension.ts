@@ -83,7 +83,7 @@ const printScriptsTable = async () => {
 	for (let i = 0; i < sortedScripts.sort().length; i += 3)
 		data += `${sortedScripts[i]?.label};${sortedScripts[i + 1]?.label || ""};${sortedScripts[i + 2]?.label || ""}\n`
 
-	console.log(await markdown.fromCsv(data, ";"))
+	console.log(await markdown.csvToMarkdown(data, ";"))
 }
 
 // show swissknife's script launcher and event to handle script selection

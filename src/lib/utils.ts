@@ -2,9 +2,9 @@
 import * as request from 'request'
 import * as vscode from 'vscode'
 import { readInputAsync } from '../utils'
-import { selfSignedCert } from './crypto'
-import { fromBase64 } from './encodings'
-import { fromString, toFetch } from './requestUtils'
+import { generateSelfSignedCertificate } from './crypto'
+import { base64ToText } from './encodings'
+import { parseRawRequest, rawRequestToJSFetch } from './requestUtils'
 import * as Server from './server'
 import { ServerConfig } from './server'
 
@@ -14,8 +14,8 @@ export const jwtDecode = (str: string): string => {
   if (parts.length !== 3) throw new Error("Invalid JWT Token")
 
 
-  var header = fromBase64(parts[0])
-  var payload = fromBase64(parts[1])
+  var header = base64ToText(parts[0])
+  var payload = base64ToText(parts[1])
   var signature = parts[2]
 
   try {
@@ -29,11 +29,11 @@ export const jwtDecode = (str: string): string => {
   } catch (err) { throw new Error("Error parsing JWT") }
 }
 
-export const textToString = (str: string): string => {
-  return JSON.stringify(textToString)
+export const escapeString = (str: string): string => {
+  return JSON.stringify(escapeString)
 }
 
-export const urlShortener = async (str: string): Promise<string> => {
+export const shortenUrl = async (str: string): Promise<string> => {
   return new Promise((resolve, reject) => {
     // the service is blacklisted in marketplace, trying to bypass it :D 
     request({ uri: "https://tin" + "yur" + "l.com/api-create.php?url=" + str, }, (err, httpResponse) => {
@@ -43,7 +43,7 @@ export const urlShortener = async (str: string): Promise<string> => {
   })
 }
 
-export const urlExpand = async (str: string): Promise<string> => {
+export const expandUrl = async (str: string): Promise<string> => {
 
   return new Promise((resolve, reject) => {
     request({ uri: str, followRedirect: false },
@@ -56,8 +56,8 @@ export const urlExpand = async (str: string): Promise<string> => {
 }
 
 export const requestToFetch = (str: string): string => {
-  const parsedRequest = fromString(str)
-  return toFetch(parsedRequest)
+  const parsedRequest = parseRawRequest(str)
+  return rawRequestToJSFetch(parsedRequest)
 }
 
 export const _startServer = async (https: boolean) => {
@@ -71,7 +71,7 @@ export const _startServer = async (https: boolean) => {
 
   if (https) {
     const domain = (await readInputAsync("What's the domain to generate the certificate to?")) || "localhost"
-    const pems = await selfSignedCert(domain)
+    const pems = await generateSelfSignedCertificate(domain)
     key = pems.private
     cert = pems.cert
   }
@@ -159,7 +159,7 @@ export const linuxPermissions = (permission: string): string => {
   return decoded
 }
 
-export const randomLine = (str: string): string => {
+export const pickRandomLine = (str: string): string => {
   const lines = str.split("\n")
   const n = Math.floor(Math.random() * lines.length)
   return lines[n]

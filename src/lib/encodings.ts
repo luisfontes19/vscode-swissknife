@@ -1,34 +1,34 @@
 import { leftPad } from './utils'
 
-export const toBase64 = (str: string): string => {
+export const textToBase64 = (str: string): string => {
   return Buffer.from(str, 'utf-8').toString("base64")
 }
 
-export const fromBase64 = (str: string): string => {
+export const base64ToText = (str: string): string => {
   return Buffer.from(str, 'base64').toString()
 }
 
-export const fromHex = (str: string): string => {
+export const hexToText = (str: string): string => {
   return Buffer.from(str, 'hex').toString()
 }
 
-export const toHex = (str: string): string => {
+export const textToHex = (str: string): string => {
   return Buffer.from(str, 'utf-8').toString("hex").toUpperCase()
 }
 
-export const toHTMLEncodeAll = (str: string): string => {
+export const htmlEncodeAllChars = (str: string): string => {
   return str.split("").map(c => `&#${c.charCodeAt(0)}`).join("")
 }
 
-export const toUrlEncode = (str: string): string => {
+export const urlEncode = (str: string): string => {
   return encodeURIComponent(str)
 }
 
-export const fromUrlEncode = (str: string): string => {
+export const urlDecode = (str: string): string => {
   return decodeURIComponent(str)
 }
 
-export const fullUrlEncode = (str: string): string => {
+export const urlEncodeAllChars = (str: string): string => {
   let encoded = ''
 
   for (let i = 0; i < str.length; i++) {
@@ -39,11 +39,11 @@ export const fullUrlEncode = (str: string): string => {
   return encoded
 }
 
-export const toBinary = (str: string): string => {
+export const textToBinary = (str: string): string => {
   return str.split("").map(c => leftPad(c.charCodeAt(0).toString(2), 8)).join(" ")
 }
 
-export const fromBinary = (str: string): string => {
+export const binaryToText = (str: string): string => {
   return str.replace(/\s/g, "").match(/[0-1]{8}/g)?.map(b => String.fromCharCode(parseInt(b, 2))).join("") || ""
 }
 
@@ -64,7 +64,7 @@ export const toMorseCode = (str: string): string => {
 }
 
 //best article ever -> https://dmitripavlutin.com/what-every-javascript-developer-should-know-about-unicode/
-export const fromUnicodeEscaped = (str: string): string => {
+export const unicodeDecode = (str: string): string => {
   const regex = /\\u\{(\w{1,6})\}|\\u(\w{1,6})/ //\w can improved
   return str.match(new RegExp(regex, "g"))?.map(m => {
     const finding = m.match(regex)!
@@ -74,7 +74,7 @@ export const fromUnicodeEscaped = (str: string): string => {
   }).join("") || ""
 }
 
-export const toUnicodeEscaped = (str: string): string => {
+export const unicodeEncode = (str: string): string => {
   return [...str].map(c => {
     const u = c.codePointAt(0)!.toString(16)
     return `\\u{${u}}`
@@ -83,7 +83,7 @@ export const toUnicodeEscaped = (str: string): string => {
 
 // From here: https://github.com/mathiasbynens/quoted-printable/blob/master/src/quoted-printable.js
 // And here: https://gist.github.com/MarcelloDiSimone/933a13c6a5b6458ce29d972644bb5892
-export const fromQuotedPrintable = (str: string): string => {
+export const quotedPrintableDecode = (str: string): string => {
   return str
     .replace(/[\t\x20]$/gm, '')
     .replace(/=(?:\r\n?|\n|$)/g, '')

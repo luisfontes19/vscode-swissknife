@@ -1,5 +1,5 @@
 import * as assert from 'assert'
-import { bip39, hashIdentifier, selfSignedCert, toMd5, toSha1, toSha256, toSha512 } from '../../lib/crypto'
+import { bip39, generateSelfSignedCertificate, hashIdentifier, toMd5, toSha1, toSha256, toSha512 } from '../../lib/crypto'
 
 suite('[Scripts] Crypto', () => {
 
@@ -36,7 +36,7 @@ suite('[Scripts] Crypto', () => {
   test('Should generate self signed certificate', () => {
 
     // TODO: CHECK DOMAIN IN CERT
-    const data = selfSignedCert("localhost")
+    const data = generateSelfSignedCertificate("localhost")
     assert(data.private.includes("-----BEGIN RSA PRIVATE KEY-----"))
     assert(data.cert.includes("-----BEGIN CERTIFICATE-----"))
     assert(data.public.includes("-----BEGIN PUBLIC KEY-----"))
@@ -51,7 +51,7 @@ suite('[Scripts] Crypto', () => {
       let hash = "0b64dca35a247169059ed51b0bbdf170"
       let res = hashIdentifier(hash)
 
-      assert(res.startsWith(hash + "\nIdentified Algorithms:\nMD5"))
+      assert(res[0], "MD5")
     })
 
     test('sha1', () => {
@@ -59,7 +59,7 @@ suite('[Scripts] Crypto', () => {
       let hash = "fedadff71ca0434beef9695b590bb49768988c75"
       let res = hashIdentifier(hash)
 
-      assert(res.startsWith(hash + "\nIdentified Algorithms:\nSHA-1"))
+      assert(res[0], "SHA-1")
     })
 
     test('sha256', () => {
@@ -67,7 +67,7 @@ suite('[Scripts] Crypto', () => {
       let hash = "2bfeca7b44d82aefb3e4c5f7a56fbb93966168891db0955f07436de70ea1a9bd"
       let res = hashIdentifier(hash)
 
-      assert(res.startsWith(hash + "\nIdentified Algorithms:\nSHA-256"))
+      assert(res[0], "SHA-256")
     })
   })
 

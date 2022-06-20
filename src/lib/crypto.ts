@@ -32,11 +32,12 @@ export const bip39 = () => {
   return { mnemonic, seed }
 }
 
-export const selfSignedCert = (domain: string): any => {
+export const generateSelfSignedCertificate = (domain: string): any => {
   const attrs = [{ name: 'commonName', value: domain }]
   return selfsigned.generate(attrs, { days: 365, keySize: 2048 })
 }
 
+//TODO: double check why i disabled this... does it drop a binary? does it create conflicts in the build?
 export const generateElipticKeypair = async (context: ISwissKnifeContext): Promise<string> => {
   const supportedCurves = ["secp256k1", "p192", "p224", "p256", "p384", "p521", "curve25519", "ed25519"]
 
@@ -48,14 +49,9 @@ export const generateElipticKeypair = async (context: ISwissKnifeContext): Promi
   return `Private key:${keypair.getPrivate("hex")}\nPublic Key:${keypair.getPublic(true, "hex")}`
 }
 
-export const hashIdentifier = (input: string): string => {
-  const res = HashIdentifier.checkAlgorithm(input)
-  input += res.length > 0 ? `\nIdentified Algorithms:\n${res.join("\n")}` : "\nCould not identify an hash algorithm"
+export const hashIdentifier = (input: string): string[] => HashIdentifier.checkAlgorithm(input)
 
-  return input
-}
-
-export const generateRSAKeyPair = (): string => {
+export const generateRSAKeyPair = () => {
   const res = crypto.generateKeyPairSync('rsa', {
     modulusLength: 4096,
     publicKeyEncoding: {
@@ -70,6 +66,6 @@ export const generateRSAKeyPair = (): string => {
 
   //TODO: open each in a new tab?
   //TODO: ask for size and password
-  return res.publicKey + "\n\n\n\n" + res.privateKey
+  return res
 }
 

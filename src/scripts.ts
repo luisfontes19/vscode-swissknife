@@ -1,16 +1,16 @@
 import { IScript, ISwissKnifeContext } from './Interfaces'
 import { hexToRgb, rgbToHex } from './lib/colors'
 import { countChars, countWords } from './lib/count'
-import { bip39, generateRSAKeyPair, hashIdentifier, selfSignedCert, toMd5, toSha1, toSha256, toSha512 } from './lib/crypto'
-import { fromBase64, fromBinary, fromHex, fromQuotedPrintable, fromUnicodeEscaped, fromUrlEncode, fullUrlEncode, toBase64, toBinary, toHex, toHTMLEncodeAll, toMorseCode, toUnicodeEscaped, toUrlEncode } from './lib/encodings'
+import { bip39, generateRSAKeyPair, generateSelfSignedCertificate, hashIdentifier, toMd5, toSha1, toSha256, toSha512 } from './lib/crypto'
+import { base64ToText, binaryToText, hexToText, htmlEncodeAllChars, quotedPrintableDecode, textToBase64, textToBinary, textToHex, toMorseCode, unicodeEncode, urlDecode, urlEncode, urlEncodeAllChars } from './lib/encodings'
 import { loremIpsum, randomString, uuidv4 } from './lib/generators'
-import { fromCsv, toHtml } from './lib/markdown'
+import { csvToMarkdown, markdownToHtml } from './lib/markdown'
 import { scriptTemplateJs, scriptTemplateTs } from './lib/native'
 import { checkPassword, generatePassword } from './lib/passwords'
 import { capitalize, joinLines, sortAlphabetically, toCamelCase, toLowerCase, toUpperCase } from './lib/textBasic'
-import { fromTimestamp, insertLocalDate, insertUtcDate, toTimestamp } from './lib/time'
-import { jwtDecode, linuxPermissions, randomLine, requestToFetch, startSecureServer, startServer, stopServer, textToString, urlExpand, urlShortener } from './lib/utils'
-import { fromYaml, toYaml } from './lib/yaml'
+import { formattedDateToTimestamp, insertLocalDate, insertUtcDate, timestampToFormattedDate } from './lib/time'
+import { escapeString, expandUrl, jwtDecode, linuxPermissions, pickRandomLine, requestToFetch, shortenUrl, startSecureServer, startServer, stopServer } from './lib/utils'
+import { jsonToYaml, yamlToJson } from './lib/yaml'
 import { readInputAsync } from './utils'
 
 // cb expects a callback with the following signature:
@@ -85,7 +85,10 @@ const scripts: IScript[] = [
   {
     title: "RSA Key pair",
     detail: "Generates RSA public and private keys",
-    cb: (context: ISwissKnifeContext) => context.insertRoutine(async () => generateRSAKeyPair())
+    cb: (context: ISwissKnifeContext) => context.insertRoutine(async () => {
+      const res = generateRSAKeyPair()
+      return res.publicKey + "\n\n\n\n" + res.privateKey
+    })
   },
   {
     title: "Self Signed Certificate",
@@ -93,7 +96,7 @@ const scripts: IScript[] = [
     cb: (context: ISwissKnifeContext) => context.insertRoutine(async (context: ISwissKnifeContext): Promise<string> => {
 
       const domain = await readInputAsync("What's the domain to generate the certificate to?")
-      const pems = selfSignedCert(domain || "localhost")
+      const pems = generateSelfSignedCertificate(domain || "localhost")
       return `${pems.cert}\n\n\n\n\n\n${pems.private}\n\n\n\n\n\n${pems.public}`
     }
     )
@@ -101,7 +104,12 @@ const scripts: IScript[] = [
   {
     title: "Identify hash",
     detail: "Tries to identify the algorithm that was used to generate the supplied hash",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => hashIdentifier(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (input: string) => {
+      const res = hashIdentifier(input)
+      input += res.length > 0 ? `\nIdentified Algorithms:\n${res.join("\n")}` : "\nCould not identify an hash algorithm"
+
+      return input
+    })
   },
 
   ////////////////////////////////////////////////////////////////////////////////////
@@ -115,67 +123,67 @@ const scripts: IScript[] = [
   {
     title: "Unicode decode",
     detail: "Decode unicode escaoed string. (ex: \\u00AA or \\u{00AA}",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => fromUnicodeEscaped(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => unicodeEncode(text))
   },
   {
     title: "Unicode encode (js format)",
     detail: "Converts text into unicode escaped charaters for javascript",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => toUnicodeEscaped(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => unicodeEncode(text))
   },
   {
     title: "Base64 encode",
     detail: "Convert text into base64 encoded string",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => toBase64(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => textToBase64(text))
   },
   {
     title: "Base64 decode",
     detail: "Decode base64 strings",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => fromBase64(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => base64ToText(text))
   },
   {
     title: "Hex decode",
     detail: "Convert an hex encoded string into readable text",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => fromHex(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => hexToText(text))
   },
   {
     title: "Hex encode",
     detail: "Convert a string tino hex encoded",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => toHex(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => textToHex(text))
   },
   {
     title: "Quoted Printable Decode",
     detail: "Decode a “Quoted Printable” (QP encoding) string",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => fromQuotedPrintable(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => quotedPrintableDecode(text))
   },
   {
     title: "Url Encode",
     detail: "Url Encode a string",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => toUrlEncode(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => urlEncode(text))
   },
   {
     title: "Url Encode (All Characters)",
     detail: "Url encode all characters in a string",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => fullUrlEncode(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => urlEncodeAllChars(text))
   },
   {
     title: "Url Decode",
     detail: "Url decode a string",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => fromUrlEncode(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => urlDecode(text))
   },
   {
     title: "HTML Encode (ALL)",
     detail: "Html encode all characters",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => toHTMLEncodeAll(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => htmlEncodeAllChars(text))
   },
   {
     title: "Text To Binary",
     detail: "Converts text to binary",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => toBinary(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => textToBinary(text))
   },
   {
     title: "Binary To Text",
     detail: "Converts binary to Text",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => fromBinary(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => binaryToText(text))
   },
 
   ////////////////////////////////////////////////////////////////////////////////////
@@ -216,12 +224,12 @@ const scripts: IScript[] = [
   {
     title: "CSV to Markdown",
     detail: "Generates a markdown table from the supplied CSV",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => fromCsv(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => csvToMarkdown(text))
   },
   {
     title: "Markdown to HTML",
     detail: "Converts Markdown to renderable HTML code",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => toHtml(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => markdownToHtml(text))
   },
 
   ////////////////////////////////////////////////////////////////////////////////////
@@ -305,12 +313,12 @@ const scripts: IScript[] = [
   {
     title: "Date to Timestamp",
     detail: "Convert a valid date into unix timestamp",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => toTimestamp(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => formattedDateToTimestamp(text))
   },
   {
     title: "Timestamp to Date",
     detail: "Converts a unix timestamp to UTC date",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => fromTimestamp(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => timestampToFormattedDate(text))
   },
   {
     title: "UTC DateTime",
@@ -345,17 +353,17 @@ const scripts: IScript[] = [
   {
     title: "Url Shorten",
     detail: "Shortens an URL",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(urlShortener)
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(shortenUrl)
   },
   {
     title: "Url Unshorten (url expand)",
     detail: "Converts a shorten URL into the full url",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => urlExpand(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => expandUrl(text))
   },
   {
     title: "Text to String (Escape)",
     detail: "Converts text to string, escaping necessary characters",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => textToString(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => escapeString(text))
   },
   {
     title: "Start Local HTTP Server",
@@ -375,7 +383,7 @@ const scripts: IScript[] = [
   {
     title: "Pick random line",
     detail: "One option per line, chooses one line at random",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => randomLine(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => pickRandomLine(text))
   },
 
   ////////////////////////////////////////////////////////////////////////////////////
@@ -384,12 +392,12 @@ const scripts: IScript[] = [
   {
     title: "JSON to YAML",
     detail: "Converts a JSON structure to YAML",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => toYaml(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => jsonToYaml(text))
   },
   {
     title: "YAML to JSON",
     detail: "Converts a YAML structure to JSON",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => fromYaml(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => yamlToJson(text))
   },
 ]
 

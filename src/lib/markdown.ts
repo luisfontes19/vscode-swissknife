@@ -5,7 +5,7 @@ const showdown = require('showdown')
 
 //adapted from https://github.com/IvanMathy/Boop/blob/0e7864b30e83d69283e081d302b7bb66aeff4cfb/Scripts/convertToMarkdownTable.js
 //All credits to 'xshoji'
-export const fromCsv = (input: string, delimiter: string | undefined = undefined): string => {
+export const csvToMarkdown = (input: string, delimiter: string | undefined = undefined): string => {
 
   const list = input.trim().replace(/^(\r?\n)+$/g, "\n").split("\n").map(v => v.replace(/^\||\|$/g, ""))
 
@@ -46,7 +46,7 @@ export const fromCsv = (input: string, delimiter: string | undefined = undefined
   return formattedTableElements.map(record => "| " + record.join(" | ") + " |").join("\n")
 }
 
-export const toHtml = (input: string): string => {
+export const markdownToHtml = (input: string): string => {
   const converter = new showdown.Converter()
   return converter.makeHtml(input)
 }
