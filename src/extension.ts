@@ -19,9 +19,10 @@ import * as passwords from './scripts/passwords'
 import * as textBasic from './scripts/textBasic'
 import * as time from './scripts/time'
 import * as utils from './scripts/utils'
+import * as yaml from './scripts/yaml'
 import { relativePathForUri } from './utils'
 
-export const nativeModules = { colors, count, crypto, encodings, generators, markdown, native, passwords, textBasic, time, utils, lib: { requestUtils, server } }
+export const nativeModules = { colors, count, crypto, encodings, generators, markdown, native, passwords, textBasic, time, utils, lib: { requestUtils, server }, yaml }
 export const modules = { ...nativeModules }
 export const extensionContext: ISwissKnifeContext = { insertRoutine, replaceRoutine, informationRoutine, vscode, modules }
 

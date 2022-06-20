@@ -133,6 +133,7 @@
     "@types/request": "^2.48.5",
     "@types/uuid": "^8.3.0",
     "@types/vscode": "^1.60.0",
+    "@types/yaml": "^1.9.7",
     "@types/zxcvbn": "^4.4.0",
     "@typescript-eslint/eslint-plugin": "^4.1.1",
     "@typescript-eslint/parser": "^4.1.1",
@@ -156,6 +157,7 @@
     "selfsigned": "^1.10.8",
     "showdown": "^1.9.1",
     "uuid": "^8.3.1",
+    "yaml": "^2.1.1",
     "zxcvbn": "^4.4.2"
   },
   "keywords": [
