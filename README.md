@@ -16,27 +16,27 @@ Swissknife is the developers' toolbox. It provides a set of features (scripts) t
 ![Demo](data/demo.gif)
 
 ## Some of the available scripts
-|                                         |                         |                            |
-|-----------------------------------------|-------------------------|----------------------------|
-| Base64 decode                           | Base64 encode           | Binary To Text             |
-| Bip39 Mnemonic                          | CSV to Markdown         | Count characters           |
-| Count words                             | Date to Timestamp       | Generate Password          |
-| HTML Encode (ALL)                       | Hex decode              | Hex encode                 |
-| Hex to RGB                              | Identify hash           | JWT Decode                 |
-| Join lines                              | Local DateTime          | Lorem Ipsum                |
-| Markdown to HTML                        | Md5 hash                | New Swissknife Script (JS) |
-| New Swissknife Script (TS)              | Password strength       | Pick random                |
-| Quoted Printable Decode                 | RGB To Hex              | RSA Key pair               |
-| Random String                           | Request to fetch        | SHA1 hash                  |
-| SHA256 hash                             | SHA512 hash             | Self Signed Certificate    |
-| Sort Lines                              | Start Local HTTP Server | Start Local HTTPS Server   |
-| Stop HTTP Server                        | Text To Binary          | Text to String             |
-| Timestamp to Date                       | To Camel Case           | To Lower Case              |
-| To Morse code                           | To Upper Case           | UTC DateTime               |
-| UUIDv4                                  | Unicode decode          | Unicode encode (js format) |
-| Unix/Linux Permission To Human Readable | Url Decode              | Url Encode                 |
-| Url Encode (All Characters)             | Url Shorten             | Url Unshorten (url expand) |
-|                                         |                         |                            |
+|                             |                            |                                         |
+| --------------------------- | -------------------------- | --------------------------------------- |
+| RGB(a) To Hex               | Hex to RGB                 | Count words                             |
+| Count characters            | Md5 hash                   | SHA1 hash                               |
+| SHA256 hash                 | SHA512 hash                | Bip39 Mnemonic                          |
+| RSA Key pair                | Self Signed Certificate    | Identify hash                           |
+| To Morse code               | Unicode decode             | Unicode encode (js format)              |
+| Base64 encode               | Base64 decode              | Hex decode                              |
+| Hex encode                  | Quoted Printable Decode    | Url Encode                              |
+| Url Encode (All Characters) | Url Decode                 | HTML Encode (ALL)                       |
+| Text To Binary              | Binary To Text             | UUIDv4                                  |
+| Random String               | CSV to Markdown            | Markdown to HTML                        |
+| New Swissknife Script (JS)  | New Swissknife Script (TS) | Password strength                       |
+| Generate Password           | To Lower Case              | To Upper Case                           |
+| Capitalize                  | To Camel Case              | Join lines                              |
+| Sort Lines                  | Date to Timestamp          | Timestamp to Date                       |
+| UTC DateTime                | Local DateTime             | JWT Decode                              |
+| Request to fetch            | Lorem Ipsum                | Unix/Linux Permission To Human Readable |
+| Url Shorten                 | Url Unshorten (url expand) | Text to String                          |
+| Start Local HTTP Server     | Start Local HTTPS Server   | Stop HTTP Server                        |
+| Pick random                 | JSON to YAML               | YAML to JSON                            |
 
 
 ## Usage
@@ -90,6 +90,6 @@ Due to a limitation in vscode extension system AFAIK, I can't allow users to ext
 
 ## Future Plans
 
-* Create unit tests, specially for the scripts
+* ~~Create unit tests, specially for the scripts~~
 * Start doing proper error handlings
 * Create a place for user contributed scripts
