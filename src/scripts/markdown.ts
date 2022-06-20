@@ -6,18 +6,21 @@ const showdown = require('showdown')
 
 //adapted from https://github.com/IvanMathy/Boop/blob/0e7864b30e83d69283e081d302b7bb66aeff4cfb/Scripts/convertToMarkdownTable.js
 //All credits to 'xshoji'
-export const fromCsv = async (input: string): Promise<string> => {
+export const _fromCsv = async (input: string, delimiter: string | undefined = undefined): Promise<string> => {
 
   const list = input.trim().replace(/^(\r?\n)+$/g, "\n").split("\n").map(v => v.replace(/^\||\|$/g, ""))
-  const delimiter = [`|`, `\t`, `","`, `,`].find(v => list[0].split(v).length > 1)
-  if (delimiter === `|`) {
-    // If input text is markdown table format, removes header separator.
-    list.splice(1, 1)
+
+  if (!delimiter) {
+    delimiter = [`|`, `\t`, `","`, `,`, `;`].find(v => list[0].split(v).length > 1)
+    if (delimiter === `|`) {
+      // If input text is markdown table format, removes header separator.
+      list.splice(1, 1)
+    }
   }
 
   if (!delimiter) return ""
 
-  const tableElements = list.map(record => record.split(delimiter).map(v => v.trim()))
+  const tableElements = list.map(record => record.split(delimiter!).map(v => v.trim()))
   const calcBytes = (character: string) => {
     let length = 0
     for (let i = 0; i < character.length; i++) {
@@ -43,6 +46,8 @@ export const fromCsv = async (input: string): Promise<string> => {
   formattedTableElements.unshift(headerValues)
   return formattedTableElements.map(record => "| " + record.join(" | ") + " |").join("\n")
 }
+
+export const fromCsv = async (input: string): Promise<string> => _fromCsv(input)
 
 export const toHtml = async (input: string): Promise<string> => {
   const converter = new showdown.Converter()
