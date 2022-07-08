@@ -45,7 +45,6 @@ export const insertRoutine = async (cb: TScriptInsertCallback): Promise<void> =>
   // apply all changes at once
   vscode.window.activeTextEditor?.edit(editor => {
     for (const d of changeData) {
-      console.log(d.position)
       editor.insert(d.position, d.result)
     }
 
@@ -92,6 +91,25 @@ export const documentRange = (): vscode.Range => {
   {
     const p = new vscode.Position(0, 0)
     return new vscode.Range(p, p)
+  }
+}
+
+export const selectAllTextIfNoSelection = () => {
+  // if nothing selected select entire text
+  const editor = vscode.window.activeTextEditor
+  if (editor?.selection?.isEmpty) {
+    const { lineCount } = editor.document
+
+    const firstLine = editor.document.lineAt(0)
+    const lastLine = editor.document.lineAt(lineCount - 1)
+
+    editor.selection = new vscode.Selection(
+      firstLine.lineNumber,
+      firstLine.range.start.character,
+      lastLine.lineNumber,
+      lastLine.range.end.character
+    )
+
   }
 }
 

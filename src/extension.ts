@@ -25,7 +25,7 @@ import { relativePathForUri } from './utils'
 
 export const nativeModules = { colors, count, crypto, encodings, generators, markdown, native, passwords, textBasic, time, utils, lib: { requestUtils, server }, yaml }
 export const modules = { ...nativeModules }
-export const extensionContext: ISwissKnifeContext = { insertRoutine, replaceRoutine, informationRoutine, vscode, modules }
+export const extensionContext: ISwissKnifeContext = { insertRoutine, replaceRoutine, informationRoutine, vscode, modules, extensionPath: "" }
 
 let scripts: IScriptQuickPickItem[] = []
 let internalScripts: IScriptQuickPickItem[] = []
@@ -38,6 +38,8 @@ let fileDecorator: FileDecorator
 
 export function activate(ctx: vscode.ExtensionContext) {
 	context = ctx
+
+	extensionContext.extensionPath = context.extensionPath
 
 	extensionFolder = ctx.globalStorageUri.fsPath
 	userScriptsFolder = path.join(extensionFolder, "scripts")

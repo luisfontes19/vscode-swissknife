@@ -2,7 +2,7 @@
   "name": "vscode-swissknife",
   "displayName": "Swissknife",
   "description": "The developers swissknife. Do conversions and generations right out of vs code. Extendable with user scripts",
-  "version": "1.6.3",
+  "version": "1.7.0",
   "author": "luisfontes19",
   "publisher": "luisfontes19",
   "license": "MIT",
@@ -109,11 +109,15 @@
       }
     ]
   },
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
   "scripts": {
     "vscode:prepublish": "npm run bundle",
     "vscode:package": "vsce package",
     "rename": "node -e \"require('fs').rename('out/index.js', 'out/extension.js', function(err) { if (err) console.log(err); console.log('File successfully renamed!') })\"",
-    "bundle": "npx ncc build src/extension.ts -o out && npm run rename",
+    "bundle": "npx ncc build src/extension.ts -o out && npm run rename && cp screenshot_template.html out",
     "compile": "tsc -p ./",
     "lint": "eslint src --ext ts",
     "watch": "tsc -watch -p ./",

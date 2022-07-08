@@ -11,7 +11,7 @@ import { capitalize, joinLines, sortAlphabetically, toCamelCase, toLowerCase, to
 import { formattedDateToTimestamp, insertLocalDate, insertUtcDate, timestampToFormattedDate } from './lib/time'
 import { escapeString, expandUrl, jwtDecode, linuxPermissions, pickRandomLine, requestToFetch, shortenUrl, startSecureServer, startServer, stopServer } from './lib/utils'
 import { jsonToYaml, yamlToJson } from './lib/yaml'
-import { readInputAsync } from './utils'
+import { readInputAsync, takeScreenshot } from './utils'
 
 // cb expects a callback with the following signature:
 // (context: ISwissKnifeContext) => Promise<void>
@@ -340,6 +340,11 @@ const scripts: IScript[] = [
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => jwtDecode(text))
   },
   {
+    title: "Code screenshot",
+    detail: "Create a nice code screenshot",
+    cb: async (context: ISwissKnifeContext) => takeScreenshot(context)
+  },
+  {
     title: "Request to fetch",
     detail: "Converts a raw HTTP request into a javascript fetch code",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => requestToFetch(text))
@@ -385,7 +390,6 @@ const scripts: IScript[] = [
     detail: "One option per line, chooses one line at random",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => pickRandomLine(text))
   },
-
   ////////////////////////////////////////////////////////////////////////////////////
   //                                     YAML                                       //
   ////////////////////////////////////////////////////////////////////////////////////

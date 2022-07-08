@@ -12,6 +12,7 @@ Swissknife is the developers' toolbox. It provides a set of features (scripts) t
 * Extendable with custom scripts
 * Local webserver with request logging
 * File Explorer decorators (and custom decorators)
+* Generate pretty, framed screenshots of the code
 
 ![Demo](data/demo.gif)
 
