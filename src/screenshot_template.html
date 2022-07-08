@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    body {
+      font-family: var(--vscode-editor-font-family);
+      font-size: var(--vscode-editor-font-size);
+      line-height: var(--vscode-editor-lineHeight);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    #container {
+
+      border: 3px solid var(--vscode-editor-background);
+      border-radius: 10px;
+      background-color: var(--vscode-editor-background);
+      color: var(--vscode-editor-foreground);
+      box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.15);
+      min-width: 700px !important;
+      flex-wrap: wrap;
+      display: inline-flex;
+      margin: 50px
+    }
+
+    #screenshot {
+      background: -webkit-linear-gradient(to right, #e2e2e2, #c9d6ff);
+      background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+      overflow-x: scroll;
+      width: auto;
+      padding: 50px;
+    }
+
+    .row {
+      padding: 10px;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      width: 100%;
+    }
+
+    .dot {
+      margin-top: 4px;
+      height: 12px;
+      width: 12px;
+      background-color: #bbb;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    #filename {
+      margin-left: 15px;
+      display: inline-block;
+    }
+
+    #code-container {
+      display: flex;
+      flex-direction: row;
+      padding: 5px;
+      margin-right: 15px;
+      word-wrap: break-word !important;
+    }
+
+    #line-numbers {
+      width: auto;
+      padding-right: 10px;
+      color: var(--vscode-editorLineNumber-foreground);
+      font-family: var(--vscode-editor-font-family);
+    }
+
+    .line-number {
+      font-size: var(--vscode-editor-font-size);
+      line-height: var(--vscode-editor-line-height);
+    }
+  </style>
+
+  <script src="{{__html2canvasPath__}}"></script>
+
+</head>
+
+<body>
+  <button onclick="generateAndSaveImage()">Save</button>
+  <div id="screenshot">
+    <div id="container">
+      <div class="row">
+        <div class="column left" style="z-index:10">
+          <span class="dot" style="background:#ED594A;"></span>
+          <span class="dot" style="background:#FDD800;"></span>
+          <span class="dot" style="background:#5AC05A;"></span>
+          <div class="column" contentEditable="true" id="filename"></div>
+        </div>
+      </div>
+
+      <div id="code-container">
+        <div id="line-numbers"></div>
+        <div id="code">
+        </div>
+      </div>
+    </div>
+
+    <script>
+
+      const vscode = acquireVsCodeApi()
+
+      const doMagic = async (html) => {
+        const filename = "{{__filename__}}"
+        document.getElementById("code").innerHTML = html
+        generateLineNumbers(html.match(/(<\/div>)|(<br>)/g).length)
+        document.getElementById("filename").innerText = filename
+
+
+        await generateAndSaveImage();
+        vscode.postMessage("done")
+      }
+
+      const generateAndSaveImage = async () => {
+        try {
+          const img = await generateImage()
+          const filename = document.getElementById("filename").innerText
+          saveImage(img, `${filename}.png`)
+        } catch (ex) { } //TODO: exception
+      }
+
+      const generateImage = () => {
+        return new Promise((resolve, reject) => {
+          const container = document.getElementById("screenshot")
+          const width = document.getElementById("container").offsetWidth + 200 //100 padding
+          container.style.width = `${width}px`
+          html2canvas(container, { scale: 4 }).then(canvas => resolve(canvas))
+        })
+      }
+
+      const saveImage = (canvas, filename) => {
+        const link = document.createElement('a')
+        link.download = filename
+        link.href = canvas.toDataURL()
+        link.click();
+      }
+
+      const generateLineNumbers = (length) => {
+
+        const lineNumbers = document.getElementById("line-numbers")
+        const lineHeight = document.getElementById("code").querySelector("div").style.lineHeight;
+
+        for (let i = 0; i < length; i++) {
+          const lineNumber = document.createElement("div")
+          const span = document.createElement("span")
+          span.className = "line-number"
+          span.style.lineHeight = lineHeight
+          span.innerText = i + 1
+          lineNumber.appendChild(span)
+          lineNumbers.appendChild(lineNumber)
+        }
+      }
+
+      document.addEventListener("paste", (e) => {
+        const html = e.clipboardData.getData("text/html") || e.clipboardData.getData("text/plain")
+        doMagic(html)
+      })
+
+      setTimeout(() => { document.execCommand("paste"); }, 200);
+
+
+    </script>
+</body>
+
+</html>

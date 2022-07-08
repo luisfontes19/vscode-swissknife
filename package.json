@@ -114,16 +114,17 @@
     "theme": "dark"
   },
   "scripts": {
-    "vscode:prepublish": "npm run bundle",
     "vscode:package": "vsce package",
     "rename": "node -e \"require('fs').rename('out/index.js', 'out/extension.js', function(err) { if (err) console.log(err); console.log('File successfully renamed!') })\"",
-    "bundle": "npx ncc build src/extension.ts -o out && npm run rename && cp screenshot_template.html out",
+    "inject:html2canvas": "node inject_html2canvas.js",
+    "bundle": "rm -rf out && npx ncc build src/extension.ts -o out && npm run rename && npm run inject:html2canvas",
     "compile": "tsc -p ./",
     "lint": "eslint src --ext ts",
     "watch": "tsc -watch -p ./",
     "test": "npm run compile && node out/test/runTest.js",
     "tag": "git tag v$(node -e \"console.log(require('./package.json').version)\")",
-    "publish": "npm run test && npm run bundle && vsce package && vsce publish && npm run tag && git push origin master"
+    "build": "npm run bundle && vsce package",
+    "publish": "npm run test && npm run build && vsce publish && npm run tag && git push origin master"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
@@ -145,6 +146,7 @@
     "@vscode/test-electron": "^2.1.4",
     "chai": "^4.3.6",
     "eslint": "^7.32.0",
+    "html2canvas": "^1.4.1",
     "mocha": "^8.4.0",
     "ts-node": "^10.8.1",
     "typescript": "^4.0.2",

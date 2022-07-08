@@ -11,3 +11,9 @@ vsc-extension-quickstart.md
 **/*.ts
 types/**
 node_modules/**
+screenshot_template.html
+*.vsix
+*.zip
+inject_html2canvas.js
+vscode-swissknife-*/**
+vscode-swissknife*

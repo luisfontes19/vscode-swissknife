@@ -24,5 +24,6 @@ export interface ISwissKnifeContext {
   replaceRoutine: (cb: TScriptCallback) => Promise<void>
   informationRoutine: (cb: TScriptCallback) => Promise<void>
   modules: any,
-  extensionPath: string
+  extensionPath: string,
+  development: boolean
 }

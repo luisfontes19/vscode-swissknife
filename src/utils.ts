@@ -46,9 +46,15 @@ export const takeScreenshot = async (context: ISwissKnifeContext): Promise<void>
     }
   )
 
-  const html = fs.readFileSync(`${context.extensionPath}/screenshot_template.html`).toString()
+  const libraryPath = vscode.Uri.file(path.join(context.extensionPath, 'node_modules', 'html2canvas', 'dist', 'html2canvas.min.js'))
+  const html2canvasPath = panel.webview.asWebviewUri(libraryPath)
+
+  const templatePath = context.extensionPath + (context.development ? `/src/screenshot_template.html` : `/out/screenshot_template.html`)
+  const html = fs.readFileSync(templatePath).toString()
   const filename = vscode.window.activeTextEditor?.document.fileName.split("/").pop() || "untitled"
-  panel.webview.html = html.replace("{{__filename__}}", filename)
+
+  //the __html2canvasPath__ replace is only needed for dev, in production the html2canvas library is already loaded minified :)
+  panel.webview.html = html.replace("{{__filename__}}", filename).replace("{{__html2canvasPath__}}", html2canvasPath.toString())
 
   panel.webview.onDidReceiveMessage(() => {
     vscode.env.clipboard.writeText(clipboard)
