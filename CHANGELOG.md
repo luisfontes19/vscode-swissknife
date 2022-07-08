@@ -2,6 +2,11 @@
 
 All notable changes to the "swissknife" extension will be documented in this file.
 
+## 1.7.0
+
+* Code refactoring. Scripts logic is now independent from the script call. Made more reusable code
+* Added code screenshot script
+
 ## 1.6.2
 
 * Multiple bug fixes
