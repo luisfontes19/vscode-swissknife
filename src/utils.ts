@@ -35,7 +35,7 @@ export const takeScreenshot = async (context: ISwissKnifeContext): Promise<void>
   await vscode.commands.executeCommand("editor.action.clipboardCopyWithSyntaxHighlightingAction")
 
   const panel = vscode.window.createWebviewPanel(
-    "vscode-swissknife-tab", "VSCodeSwissknife",
+    "vscode-swissknife-screenshot", "Swissknife Screenshot",
     {
       viewColumn: vscode.ViewColumn.Beside,
       preserveFocus: false
