@@ -34,7 +34,6 @@
       padding: 50px;
     }
 
-    /* Container for columns and the top "toolbar" */
     .row {
       padding: 10px;
       border-top-left-radius: 4px;
@@ -42,20 +41,6 @@
       width: 100%;
     }
 
-    /* Create three unequal columns that floats next to each other */
-    .column {
-      float: left;
-    }
-
-
-    /* Clear floats after the columns */
-    .row:after {
-      content: "";
-      display: table;
-      clear: both;
-    }
-
-    /* Three dots */
     .dot {
       margin-top: 4px;
       height: 12px;
@@ -66,7 +51,8 @@
     }
 
     #filename {
-      margin-left: 20px
+      margin-left: 15px;
+      display: inline-block;
     }
 
     #code-container {
@@ -82,7 +68,6 @@
       padding-right: 10px;
       color: var(--vscode-editorLineNumber-foreground);
       font-family: var(--vscode-editor-font-family);
-      cursor: default;
     }
 
     .line-number {
@@ -126,12 +111,12 @@
   <div id="screenshot">
     <div id="container">
       <div class="row">
-        <div class="column left">
+        <div class="column left" style="z-index:10">
           <span class="dot" style="background:#ED594A;"></span>
           <span class="dot" style="background:#FDD800;"></span>
           <span class="dot" style="background:#5AC05A;"></span>
+          <div class="column" id="filename"></div>
         </div>
-        <div class="column" id="filename"></div>
       </div>
 
       <div id="code-container">
@@ -147,10 +132,9 @@
 
       const doMagic = async (html) => {
         const filename = "{{__filename__}}"
-
         document.getElementById("code").innerHTML = html
-        document.getElementById("filename").innerText = filename
         generateLineNumbers(html.match(/(<\/div>)|(<br>)/g).length)
+        document.getElementById("filename").innerText = filename
 
         try {
           const img = await generateImage()
@@ -165,7 +149,6 @@
           const container = document.getElementById("screenshot")
           const width = document.getElementById("container").offsetWidth + 200 //100 padding
           container.style.width = `${width}px`
-          console.log(container.style.width)
           html2canvas(container).then(canvas => resolve(canvas))
         })
       }
@@ -184,9 +167,11 @@
 
         for (let i = 0; i < length; i++) {
           const lineNumber = document.createElement("div")
-          lineNumber.className = "line-number"
-          lineNumber.style.lineHeight = lineHeight
-          lineNumber.innerText = i + 1
+          const span = document.createElement("span")
+          span.className = "line-number"
+          span.style.lineHeight = lineHeight
+          span.innerText = i + 1
+          lineNumber.appendChild(span)
           lineNumbers.appendChild(lineNumber)
         }
       }
