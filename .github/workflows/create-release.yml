@@ -17,7 +17,7 @@ jobs:
         run: |
           npm install -g vsce @vercel/ncc
           npm ci
-          npm run build
+          npm run bundle && vsce package -o vscode-swissknife.vsix
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1

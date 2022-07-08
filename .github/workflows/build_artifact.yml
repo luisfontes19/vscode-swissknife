@@ -14,8 +14,7 @@ jobs:
         run: |
           npm install -g vsce @vercel/ncc
           npm ci
-          npm run bundle
-          vsce package -o preview_build.vsix
+          npm run bundle && vsce package -o vscode-swissknife.vsix
       - name: Publish artifact
         uses: actions/upload-artifact@v3
         with:

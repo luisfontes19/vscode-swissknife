@@ -26,7 +26,7 @@ jobs:
     
     - name: Build
       run: |
-        vsce package -o vscode-swissknife.vsix
+        npm run bundle && vsce package -o vscode-swissknife.vsix
     
     - name: Tag the release
       run: |
