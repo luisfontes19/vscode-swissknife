@@ -4,11 +4,12 @@ Available in the [Visual Studio Marketplace](https://marketplace.visualstudio.co
 
 ![Banner](data/swissknife_banner.png)
 
-Swissknife is the developers' toolbox. It provides a set of features (scripts) to convert data in the editor, like converting to hex, base64 or to generate new data like current timestamps or random strings, etc. 
+Swissknife is the developers' toolbox. It provides a set of features (we call them scripts) to convert data in the editor, like converting to hex, base64 or to generate new data like current timestamps or random strings, etc. 
 
 ## Main Features
 
 * Generators and converters available in the form of scripts
+* Code Screenshot
 * Extendable with custom scripts
 * Local webserver with request logging
 * File Explorer decorators (and custom decorators)
@@ -88,6 +89,16 @@ You can use decorators to identify files in the explorer. You can create custom 
 Due to a limitation in vscode extension system AFAIK, I can't allow users to extend the menu with their own decorators, so you always need to go through the "Custom" option to use other decorators
 
 ![Decorators](data/decorators.jpg)
+
+## Code Screenshot
+
+Just select the code you want to create a screenshot from (or don't select anything and the entire code will be used) and search for the `Code Screenshot` screen. 
+
+
+The filename in the screenshot window is taken from the current file name, and if the file is not saved a temporary name will be used. The file name is editable, so when the right panel appears you can change the name, if you want :)
+
+![code screenshot](data/code_screenshot.png)
+
 
 ## Future Plans
 
