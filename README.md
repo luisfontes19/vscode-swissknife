@@ -14,6 +14,7 @@ Swissknife is the developers' toolbox. It provides a set of features (we call th
 * Local webserver with request logging
 * File Explorer decorators (and custom decorators)
 * Generate pretty, framed screenshots of the code
+* Right click on a line to copy file relative path with line number ("Copy file path with line")
 
 ![Demo](data/demo.gif)
 
@@ -49,13 +50,6 @@ The conversions will only use the selected text by default. If no text is select
 It supports multi selection and will run the script for each selection individually
 
 On top of the scripts provided swissknife now offers two new features:
-
-* **Copy relative file path with line number** - right click on a line in the editor and select "Copy file path with line". Ex output: app/src/android/java/com/myorg/app/ui/File.kt#83
-* **Ability to check/uncheck files/folders in the explorer**. Right click on a file and select "Toggle: Check File" or "Toggle: Check Folder". A '✓' will show up, identifying that you checked the file/folder
-
-### Macbook Touchbar Support
-
-You can also invoke the swissknife extension directly from the macbook's touchbar
 
 ## Scripts Details
 
