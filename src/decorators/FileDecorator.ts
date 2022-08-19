@@ -1,69 +1,8 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { Event, EventEmitter, FileDecoration, FileDecorationProvider, ProviderResult, TreeDataProvider, TreeItem, Uri, window, workspace } from 'vscode'
-import { getAllFilesInFolder, relativePathForUri, vscodeFolderPathForWorkspace, workspacePathForUri } from './utils'
-
-export interface DecoratorEntry {
-  file: string
-  decorator: string
-}
-
-enum DecoratorOp {
-  ADD, REMOVE, UPDATE
-}
-
-export class DecoratorsTreeviewProvider implements TreeDataProvider<any> {
-  private eventEmitter: EventEmitter<DecoratorEntry[] | undefined>
-  readonly onDidChangeTreeData: Event<DecoratorEntry[] | undefined>
-  private decoretedFiles: DecoratorEntry[] = []
-
-  public constructor() {
-    this.eventEmitter = new EventEmitter<any>()
-    this.onDidChangeTreeData = this.eventEmitter.event
-  }
-
-  refresh(data: DecoratorEntry[]) {
-    this.decoretedFiles = data
-    this.eventEmitter.fire(undefined) // undefined since its not in a parent node :)
-  }
-
-
-  getTreeItem(item: DecoratorEntry): TreeItem {
-    return new TreeItem(`${item.decorator} ${item.file}`)
-  }
-
-  getChildren(element?: any): Thenable<DecoratorEntry[]> {
-    return Promise.resolve(this.decoretedFiles)
-  }
-
-  onSelectionChange = (e: any) => {
-    const selection = e.selection[0]
-    const fileParts: string[] = selection.file.split(path.sep)
-
-    // we have the workspace name (root folder) in the treeview item as the first part of the path
-    // so we extract it here and search for that workspace full path (so we can open the file)
-    const workspaceName = fileParts[0] || selection
-    const workspacePath = workspace.workspaceFolders?.find(w => w.name === workspaceName)?.uri.path
-
-    if (workspacePath) {
-      // remove the workspace name from the file path
-      // and construct the file path again
-      fileParts.shift()
-      const file = path.join(workspacePath, fileParts.join(path.sep))
-
-
-      fs.lstat(file, (err, stats) => {
-        if (err) console.log(`[SWISSKNIFE] ${err}`)
-
-        if (stats.isFile())
-          workspace.openTextDocument(file).then(doc => window.showTextDocument(doc))
-        else
-          console.log(`[SWISSKNIFE] ${file} doesn't seem to be a file to open`)
-      })
-
-    }
-  }
-}
+import { Event, EventEmitter, FileDecoration, FileDecorationProvider, ProviderResult, Uri } from 'vscode'
+import { getAllFilesInFolder, relativePathForUri, vscodeFolderPathForWorkspace, workspacePathForUri } from '../utils'
+import { DecoratorEntry, DecoratorOp } from './types'
 
 export class FileDecorator implements FileDecorationProvider {
 
@@ -101,9 +40,11 @@ export class FileDecorator implements FileDecorationProvider {
 
     const decorator = decoratorsForWorkspace.find(f => f.file === relativePathForUri(uri))
 
-    if (decorator)
+    if (decorator) {
+      console.log({ badge: decorator.decorator })
       //color: new vscode.ThemeColor("button.background"),
       return { badge: decorator.decorator }
+    }
   }
 
   private determinateDecorateOperationForUri = (decorators: DecoratorEntry[], uri: Uri, decorator: string) => {
@@ -238,6 +179,3 @@ export class FileDecorator implements FileDecorationProvider {
 
   }
 }
-
-
-

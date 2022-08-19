@@ -3,8 +3,9 @@ import * as glob from 'glob'
 import * as path from 'path'
 import * as vscode from 'vscode'
 import { Uri } from 'vscode'
+import { DecoratorsTreeviewProvider } from './decorators/DecoratorsTreeviewProvider'
+import { FileDecorator } from './decorators/FileDecorator'
 import { informationRoutine, insertRoutine, replaceRoutine } from './editorOperations'
-import { DecoratorEntry, DecoratorsTreeviewProvider, FileDecorator } from './fileDecorator'
 import { IScript, IScriptQuickPickItem, ISwissKnifeContext } from './Interfaces'
 import * as colors from './lib/colors'
 import * as count from './lib/count'
@@ -87,28 +88,14 @@ const setupDecoratorTree = () => {
 	const tree = vscode.window.createTreeView("swissknife-decorators-tree", { treeDataProvider: treeProvider })
 	tree.onDidChangeSelection((e: any) => treeProvider.onSelectionChange(e))
 
+	treeProvider.refresh(fileDecorator)
 
-	const getAllDecorators = () => {
-		let decorators: DecoratorEntry[] = []
-		vscode.workspace.workspaceFolders?.forEach(workspace => {
-			const workspacePath = workspace.uri.fsPath
-			const decoratorFile = fileDecorator.decoratorsFilePath(workspacePath)
-			const workspaceDecorators = fileDecorator.decoratedFilesForWorkspace(workspacePath)
-			workspaceDecorators.forEach(decorator => decorator.file = path.join(workspace.name, decorator.file))
-			decorators = [...decorators, ...workspaceDecorators]
 
-			fs.watch(decoratorFile, {}, async () => refreshTree)
-		})
-
-		return decorators
+	vscode.workspace.onDidChangeWorkspaceFolders(() => {
+		console.log("teste")
+		treeProvider.refresh(fileDecorator)
 	}
-
-	const refreshTree = () => {
-		treeProvider.refresh(getAllDecorators())
-	}
-
-	refreshTree()
-	vscode.workspace.onDidChangeWorkspaceFolders(() => refreshTree())
+	)
 }
 
 const printScriptsTable = async () => {
@@ -220,3 +207,5 @@ const copyPathWithLine = () => {
 		vscode.env.clipboard.writeText(`${filePath}#${pos}`)
 	}
 }
+
+export function deactivate() { }
