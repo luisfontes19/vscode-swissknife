@@ -23,6 +23,18 @@ export const readInputAsync = async (prompt: string): Promise<string | undefined
   })
 }
 
+export const getCurrentWorkspaceFolder = (): string | undefined => {
+  const openFile = vscode.window.activeTextEditor?.document.uri
+  if (openFile) return workspacePathForUri(openFile)
+
+  const workspacesCount = vscode.workspace.workspaceFolders?.length
+  if (workspacesCount === 1) return vscode.workspace.workspaceFolders![0].uri.path
+
+  console.log("[SWISSKNIFE] Could not determinate current workspace")
+
+  return undefined
+}
+
 
 // this feature is heavily based on the awesome https://github.com/jeffersonlicet/snipped
 // hugo kudos to Jeff for his logic on that awesome extension

@@ -4,7 +4,7 @@ import * as path from 'path'
 import * as vscode from 'vscode'
 import { Uri } from 'vscode'
 import { informationRoutine, insertRoutine, replaceRoutine } from './editorOperations'
-import { FileDecorator } from './fileDecorator'
+import { DecoratorEntry, DecoratorsTreeviewProvider, FileDecorator } from './fileDecorator'
 import { IScript, IScriptQuickPickItem, ISwissKnifeContext } from './Interfaces'
 import * as colors from './lib/colors'
 import * as count from './lib/count'
@@ -72,11 +72,43 @@ export function activate(ctx: vscode.ExtensionContext) {
 				if ([...dec].length !== 1) return vscode.window.showErrorMessage("Custom decorator must be 1 character long")
 
 				fileDecorator.decorate(args, dec)
+
 			})
 		})
 	]
 
+	setupDecoratorTree()
+
 	ctx.subscriptions.push(...disposables)
+}
+
+const setupDecoratorTree = () => {
+	const treeProvider = new DecoratorsTreeviewProvider()
+	const tree = vscode.window.createTreeView("swissknife-decorators-tree", { treeDataProvider: treeProvider })
+	tree.onDidChangeSelection((e: any) => treeProvider.onSelectionChange(e))
+
+
+	const getAllDecorators = () => {
+		let decorators: DecoratorEntry[] = []
+		vscode.workspace.workspaceFolders?.forEach(workspace => {
+			const workspacePath = workspace.uri.fsPath
+			const decoratorFile = fileDecorator.decoratorsFilePath(workspacePath)
+			const workspaceDecorators = fileDecorator.decoratedFilesForWorkspace(workspacePath)
+			workspaceDecorators.forEach(decorator => decorator.file = path.join(workspace.name, decorator.file))
+			decorators = [...decorators, ...workspaceDecorators]
+
+			fs.watch(decoratorFile, {}, async () => refreshTree)
+		})
+
+		return decorators
+	}
+
+	const refreshTree = () => {
+		treeProvider.refresh(getAllDecorators())
+	}
+
+	refreshTree()
+	vscode.workspace.onDidChangeWorkspaceFolders(() => refreshTree())
 }
 
 const printScriptsTable = async () => {
@@ -188,5 +220,3 @@ const copyPathWithLine = () => {
 		vscode.env.clipboard.writeText(`${filePath}#${pos}`)
 	}
 }
-
-export function deactivate() { }

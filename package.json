@@ -107,7 +107,15 @@
         "mac": "Cmd+Shift+9",
         "when": "editorFocus"
       }
-    ]
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "swissknife-decorators-tree",
+          "name": "Decorated Files"
+        }
+      ]
+    }
   },
   "galleryBanner": {
     "color": "#1e1e1e",
