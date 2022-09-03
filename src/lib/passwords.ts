@@ -19,29 +19,18 @@ const _generateCharCode = (from: number, to: number): number => {
   return ((crypto.randomBytes(1)[0]) % to) + from
 }
 
-// fix module bias, using module to get a number won't get uniform numbers, there's a bias
-// we fix it with this logic
-// 256 is the number of possible outputs from crypto.randombytes(1)
-// cool explanation here: // https://donjon.ledger.com/kaspersky-password-manager/
-export const generateSecureCharCode = (): number => {
-  const from = 33
-  const to = 125
-  const length = to - from
-  const moduleBias = 256 - (256 - length)
+export const generatePassword = (length: number) => {
+  // TODO: make this configurable
+  let charSet = 'abcdefghijklmnopqrstuvwxyz'
+  charSet += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  charSet += '0123456789'
+  charSet += '!@#$%^&*()_+~`|}{[]\\:;?><,./-='
 
-  let n = 0
-  do
-    n = _generateCharCode(from, to)
-  while (n > moduleBias)
+  const passwordChars = []
+  for (let i = 0; i < length; i++) {
+    const pos = crypto.randomInt(0, charSet.length - 1)
+    passwordChars.push(charSet[pos])
+  }
 
-  return n
-
-}
-
-export const generatePassword = (size: number) => {
-  let charCodes: number[] = []
-  for (let i = 0; i < size; i++)
-    charCodes.push(generateSecureCharCode())
-
-  return String.fromCharCode(...charCodes)
+  return passwordChars.join('')
 }
