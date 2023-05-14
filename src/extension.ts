@@ -5,7 +5,7 @@ import * as vscode from 'vscode'
 import { Uri } from 'vscode'
 import { informationRoutine, insertRoutine, replaceRoutine } from './editorOperations'
 import { FileDecorator } from './fileDecorator/FileDecorator'
-import { customDecorator } from './fileDecorator/utils'
+import { customDecorator, setupDecoratorTree } from './fileDecorator/utils'
 import { IScript, IScriptQuickPickItem, ISwissKnifeContext } from './Interfaces'
 import * as colors from './lib/colors'
 import * as count from './lib/count'
@@ -106,7 +106,7 @@ export function activate(ctx: vscode.ExtensionContext) {
 
 	]
 
-	// setupDecoratorTree(fileDecorator)
+	setupDecoratorTree(fileDecorator)
 
 	ctx.subscriptions.push(...disposables)
 

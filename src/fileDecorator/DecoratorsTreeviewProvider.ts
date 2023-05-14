@@ -54,6 +54,7 @@ export class DecoratorsTreeviewProvider implements TreeDataProvider<any> {
 
       decorators[workspace.name] = workspaceDecorators
 
+      if (!fs.existsSync(decoratorFile)) return
 
       fs.watch(decoratorFile, {}, async () => this.refresh(fileDecorator))
     })
