@@ -2,7 +2,6 @@
 
 Available in the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=luisfontes19.vscode-swissknife)
 
-![Banner](data/swissknife_banner.png)
 
 Swissknife is the developers' toolbox. It provides a set of features (we call them scripts) to convert data in the editor, like converting to hex, base64 or to generate new data like current timestamps or random strings, etc.
 
@@ -49,21 +48,25 @@ You can invoke the dedicated command pallete with ```ctrl+shift+9``` for windows
 The conversions will only use the selected text by default. If no text is selected the entire content of the editor will be used.
 It supports multi selection and will run the script for each selection individually
 
-## Notes
+### Notes
 
 You can now add notes per line to your code. Since this feature changes a bit the gutter and you start to see a plus sign on the left of the line numbers on the line you hover the mouse, we ship this feature disabled by default and can be enabled per workspace.
 
 ![Banner](data/notes.gif)
 
-Use the command `Swissknife: Enable Notes for project` to enable it for the current workspace. From there on you can start adding notes to your code to specific lines as shown in the gif above.
+Use the command `Swissknife: Enable Notes for workspace` to enable it for the current workspace. From there on you can start adding notes to your code to specific lines as shown in the gif above.
 
 You can also generate a report of all notes in the project by using the command `Swissknife: Generate Notes Report`.
+
+To view the existing notes you'll see a new tab in the bottom pannel called `Comments` where you can find the all the notes created for the workspace
 
 ### File Explorer Decorators
 
 You can use decorators to identify files in the explorer. You can create custom decorators and guess what... Emojis are allowed 😁. You can copy them from [here](https://emojipedia.org/).
 
-Due to a limitation in vscode extension system AFAIK I can't allow users to extend the menu with their own decorators, so you always need to go through the "Custom" option to use other decorators
+Due to a limitation in vscode extension system AFAIK I can't allow users to extend the menu with their own decorators, so you always need to go through the "Custom" option to use other decorators.
+
+In the explorer section you'll also have a new section to view all the files decorated with this extension
 
 ![Decorators](data/decorators.jpg)
 

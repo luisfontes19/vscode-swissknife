@@ -2,7 +2,7 @@
   "name": "vscode-swissknife",
   "displayName": "Swissknife",
   "description": "The developers swissknife. Do conversions and generations right out of vs code. Extendable with user scripts",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "author": "luisfontes19",
   "publisher": "luisfontes19",
   "license": "MIT",
@@ -161,11 +161,11 @@
       },
       {
         "command": "swissknife.enableNotes",
-        "title": "Swissknife: Enable notes for project"
+        "title": "Swissknife: Enable notes for Workspace"
       },
       {
         "command": "swissknife.disableNotes",
-        "title": "Swissknife: Disable notes for project"
+        "title": "Swissknife: Disable notes for Workspace"
       },
       {
         "command": "swissknife.generateNotesDoc",
