@@ -116,7 +116,7 @@ export const saveNotesToFile = () => {
   }))
 
 
-  fs.writeFileSync(notesFilePath, JSON.stringify(_notes))
+  fs.writeFileSync(notesFilePath, JSON.stringify(_notes, null, 2))
 }
 
 const getNotesFilePath = () => {

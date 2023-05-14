@@ -25,10 +25,13 @@ export const readInputAsync = async (prompt: string): Promise<string | undefined
 
 export const getCurrentWorkspaceFolder = (): string | undefined => {
   const openFile = vscode.window.activeTextEditor?.document.uri
-  if (openFile) return workspacePathForUri(openFile)
+  if (openFile) {
+    const ws = workspacePathForUri(openFile)
+    if (ws) return ws
+  }
 
   const workspacesCount = vscode.workspace.workspaceFolders?.length
-  if (workspacesCount === 1) return vscode.workspace.workspaceFolders![0].uri.path
+  if (workspacesCount && workspacesCount > 0) return vscode.workspace.workspaceFolders![0].uri.path
 
   console.log("[SWISSKNIFE] Could not determinate current workspace")
 

@@ -2,10 +2,12 @@
 
 All notable changes to the "swissknife" extension will be documented in this file.
 
-## 1.7.1
+## 1.8.0
 
-* Added window to list decorated files
+* Adds window to list decorated files
 * Fixed stupid logic with password generation script. Wasn't generating passwords with all possible chars
+* Add color scripts for HSL and HWB
+* Add notes feature. You can now add notes per line to your code. Check the README for more info
 
 
 ## 1.7.0
