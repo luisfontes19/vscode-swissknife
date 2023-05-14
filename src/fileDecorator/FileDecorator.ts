@@ -8,6 +8,7 @@ export class FileDecorator implements FileDecorationProvider {
 
   private eventEmitter: EventEmitter<Uri | Uri[]>
   public onDidChangeFileDecorations: Event<Uri | Uri[] | undefined>
+  public onCreatedDecoratorFile: undefined | ((filepath: string) => void) = undefined
 
   // this variable is used to track if the .vscode folder exists for a workspace
   // since we need to check this for every file in the file tree, its better to cache it
@@ -151,6 +152,7 @@ export class FileDecorator implements FileDecorationProvider {
     return newFile
   }
 
+
   private ensureVscodeFolderExists(workspace: string) {
     const vscodeFolder = vscodeFolderPathForWorkspace(workspace)
 
@@ -165,7 +167,10 @@ export class FileDecorator implements FileDecorationProvider {
   }
 
   private writeDecoratorsFile(filePath: string, content: any) {
+    const existed = fs.existsSync(filePath)
     fs.writeFileSync(filePath, JSON.stringify(content, null, 2))
+
+    if (!existed && this.onCreatedDecoratorFile) this.onCreatedDecoratorFile(filePath)
   }
 
   private migrateDecoratorsFile(oldFilePath: string, newFilePath: string) {
