@@ -30,7 +30,7 @@ export const jwtDecode = (str: string): string => {
 }
 
 export const escapeString = (str: string): string => {
-  return JSON.stringify(escapeString)
+  return JSON.stringify(str)
 }
 
 export const shortenUrl = async (str: string): Promise<string> => {

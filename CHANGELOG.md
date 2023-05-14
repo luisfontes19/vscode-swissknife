@@ -2,6 +2,12 @@
 
 All notable changes to the "swissknife" extension will be documented in this file.
 
+## 1.7.1
+
+* Added window to list decorated files
+* Fixed stupid logic with password generation script. Wasn't generating passwords with all possible chars
+
+
 ## 1.7.0
 
 * Code refactoring. Scripts logic is now independent from the script call. Made more reusable code

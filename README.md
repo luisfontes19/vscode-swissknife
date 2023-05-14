@@ -4,17 +4,17 @@ Available in the [Visual Studio Marketplace](https://marketplace.visualstudio.co
 
 ![Banner](data/swissknife_banner.png)
 
-Swissknife is the developers' toolbox. It provides a set of features (we call them scripts) to convert data in the editor, like converting to hex, base64 or to generate new data like current timestamps or random strings, etc. 
+Swissknife is the developers' toolbox. It provides a set of features (we call them scripts) to convert data in the editor, like converting to hex, base64 or to generate new data like current timestamps or random strings, etc.
 
 ## Main Features
 
-* Generators and converters available in the form of scripts
-* Code Screenshot
-* Extendable with custom scripts
+* Multiple generators and converters available in the form of scripts
+* Extensible with custom scripts
 * Local webserver with request logging
 * File Explorer decorators (and custom decorators)
 * Generate pretty, framed screenshots of the code
 * Right click on a line to copy file relative path with line number ("Copy file path with line")
+* Notes/Comments per file line and reporting
 
 ![Demo](data/demo.gif)
 
@@ -49,9 +49,34 @@ You can invoke the dedicated command pallete with ```ctrl+shift+9``` for windows
 The conversions will only use the selected text by default. If no text is selected the entire content of the editor will be used.
 It supports multi selection and will run the script for each selection individually
 
-On top of the scripts provided swissknife now offers two new features:
+## Notes
 
-## Scripts Details
+You can now add notes per line to your code. Since this feature changes a bit the gutter and you start to see a plus sign on the left of the line numbers on the line you hover the mouse, we ship this feature disabled by default and can be enabled per workspace.
+
+![Banner](data/notes.gif)
+
+Use the command `Swissknife: Enable Notes for project` to enable it for the current workspace. From there on you can start adding notes to your code to specific lines as shown in the gif above.
+
+You can also generate a report of all notes in the project by using the command `Swissknife: Generate Notes Report`.
+
+### File Explorer Decorators
+
+You can use decorators to identify files in the explorer. You can create custom decorators and guess what... Emojis are allowed 😁. You can copy them from [here](https://emojipedia.org/).
+
+Due to a limitation in vscode extension system AFAIK I can't allow users to extend the menu with their own decorators, so you always need to go through the "Custom" option to use other decorators
+
+![Decorators](data/decorators.jpg)
+
+## Code Screenshot
+
+Just select the code you want to create a screenshot from (or don't select anything and the entire code will be used) and search for the `Code Screenshot` screen.
+
+
+The filename in the screenshot window is taken from the current file name, and if the file is not saved a temporary name will be used. The file name is editable, so when the right panel appears you can change the name, if you want :)
+
+![code screenshot](data/code_screenshot.png)
+
+
 
 ### Identify Hash
 
@@ -62,36 +87,11 @@ Still we organize the hashes from top down by most relevant.
 
 The servers log all requests received into the "Output" window of VSCode (You can show it by going to view -> Output in the menu). Then on the right of the window (where usually has the value "Tasks"), filter by "Swissknife Server"
 
-## Privacy Note
-
-One of the main purposes of this extension is to stop pasting data, or trusting generated data from random websites.
-The extension avoids doing external web requests or logging data, for privacy.
-But there are some operations where external requests are needed:
-
-* **Url Unshorten** - This one really needs to do the request to the short url, so it can get the redirect (full) url. But keep in mind that the full url is never reached, the extension does not follow the redirect.
-
 ## Writing Scripts
 
 You can quite easily create your own scripts, without the need to dig through the code of the extension. Just create a file and drop it in the "Scripts" folder.
 
 Check how to do it [here](https://github.com/luisfontes19/vscode-swissknife/blob/master/data/custom_scripts.md)
-
-## Decorators
-
-You can use decorators to identify files in the explorer. You can create custom decorators and guess what, emojis are allowed. You can copy them from [here](https://emojipedia.org/). 
-
-Due to a limitation in vscode extension system AFAIK, I can't allow users to extend the menu with their own decorators, so you always need to go through the "Custom" option to use other decorators
-
-![Decorators](data/decorators.jpg)
-
-## Code Screenshot
-
-Just select the code you want to create a screenshot from (or don't select anything and the entire code will be used) and search for the `Code Screenshot` screen. 
-
-
-The filename in the screenshot window is taken from the current file name, and if the file is not saved a temporary name will be used. The file name is editable, so when the right panel appears you can change the name, if you want :)
-
-![code screenshot](data/code_screenshot.png)
 
 
 ## Future Plans

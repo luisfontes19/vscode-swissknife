@@ -57,6 +57,50 @@
           "when": "editorTextFocus && !editorHasSelection && !editorHasMultipleSelections",
           "group": "9_cutcopypaste"
         }
+      ],
+      "comments/commentThread/context": [
+        {
+          "command": "swissknife.createNote",
+          "group": "inline",
+          "when": "commentController == swissknife-notes"
+        }
+      ],
+      "comments/comment/context": [
+        {
+          "command": "swissknife.saveNote",
+          "group": "inline",
+          "when": "commentController == swissknife-notes"
+        }
+      ],
+      "comments/commentThread/title": [
+        {
+          "command": "swissknife.editNote",
+          "group": "group@1",
+          "when": "commentController == swissknife-notes && !commentThreadIsEmpty"
+        },
+        {
+          "command": "swissknife.deleteNote",
+          "group": "group@2",
+          "when": "commentController == swissknife-notes && !commentThreadIsEmpty"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "swissknife.editNote",
+          "when": "false"
+        },
+        {
+          "command": "swissknife.createNote",
+          "when": "false"
+        },
+        {
+          "command": "swissknife.deleteNote",
+          "when": "false"
+        },
+        {
+          "command": "swissknife.saveNote",
+          "when": "false"
+        }
       ]
     },
     "submenus": [
@@ -77,11 +121,11 @@
       },
       {
         "command": "swissknife.openScripts",
-        "title": "Open Swissknife user scripts folder"
+        "title": "Swissknife: Open Swissknife user scripts folder"
       },
       {
         "command": "swissknife.copyPathWithLine",
-        "title": "Copy file path with line"
+        "title": "Swissknife: Copy file path with line"
       },
       {
         "command": "swissknife.decorators.check",
@@ -98,6 +142,34 @@
       {
         "command": "swissknife.decorators.custom",
         "title": "(?) Custom"
+      },
+      {
+        "command": "swissknife.createNote",
+        "title": "Create Note"
+      },
+      {
+        "command": "swissknife.editNote",
+        "title": "Edit Note"
+      },
+      {
+        "command": "swissknife.deleteNote",
+        "title": "Delete Note"
+      },
+      {
+        "command": "swissknife.saveNote",
+        "title": "Save Note"
+      },
+      {
+        "command": "swissknife.enableNotes",
+        "title": "Swissknife: Enable notes for project"
+      },
+      {
+        "command": "swissknife.disableNotes",
+        "title": "Swissknife: Disable notes for project"
+      },
+      {
+        "command": "swissknife.generateNotesDoc",
+        "title": "Swissknife: Generate notes report"
       }
     ],
     "keybindings": [
@@ -115,6 +187,16 @@
           "name": "Decorated Files"
         }
       ]
+    },
+    "configuration": {
+      "title": "Swissknife",
+      "properties": {
+        "swissknife.notesEnabled": {
+          "type": "boolean",
+          "description": "Enable the feature to allow to add notes per line in files.",
+          "default": false
+        }
+      }
     }
   },
   "galleryBanner": {

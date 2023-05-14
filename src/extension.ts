@@ -3,9 +3,9 @@ import * as glob from 'glob'
 import * as path from 'path'
 import * as vscode from 'vscode'
 import { Uri } from 'vscode'
-import { DecoratorsTreeviewProvider } from './decorators/DecoratorsTreeviewProvider'
-import { FileDecorator } from './decorators/FileDecorator'
 import { informationRoutine, insertRoutine, replaceRoutine } from './editorOperations'
+import { FileDecorator } from './fileDecorator/FileDecorator'
+import { customDecorator } from './fileDecorator/utils'
 import { IScript, IScriptQuickPickItem, ISwissKnifeContext } from './Interfaces'
 import * as colors from './lib/colors'
 import * as count from './lib/count'
@@ -21,6 +21,8 @@ import * as textBasic from './lib/textBasic'
 import * as time from './lib/time'
 import * as utils from './lib/utils'
 import * as yaml from './lib/yaml'
+import { generateNotesDoc, initNotesController, onCreateNote, onDeleteNote, onEditNote, onSaveEditNote } from './NotesHandler'
+
 import { default as _scripts } from './scripts'
 import { relativePathForUri } from './utils'
 
@@ -35,10 +37,16 @@ let context: vscode.ExtensionContext
 let extensionFolder: string
 let userScriptsFolder: string
 
+
 let fileDecorator: FileDecorator
 
 export function activate(ctx: vscode.ExtensionContext) {
+
+	const config = vscode.workspace.getConfiguration('swissknife', vscode.window.activeTextEditor?.document.uri)
+
 	context = ctx
+
+	let notesController: vscode.CommentController | undefined
 
 	extensionContext.extensionPath = context.extensionPath
 	extensionContext.development = ctx.extensionMode === vscode.ExtensionMode.Development
@@ -50,53 +58,63 @@ export function activate(ctx: vscode.ExtensionContext) {
 	checkUserScriptsFolder()
 
 	loadScripts().then(() => {
-		// So that i can print a markdown table with the scripts to include in the readme :) 
+		// So that i can print a markdown table with the scripts to include in the readme :)
 		if (ctx.extensionMode === vscode.ExtensionMode.Development)
 			printScriptsTable()
 
 	})
 
+	const enableNotes = () => {
+		notesController = initNotesController()
+		ctx.subscriptions.push(notesController)
+	}
+
+
 	const disposables = [
 		vscode.commands.registerCommand('swissknife.show', show),
 		vscode.commands.registerCommand('swissknife.reload', reload),
 		vscode.commands.registerCommand('swissknife.openScripts', openUserScriptsFolder),
-
 		vscode.commands.registerCommand('swissknife.copyPathWithLine', copyPathWithLine),
 
+		// file decorators
 		vscode.window.registerFileDecorationProvider(fileDecorator),
 		vscode.commands.registerCommand("swissknife.decorators.check", (args) => { fileDecorator.decorate(args, FileDecorator.DECORATOR_CHECK) }),
 		vscode.commands.registerCommand("swissknife.decorators.reject", (args) => { fileDecorator.decorate(args, FileDecorator.DECORATOR_REJECT) }),
 		vscode.commands.registerCommand("swissknife.decorators.eyes", (args) => { fileDecorator.decorate(args, FileDecorator.DECORATOR_EYES) }),
-		vscode.commands.registerCommand("swissknife.decorators.custom", (args, b) => {
-			vscode.window.showInputBox({ prompt: "Provide a custom decorator (1 character only)" }).then(dec => {
-				dec ||= ""
-				if ([...dec].length !== 1) return vscode.window.showErrorMessage("Custom decorator must be 1 character long")
+		vscode.commands.registerCommand("swissknife.decorators.custom", customDecorator(fileDecorator)),
 
-				fileDecorator.decorate(args, dec)
 
+
+		// Gutter Notes
+		vscode.commands.registerCommand('swissknife.createNote', onCreateNote),
+		vscode.commands.registerCommand('swissknife.deleteNote', onDeleteNote),
+		vscode.commands.registerCommand('swissknife.editNote', onEditNote),
+		vscode.commands.registerCommand('swissknife.saveNote', onSaveEditNote),
+		vscode.commands.registerCommand('swissknife.generateNotesDoc', generateNotesDoc),
+		vscode.commands.registerCommand('swissknife.enableNotes', () => {
+			config.update('notesEnabled', true).then(() => {
+				enableNotes()
+			})
+		}),
+		vscode.commands.registerCommand('swissknife.disableNotes', () => {
+			config.update('notesEnabled', false).then(() => {
+				notesController?.dispose()
 			})
 		})
+		// vscode.commands.registerCommand('swissknife.deleteNoteComment', deleteNoteComment),
+		// vscode.commands.registerCommand('swissknife.addNoteComment', addNoteComment),
+
 	]
 
-	setupDecoratorTree()
+	// setupDecoratorTree(fileDecorator)
 
 	ctx.subscriptions.push(...disposables)
+
+	const notesEnabled = config.get('notesEnabled')
+	if (notesEnabled) enableNotes()
 }
 
-const setupDecoratorTree = () => {
-	const treeProvider = new DecoratorsTreeviewProvider()
-	const tree = vscode.window.createTreeView("swissknife-decorators-tree", { treeDataProvider: treeProvider })
-	tree.onDidChangeSelection((e: any) => treeProvider.onSelectionChange(e))
 
-	treeProvider.refresh(fileDecorator)
-
-
-	vscode.workspace.onDidChangeWorkspaceFolders(() => {
-		console.log("teste")
-		treeProvider.refresh(fileDecorator)
-	}
-	)
-}
 
 const printScriptsTable = async () => {
 	let data = ";;\n" //empty headers

@@ -1,5 +1,5 @@
 import { IScript, ISwissKnifeContext } from './Interfaces'
-import { hexToRgb, rgbToHex } from './lib/colors'
+import { hexToHsl, hexToHwb, hexToRgb, hslToHex, rgbToHex } from './lib/colors'
 import { countChars, countWords } from './lib/count'
 import { bip39, generateRSAKeyPair, generateSelfSignedCertificate, hashIdentifier, toMd5, toSha1, toSha256, toSha512 } from './lib/crypto'
 import { base64ToText, binaryToText, hexToText, htmlEncodeAllChars, quotedPrintableDecode, textToBase64, textToBinary, textToHex, toMorseCode, unicodeEncode, urlDecode, urlEncode, urlEncodeAllChars } from './lib/encodings'
@@ -15,9 +15,9 @@ import { readInputAsync, takeScreenshot } from './utils'
 
 // cb expects a callback with the following signature:
 // (context: ISwissKnifeContext) => Promise<void>
-// but since most of the times we are using a routine method (replaceRoutine, insertRoutine or informationRoutine) 
-//  they also expect a callback that will be called for each input. 
-// This may seem a bit confusing in the file but its actually really simple: 
+// but since most of the times we are using a routine method (replaceRoutine, insertRoutine or informationRoutine)
+//  they also expect a callback that will be called for each input.
+// This may seem a bit confusing in the file but its actually really simple:
 // - cb always expects a callback method
 // - if we use a routine method it will also need a callback method (async)
 const scripts: IScript[] = [
@@ -26,16 +26,117 @@ const scripts: IScript[] = [
   //                                    COLORS                                      //
   ////////////////////////////////////////////////////////////////////////////////////
   {
-    title: "RGB(a) To Hex",
+    title: "RGB(a) Color To Hex",
     detail: "Convert an RGB(A) like rgb(255,255,255) into Hex Color format",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => rgbToHex(text))
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => {
+      const rgbs = parseRgbValues(text)
+
+      const reg = /^\s?\d{1,3}\s?,\s?\d{1,3}\s?,\s?\d{1,3}\s?,?\s?\d?\.?\d{0,3}$/
+      const match = text.match(reg)
+
+      if (!match) {
+        context.informationRoutine(async () => "Invalid RGB(A) Format")
+        return text
+      }
+
+      const rgb = text.split(",").map((c) => parseInt(c))
+      return rgbToHex(rgb[0], rgb[1], rgb[2], rgb[3])
+    })
 
   },
   {
-    title: "Hex to RGB",
+    title: "Hex Color to RGB",
     detail: "Convert an Hex Color (ex #FFFFFF) into RGB(A)",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => hexToRgb(text))
   },
+
+  {
+    title: "Hex Color to HSL",
+    detail: "Convert an Hex Color (ex #FFFFFF) into HSL",
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => {
+      const matches = text.match(/^#?[0-9A-F]{8}|#?[0-9A-F]{6}$/)
+      if (!matches) {
+        context.informationRoutine(async () => "Invalid Hex Color")
+        return text
+      }
+
+      return hexToHsl(text)
+    })
+  },
+
+  {
+    title: "HSL Color to Hex",
+    detail: "Convert an HSL Color (ex hsl(0,0%,100%)) into Hex",
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => {
+
+      const res = text.match(/hsl((\d+),\s*(\d+)%,\s*(\d+)%)?/g)
+      if (!res) {
+        context.informationRoutine(async () => "Invalid HSL Format")
+        return text
+      }
+
+      const [h, s, l] = res.map(Number)
+      return hslToHex(h, s, l)
+
+    })
+  },
+
+  // {
+  //   title: "HWB Color to Hex",
+  //   detail: "Convert an HWB Color (ex hwb(0,0%,100%)) into Hex",
+  //   cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => {
+
+  //     const res = text.match(/hwb((\d+) (\d+)% (\d+)%)?/g)
+  //     if (!res) {
+  //       context.informationRoutine(async () => "Invalid or unsupported HSL Format. Only format like 'hwb(0 0% 100%)' is supported")
+  //       return text
+  //     }
+
+  //     const [h, w, b] = res.map(Number)
+  //     return hwbToHex(h, w, b)
+  //   })
+  // },
+
+  {
+    title: "Hex Color to HWB",
+    detail: "Convert an Hex Color (ex #FFFFFF) into HWB",
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => {
+      const matches = text.match(/^#?[0-9A-F]{8}|#?[0-9A-F]{6}$/)
+      if (!matches) {
+        context.informationRoutine(async () => "Invalid Hex Color")
+        return text
+      }
+
+      return hexToHwb(text)
+    })
+  },
+
+  // {
+  //   title: "Test",
+  //   detail: "Test",
+  //   cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => {
+  //     const { vscode } = context
+  //     let activeEditor = vscode.window.activeTextEditor
+  //     if (activeEditor) {
+  //       const decorationType = vscode.window.createTextEditorDecorationType({
+  //         gutterIconPath: , // image path or URI for the gutter icon
+  //         overviewRulerColor: 'red', // color of the decorator
+  //         overviewRulerLane: vscode.OverviewRulerLane.Right // specify the overview ruler lane
+  //       })
+  //       const line = 5 // The line number you want to add the decorator
+  //       const startPos = new vscode.Position(line, 0)
+  //       const endPos = new vscode.Position(line, 0)
+  //       const range = new vscode.Range(startPos, endPos)
+  //       const decoration = { range }
+  //       activeEditor.setDecorations(decorationType, [decoration])
+  //     }
+
+  //     return Promise.resolve("asd")
+  //   })
+  // },
+
+
+
 
   ////////////////////////////////////////////////////////////////////////////////////
   //                                    COUNT                                       //
@@ -406,3 +507,7 @@ const scripts: IScript[] = [
 ]
 
 export default scripts
+function parseRgbValues(text: string) {
+  throw new Error('Function not implemented.')
+}
+
