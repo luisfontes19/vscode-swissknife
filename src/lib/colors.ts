@@ -1,39 +1,59 @@
 import { leftPad } from './utils'
 
 export const hslToHex = (h: number, s: number, l: number) => {
-  // Convert the hue to degrees
-  h /= 360
+  // Convert the hue to a value between 0 and 360
+  h = ((h % 360) + 360) % 360
 
-  // Convert saturation and lightness to decimals
+  // Convert the saturation and lightness to a value between 0 and 1
   s /= 100
   l /= 100
 
-  // Calculate the RGB values
-  let r, g, b
-  if (s === 0) {
-    r = g = b = l // achromatic
-  } else {
-    const hue2rgb = (p: number, q: number, t: number) => {
-      if (t < 0) t += 1
-      if (t > 1) t -= 1
-      if (t < 1 / 6) return p + (q - p) * 6 * t
-      if (t < 1 / 2) return q
-      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6
-      return p
-    }
+  // Calculate the chroma, which is the difference between the max and min values of RGB
+  const chroma = (1 - Math.abs(2 * l - 1)) * s
 
-    const q = l < 0.5 ? l * (1 + s) : l + s - l * s
-    const p = 2 * l - q
-    r = hue2rgb(p, q, h + 1 / 3)
-    g = hue2rgb(p, q, h)
-    b = hue2rgb(p, q, h - 1 / 3)
+  // Calculate the hue prime, which is used to calculate the RGB values
+  const huePrime = h / 60
+
+  // Calculate the second largest component of RGB
+  const x = chroma * (1 - Math.abs((huePrime % 2) - 1))
+
+  // Calculate the RGB values based on the hue prime
+  let r = 0
+  let g = 0
+  let b = 0
+
+  if (huePrime >= 0 && huePrime < 1) {
+    r = chroma
+    g = x
+  } else if (huePrime >= 1 && huePrime < 2) {
+    r = x
+    g = chroma
+  } else if (huePrime >= 2 && huePrime < 3) {
+    g = chroma
+    b = x
+  } else if (huePrime >= 3 && huePrime < 4) {
+    g = x
+    b = chroma
+  } else if (huePrime >= 4 && huePrime < 5) {
+    r = x
+    b = chroma
+  } else if (huePrime >= 5 && huePrime < 6) {
+    r = chroma
+    b = x
   }
 
-  // Convert the RGB values to hex
-  const rgb = (r * 255) << 16 | (g * 255) << 8 | (b * 255) << 0
-  const hex = '#' + (0x1000000 | rgb).toString(16).substring(1)
+  // Calculate the lightness modifier
+  const lightnessModifier = l - chroma / 2
 
-  return hex.toUpperCase()
+  // Calculate the final RGB values
+  r = Math.round((r + lightnessModifier) * 255)
+  g = Math.round((g + lightnessModifier) * 255)
+  b = Math.round((b + lightnessModifier) * 255)
+
+  // Convert the RGB values to a HEX color
+  const hexColor = ((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")
+
+  return "#" + hexColor.toUpperCase()
 }
 
 export const hexToHsl = (hex: string) => {
@@ -77,8 +97,62 @@ export const hexToHsl = (hex: string) => {
   return `hsl(${hue}, ${saturation}%, ${Math.round(lightness * 100)}%)`
 }
 
-export const hwbToHex = (h: number, w: number, b: number) => {
+export const hwbToHex = (h: number, w: number, b: number): string => {
+  console.log(h)
+  console.log(w)
+  console.log(b)
+  // Convert the hue to a value between 0 and 360
+  h = ((h % 360) + 360) % 360
 
+  // Convert whiteness and blackness to a value between 0 and 1
+  w /= 100
+  b /= 100
+
+  // Calculate the chroma, which is the difference between the max and min values of RGB
+  const chroma = 1 - w - b
+
+  // Calculate the hue prime, which is used to calculate the RGB values
+  const huePrime = h / 60
+
+  // Calculate the second largest component of RGB
+  const x = chroma * (1 - Math.abs((huePrime % 2) - 1))
+
+  // Calculate the RGB values based on the hue prime
+  let r = 0
+  let g = 0
+  let bValue = 0
+
+  if (huePrime >= 0 && huePrime < 1) {
+    r = chroma
+    g = x
+  } else if (huePrime >= 1 && huePrime < 2) {
+    g = chroma
+    r = x
+  } else if (huePrime >= 2 && huePrime < 3) {
+    g = chroma
+    bValue = x
+  } else if (huePrime >= 3 && huePrime < 4) {
+    bValue = chroma
+    g = x
+  } else if (huePrime >= 4 && huePrime < 5) {
+    bValue = chroma
+    r = x
+  } else if (huePrime >= 5 && huePrime < 6) {
+    r = chroma
+    bValue = x
+  }
+
+  // Calculate the RGB values by adding the chroma, whiteness, and blackness
+  r += w
+  g += w
+  bValue += b
+
+  // Convert the RGB values to hexadecimal notation
+  const rHex = Math.round(r * 255).toString(16).padStart(2, '0')
+  const gHex = Math.round(g * 255).toString(16).padStart(2, '0')
+  const bHex = Math.round(bValue * 255).toString(16).padStart(2, '0')
+
+  return `#${rHex}${gHex}${bHex}`.toUpperCase()
 }
 
 

@@ -1,5 +1,5 @@
 import * as assert from 'assert'
-import { hexToHsl, hexToHwb, hexToRgb, hslToHex, rgbToHex } from '../../lib/colors'
+import { hexToHsl, hexToHwb, hexToRgb, hslToHex, hwbToHex, rgbToHex } from '../../lib/colors'
 
 suite('[Scripts] Colors', () => {
 
@@ -57,9 +57,10 @@ suite('[Scripts] Colors', () => {
       assert.strictEqual(hexToHwb(text), `hwb(195, 0%, 0%)`)
     })
 
-    // test('Should convert hwb to hex', () => {
-    //   assert.strictEqual(hwbToHex(196, 5, 0), `#0cbfff`)
-    // })
+    test('Should convert hwb to hex', () => {
+      // we kinda loose presition, so thats why the color is nto exactly the same
+      assert.strictEqual(hwbToHex(195, 0, 0), `#00BFFF`)
+    })
 
     test('Should convert hex to hsl', () => {
       const text = `#00bfff`

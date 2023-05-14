@@ -1,5 +1,5 @@
 import { IScript, ISwissKnifeContext } from './Interfaces'
-import { hexToHsl, hexToHwb, hexToRgb, hslToHex, rgbToHex } from './lib/colors'
+import { hexToHsl, hexToHwb, hexToRgb, hslToHex, hwbToHex, rgbToHex } from './lib/colors'
 import { countChars, countWords } from './lib/count'
 import { bip39, generateRSAKeyPair, generateSelfSignedCertificate, hashIdentifier, toMd5, toSha1, toSha256, toSha512 } from './lib/crypto'
 import { base64ToText, binaryToText, hexToText, htmlEncodeAllChars, quotedPrintableDecode, textToBase64, textToBinary, textToHex, toMorseCode, unicodeEncode, urlDecode, urlEncode, urlEncodeAllChars } from './lib/encodings'
@@ -69,33 +69,34 @@ const scripts: IScript[] = [
     detail: "Convert an HSL Color (ex hsl(0,0%,100%)) into Hex",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => {
 
-      const res = text.match(/hsl((\d+),\s*(\d+)%,\s*(\d+)%)?/g)
+      const res = text.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)?/)
       if (!res) {
         context.informationRoutine(async () => "Invalid HSL Format")
         return text
       }
 
+      res.shift()
       const [h, s, l] = res.map(Number)
       return hslToHex(h, s, l)
 
     })
   },
 
-  // {
-  //   title: "HWB Color to Hex",
-  //   detail: "Convert an HWB Color (ex hwb(0,0%,100%)) into Hex",
-  //   cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => {
+  {
+    title: "HWB Color to Hex",
+    detail: "Convert an HWB Color (ex hwb(0,0%,100%)) into Hex",
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => {
 
-  //     const res = text.match(/hwb((\d+) (\d+)% (\d+)%)?/g)
-  //     if (!res) {
-  //       context.informationRoutine(async () => "Invalid or unsupported HSL Format. Only format like 'hwb(0 0% 100%)' is supported")
-  //       return text
-  //     }
+      const res = text.match(/hwb((\d+) (\d+)% (\d+)%)?/g)
+      if (!res) {
+        context.informationRoutine(async () => "Invalid or unsupported HSL Format. Only format like 'hwb(0 0% 100%)' is supported")
+        return text
+      }
 
-  //     const [h, w, b] = res.map(Number)
-  //     return hwbToHex(h, w, b)
-  //   })
-  // },
+      const [h, w, b] = res.map(Number)
+      return hwbToHex(h, w, b)
+    })
+  },
 
   {
     title: "Hex Color to HWB",

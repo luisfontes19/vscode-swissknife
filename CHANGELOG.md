@@ -2,6 +2,10 @@
 
 All notable changes to the "swissknife" extension will be documented in this file.
 
+## 1.8.1
+
+* Fix bugs with some color scripts
+
 ## 1.8.0
 
 * Adds window to list decorated files
