@@ -7,7 +7,7 @@ import { loremIpsum, randomString, uuidv4 } from './lib/generators'
 import { csvToMarkdown, markdownToHtml } from './lib/markdown'
 import { scriptTemplateJs, scriptTemplateTs } from './lib/native'
 import { checkPassword, generatePassword } from './lib/passwords'
-import { capitalize, joinLines, sortAlphabetically, toCamelCase, toLowerCase, toUpperCase } from './lib/textBasic'
+import { capitalize, joinLines, sortAlphabetically, toCamelCase, toLowerCase, toUpperCase, slugify } from './lib/textBasic'
 import { formattedDateToTimestamp, insertLocalDate, insertUtcDate, timestampToFormattedDate } from './lib/time'
 import { escapeString, expandUrl, jwtDecode, linuxPermissions, pickRandomLine, requestToFetch, shortenUrl, startSecureServer, startServer, stopServer } from './lib/utils'
 import { jsonToYaml, yamlToJson } from './lib/yaml'
@@ -407,6 +407,11 @@ const scripts: IScript[] = [
     title: "Sort Lines",
     detail: "Sorts lines alphabetically",
     cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => sortAlphabetically(text))
+  },
+  {
+    title: "Slugify",
+    detail: "Convert a text to a slug",
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => slugify(text))
   },
 
   ////////////////////////////////////////////////////////////////////////////////////
