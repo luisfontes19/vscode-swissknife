@@ -18,7 +18,17 @@ export const toCamelCase = (text: string): string => {
 export const joinLines = (text: string, replace: string): string => {
   return text.replace(/\n/g, replace)
 }
+
 export const sortAlphabetically = (text: string): string => {
   const lines = text.split("\n")
   return lines.sort().join("\n")
+}
+
+export const slugify = (text: string): string => {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
 }
