@@ -2,7 +2,7 @@ import { IScript, ISwissKnifeContext } from './Interfaces'
 import { hexToHsl, hexToHwb, hexToRgb, hslToHex, hwbToHex, rgbToHex } from './lib/colors'
 import { countChars, countWords } from './lib/count'
 import { bip39, generateRSAKeyPair, generateSelfSignedCertificate, hashIdentifier, toMd5, toSha1, toSha256, toSha512 } from './lib/crypto'
-import { base64ToText, binaryToText, hexToText, htmlEncodeAllChars, quotedPrintableDecode, textToBase64, textToBinary, textToHex, toMorseCode, unicodeEncode, urlDecode, urlEncode, urlEncodeAllChars } from './lib/encodings'
+import { base64ToText, binaryToText, hexToText, htmlEncodeAllChars, quotedPrintableDecode, textToBase64, textToBinary, textToHex, toMorseCode, unicodeEncode, unicodeDecode, urlDecode, urlEncode, urlEncodeAllChars } from './lib/encodings'
 import { loremIpsum, randomString, uuidv4 } from './lib/generators'
 import { csvToMarkdown, markdownToHtml } from './lib/markdown'
 import { scriptTemplateJs, scriptTemplateTs } from './lib/native'
@@ -224,8 +224,8 @@ const scripts: IScript[] = [
   },
   {
     title: "Unicode decode",
-    detail: "Decode unicode escaoed string. (ex: \\u00AA or \\u{00AA}",
-    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => unicodeEncode(text))
+    detail: "Decode unicode escaped string. (ex: \\u00AA or \\u{00AA}",
+    cb: (context: ISwissKnifeContext) => context.replaceRoutine(async (text: string) => unicodeDecode(text))
   },
   {
     title: "Unicode encode (js format)",
