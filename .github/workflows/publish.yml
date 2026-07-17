@@ -1,67 +1,123 @@
-name: Publish new version
+name: Publish VS Code Extension
+
 on:
   workflow_dispatch:
+    inputs:
+      version_bump:
+        description: 'Version bump type'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
-    
-    # using an environment just to make sure nobody else call the action somehow. 
-    # the VSCE_PAT secret is provided by the environment, and I need to approve the run
-    environment: Production
+    environment: production
+    permissions:
+      contents: write
+      id-token: write
     steps:
-    
-    - name: Checkout
-      uses: actions/checkout@v2
-    
-    - name: Install Node.js
-      uses: actions/setup-node@v3.0.0
-      with:
-        node-version: 10.x
-    - name: Prepare environment
-      run: npm install && npm install -g vsce @vercel/ncc
 
-    - name: Run test
-      run: xvfb-run -a npm test
-    
-    - name: Build
-      run: |
-        npm run bundle && vsce package -o vscode-swissknife.vsix
-    
-    - name: Tag the release
-      run: |
-        npm run tag
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-        # based on https://itnext.io/creating-a-github-action-to-tag-commits-2722f1560dec        
-        remote=$(git config --get remote.origin.url)
-        commit=$(git rev-parse HEAD)
-        repo=$(basename $remote .git)
-        tag=v$(node -e \"console.log(require('./package.json').version)\")
-        curl -s -X POST https://api.github.com/repos/$REPO_OWNER/$repo/git/refs -H "Authorization: token $GITHUB_TOKEN" -d '{ "ref": "refs/tags/$tag", "sha": "$commit" }'
-    
-    - name: Create Github Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
-    
-    - name: Upload Release Asset
-      id: upload-release-asset 
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ./vscode-swissknife.vsix
-        asset_name: vscode-swissknife.vsix
-        asset_content_type: application/zip
-    
-    - name: Create npm artifact
-      run: npm run bundle && vsce package && vsce publish
-      env:
-        VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version
+        id: bump
+        run: |
+          NEW_VERSION=$(npm version ${{ github.event.inputs.version_bump }} --no-git-tag-version)
+          echo "version=${NEW_VERSION}" >> $GITHUB_OUTPUT
+          echo "version_plain=${NEW_VERSION#v}" >> $GITHUB_OUTPUT
+
+      - name: Get last tag
+        id: last_tag
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          echo "tag=${LAST_TAG}" >> $GITHUB_OUTPUT
+
+      - name: Build changelog entry
+        id: changelog
+        run: |
+          VERSION=${{ steps.bump.outputs.version_plain }}
+          LAST_TAG=${{ steps.last_tag.outputs.tag }}
+
+          if [ -z "$LAST_TAG" ]; then
+            COMMITS=$(git log --pretty=format:"- %s" --no-merges)
+          else
+            COMMITS=$(git log "${LAST_TAG}..HEAD" --pretty=format:"- %s" --no-merges)
+          fi
+
+          # Build the new changelog block
+          NEW_ENTRY="## [${VERSION}]"$'\n\n'"${COMMITS}"
+
+          # Prepend after the first line (the # title)
+          TITLE=$(head -1 CHANGELOG.md)
+          REST=$(tail -n +2 CHANGELOG.md)
+          printf '%s\n\n%s\n%s\n' "$TITLE" "$NEW_ENTRY" "$REST" > CHANGELOG.md
+
+          # Store release notes for GitHub release (multiline-safe)
+          {
+            echo "notes<<EOF"
+            echo "$COMMITS"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+      - name: Install vsce and ovsx
+        run: pnpm install -g @vscode/vsce ovsx
+
+      - name: Package extension
+        run: pnpm run vscode:package
+
+      - name: Commit changelog and version bump
+        run: |
+          git add CHANGELOG.md package.json
+          git commit -m "Release ${{ steps.bump.outputs.version }}"
+
+      - name: Create and push tag
+        run: |
+          git tag ${{ steps.bump.outputs.version }}
+          git push origin main
+          git push origin ${{ steps.bump.outputs.version }}
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create ${{ steps.bump.outputs.version }} *.vsix \
+            --title "${{ steps.bump.outputs.version }}" \
+            --notes "${{ steps.changelog.outputs.notes }}"
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Publish to VS Code Marketplace
+        run: vsce publish --azure-credential --no-dependencies --packagePath *.vsix
+
+      - name: Publish to Open VSX
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: ovsx publish *.vsix --pat $OVSX_PAT
