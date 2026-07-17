@@ -25,5 +25,6 @@ export interface ISwissKnifeContext {
   informationRoutine: (cb: TScriptCallback) => Promise<void>
   modules: any,
   extensionPath: string,
+  extensionUri: vscode.Uri,
   development: boolean
 }

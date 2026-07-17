@@ -86,6 +86,10 @@
       ],
       "commandPalette": [
         {
+          "command": "swissknife.server.stop",
+          "when": "false"
+        },
+        {
           "command": "swissknife.editNote",
           "when": "false"
         },
@@ -126,6 +130,10 @@
       {
         "command": "swissknife.copyPathWithLine",
         "title": "Swissknife: Copy file path with line"
+      },
+      {
+        "command": "swissknife.server.stop",
+        "title": "Swissknife: Stop Server"
       },
       {
         "command": "swissknife.decorators.check",
@@ -236,6 +244,7 @@
     "@vscode/test-electron": "^2.1.4",
     "chai": "^4.3.6",
     "eslint": "^7.32.0",
+    "glob": "^7.1.6",
     "html2canvas": "^1.4.1",
     "mocha": "^8.4.0",
     "ts-node": "^10.8.1",
@@ -247,7 +256,6 @@
     "bcrypt": "^5.0.1",
     "elliptic": "^6.5.4",
     "express": "^4.17.1",
-    "glob": "^7.1.6",
     "hash-identifier": "^1.0.1",
     "request": "^2.88.2",
     "selfsigned": "^1.10.8",

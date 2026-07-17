@@ -1,5 +1,3 @@
-import * as fs from 'fs'
-import * as glob from 'glob'
 import * as path from 'path'
 import * as vscode from 'vscode'
 import { Uri } from 'vscode'
@@ -24,23 +22,23 @@ import * as yaml from './lib/yaml'
 import { generateNotesDoc, initNotesController, onCreateNote, onDeleteNote, onEditNote, onSaveEditNote } from './NotesHandler'
 
 import { default as _scripts } from './scripts'
-import { relativePathForUri } from './utils'
+import { getAllFilesInFolder, relativePathForUri } from './utils'
 
 export const nativeModules = { colors, count, crypto, encodings, generators, markdown, native, passwords, textBasic, time, utils, lib: { requestUtils, server }, yaml }
 export const modules = { ...nativeModules }
-export const extensionContext: ISwissKnifeContext = { insertRoutine, replaceRoutine, informationRoutine, vscode, modules, extensionPath: "", development: false }
+export const extensionContext: ISwissKnifeContext = { insertRoutine, replaceRoutine, informationRoutine, vscode, modules, extensionPath: "", extensionUri: Uri.file(""), development: false }
 
 let scripts: IScriptQuickPickItem[] = []
 let internalScripts: IScriptQuickPickItem[] = []
 let userScripts: IScriptQuickPickItem[] = []
 let context: vscode.ExtensionContext
-let extensionFolder: string
-let userScriptsFolder: string
+let extensionFolder: Uri
+let userScriptsFolder: Uri
 
 
 let fileDecorator: FileDecorator
 
-export function activate(ctx: vscode.ExtensionContext) {
+export async function activate(ctx: vscode.ExtensionContext) {
 
 	const config = vscode.workspace.getConfiguration('swissknife', vscode.window.activeTextEditor?.document.uri)
 
@@ -49,13 +47,16 @@ export function activate(ctx: vscode.ExtensionContext) {
 	let notesController: vscode.CommentController | undefined
 
 	extensionContext.extensionPath = context.extensionPath
+	extensionContext.extensionUri = context.extensionUri
 	extensionContext.development = ctx.extensionMode === vscode.ExtensionMode.Development
 
-	extensionFolder = ctx.globalStorageUri.fsPath
-	userScriptsFolder = path.join(extensionFolder, "scripts")
+	extensionFolder = ctx.globalStorageUri
+	userScriptsFolder = Uri.joinPath(extensionFolder, "scripts")
 	fileDecorator = new FileDecorator()
 
-	checkUserScriptsFolder()
+	await checkUserScriptsFolder()
+
+	if (isUserScriptsFolderWorkspace()) openScriptTemplateScratchTab()
 
 	loadScripts().then(() => {
 		// So that i can print a markdown table with the scripts to include in the readme :)
@@ -75,6 +76,7 @@ export function activate(ctx: vscode.ExtensionContext) {
 		vscode.commands.registerCommand('swissknife.reload', reload),
 		vscode.commands.registerCommand('swissknife.openScripts', openUserScriptsFolder),
 		vscode.commands.registerCommand('swissknife.copyPathWithLine', copyPathWithLine),
+		vscode.commands.registerCommand('swissknife.server.stop', () => utils.stopServer()),
 
 		// file decorators
 		vscode.window.registerFileDecorationProvider(fileDecorator),
@@ -142,7 +144,21 @@ const show = () => {
 const reload = () => loadScripts(true)
 
 const openUserScriptsFolder = () => {
-	vscode.env.openExternal(Uri.file(userScriptsFolder))
+	vscode.commands.executeCommand('vscode.openFolder', userScriptsFolder, { forceNewWindow: true })
+}
+
+// true when this window's workspace is the swissknife user scripts folder itself
+// (i.e. it was opened via openUserScriptsFolder)
+const isUserScriptsFolderWorkspace = (): boolean => {
+	const folders = vscode.workspace.workspaceFolders
+	return !!folders && folders.length === 1 && folders[0].uri.toString() === userScriptsFolder.toString()
+}
+
+// gives the user a ready-to-edit scratch tab with the script boilerplate so they
+// don't have to remember the template command when the scripts folder window opens
+const openScriptTemplateScratchTab = async () => {
+	const doc = await vscode.workspace.openTextDocument({ content: native.scriptTemplateJs(), language: 'javascript' })
+	vscode.window.showTextDocument(doc)
 }
 
 // clear cache will only work for user scripts
@@ -156,7 +172,9 @@ const loadUserScripts = async (clearCache: boolean) => {
 
 	let scripts: IScriptQuickPickItem[] = []
 
-	const matches = glob.sync(path.join(userScriptsFolder, "/**/*.js"))
+	const files = await getAllFilesInFolder(userScriptsFolder)
+	const matches = files.filter(f => f.path.endsWith(".js")).map(f => f.fsPath)
+
 	for (let i = 0; i < matches.length; i++) {
 		const modulePath = matches[i]
 		console.log("[SWISSKNIFE] Queueing scripts module" + modulePath)
@@ -210,11 +228,9 @@ const createScriptsFromModule = (m: any) => {
 	return moduleScripts
 }
 
-const checkUserScriptsFolder = () => {
-	if (!fs.existsSync(extensionFolder))
-		fs.mkdirSync(extensionFolder)
-	if (!fs.existsSync(userScriptsFolder))
-		fs.mkdirSync(userScriptsFolder)
+const checkUserScriptsFolder = async () => {
+	// createDirectory creates any missing intermediate directories and is a no-op if it already exists
+	await vscode.workspace.fs.createDirectory(userScriptsFolder)
 }
 
 const copyPathWithLine = () => {

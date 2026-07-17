@@ -1,26 +1,31 @@
-import * as fs from 'fs'
 import * as os from 'os'
-import * as path from 'path'
 import { v1 } from 'uuid'
 import * as vscode from 'vscode'
-import { getCurrentWorkspaceFolder, relativePathForUri, vscodeFolderPathForWorkspace } from './utils'
+import { fileExists, relativePathForUri, vscodeFolderUri } from './utils'
 
-export let notes: NoteComment[] = []
 export const NOTES_FILE_NAME = 'swissknifeNotes.json'
 
-export const loadNotesFromFile = (notesController: vscode.CommentController) => {
-  const filePath = getNotesFilePath()
+// notes are kept per workspace folder (multi-root support), keyed by the folder's Uri.toString()
+export let notes: Record<string, NoteComment[]> = {}
 
-  if (!filePath) return
-  if (!fs.existsSync(filePath)) return
+const keyFor = (folder: vscode.WorkspaceFolder) => folder.uri.toString()
 
+const getNotesFileUri = (folder: vscode.WorkspaceFolder): vscode.Uri =>
+  vscode.Uri.joinPath(folder.uri, '.vscode', NOTES_FILE_NAME)
 
-  const notesFile = fs.readFileSync(filePath, { encoding: 'utf-8' })
-  const _notes = JSON.parse(notesFile)
-  const workspaceFolder = getCurrentWorkspaceFolder()
-  if (!workspaceFolder) return
+export const loadNotesFromFile = async (notesController: vscode.CommentController) => {
+  for (const folder of vscode.workspace.workspaceFolders ?? [])
+    await loadNotesForFolder(folder, notesController)
+}
 
-  notes = _notes.map((note: InternalNote) => {
+const loadNotesForFolder = async (folder: vscode.WorkspaceFolder, notesController: vscode.CommentController) => {
+  const fileUri = getNotesFileUri(folder)
+  if (!(await fileExists(fileUri))) return
+
+  const content = Buffer.from(await vscode.workspace.fs.readFile(fileUri)).toString('utf-8')
+  const _notes = JSON.parse(content)
+
+  notes[keyFor(folder)] = _notes.map((note: InternalNote) => {
     const comment = new NoteComment(
       note.body,
       vscode.CommentMode.Preview,
@@ -28,7 +33,7 @@ export const loadNotesFromFile = (notesController: vscode.CommentController) => 
     )
 
     const thread = notesController.createCommentThread(
-      vscode.Uri.file(path.join(workspaceFolder, note.file)),
+      vscode.Uri.joinPath(folder.uri, ...note.file.split('/')),
       new vscode.Range(new vscode.Position(note.line, 0), new vscode.Position(note.line, 0)),
       [comment]
     )
@@ -54,6 +59,17 @@ export const initNotesController = () => {
 
   loadNotesFromFile(controller)
 
+  // a workspace folder added later in the session (multi-root) needs its notes loaded too
+  const foldersListener = vscode.workspace.onDidChangeWorkspaceFolders(e => {
+    e.added.forEach(folder => loadNotesForFolder(folder, controller))
+  })
+
+  const dispose = controller.dispose.bind(controller)
+  controller.dispose = () => {
+    foldersListener.dispose()
+    dispose()
+  }
+
   return controller
 }
 
@@ -73,8 +89,12 @@ export const onCreateNote = (note: vscode.CommentReply) => {
 
   thread.comments = [newComment]
 
-  notes = [...notes, newComment]
-  saveNotesToFile()
+  const folder = vscode.workspace.getWorkspaceFolder(thread.uri)
+  if (!folder) return
+
+  const key = keyFor(folder)
+  notes[key] = [...(notes[key] ?? []), newComment]
+  saveNotesToFile(folder)
 }
 
 export const onEditNote = (thread: vscode.CommentThread) => {
@@ -89,25 +109,33 @@ export const onSaveEditNote = (comment: NoteComment) => {
   comment.mode = vscode.CommentMode.Preview
   comment.parent!.comments = [comment]
 
-  notes.find(note => note.id === comment.id)!.body = comment.body
-  saveNotesToFile()
+  const folder = vscode.workspace.getWorkspaceFolder(comment.parent!.uri)
+  if (!folder) return
+
+  const note = notes[keyFor(folder)]?.find(n => n.id === comment.id)
+  if (note) note.body = comment.body
+
+  saveNotesToFile(folder)
 }
 
 export const onDeleteNote = (thread: vscode.CommentThread) => {
-  notes = notes.filter(note => { console.log(note.id); return note.id !== (thread.comments[0] as NoteComment).id })
+  const folder = vscode.workspace.getWorkspaceFolder(thread.uri)
+  const deletedId = (thread.comments[0] as NoteComment).id
+
   thread.dispose()
-  saveNotesToFile()
+
+  if (!folder) return
+
+  const key = keyFor(folder)
+  notes[key] = (notes[key] ?? []).filter(note => note.id !== deletedId)
+  saveNotesToFile(folder)
 }
 
-export const saveNotesToFile = () => {
-  const notesFilePath = getNotesFilePath()
-  if (!notesFilePath) return
+export const saveNotesToFile = async (folder: vscode.WorkspaceFolder) => {
+  await vscode.workspace.fs.createDirectory(vscodeFolderUri(folder.uri))
 
-  const wsFolder = getCurrentWorkspaceFolder()
-  const vscodeFolder = vscodeFolderPathForWorkspace(wsFolder!)
-  if (!fs.existsSync(vscodeFolder)) fs.mkdirSync(vscodeFolder)
-
-  const _notes = notes.map(note => ({
+  const folderNotes = notes[keyFor(folder)] ?? []
+  const _notes = folderNotes.map(note => ({
     id: note.id,
     body: note.body,
     file: relativePathForUri(note.parent!.uri),
@@ -115,28 +143,26 @@ export const saveNotesToFile = () => {
     author: note.author.name
   }))
 
-
-  fs.writeFileSync(notesFilePath, JSON.stringify(_notes, null, 2))
-}
-
-const getNotesFilePath = () => {
-  const vscodeFolder = getCurrentWorkspaceFolder()
-
-  if (!vscodeFolder) {
-    vscode.window.showErrorMessage("Could not find current workspace. Notes will not be saved")
-    return
-  }
-
-  return path.join(vscodeFolder, ".vscode", NOTES_FILE_NAME)
+  await vscode.workspace.fs.writeFile(getNotesFileUri(folder), Buffer.from(JSON.stringify(_notes, null, 2), 'utf-8'))
 }
 
 export const generateNotesDoc = () => {
+  const folders = vscode.workspace.workspaceFolders ?? []
+  const multiRoot = folders.length > 1
+
   let md = `# ${vscode.workspace.name} Notes\n\n`
 
-  notes.forEach(note => {
-    const path = relativePathForUri(note.parent!.uri)
-    md += `## ${path}#${note.parent?.range.start.line}\n`
-    md += `${note.body}\n\n`
+  folders.forEach(folder => {
+    const folderNotes = notes[keyFor(folder)] ?? []
+    if (folderNotes.length === 0) return
+
+    if (multiRoot) md += `## ${folder.name}\n\n`
+
+    folderNotes.forEach(note => {
+      const path = relativePathForUri(note.parent!.uri)
+      md += `${multiRoot ? '###' : '##'} ${path}#${note.parent?.range.start.line}\n\n`
+      md += `${note.body}\n\n`
+    })
   })
 
   vscode.workspace.openTextDocument({ content: md, language: "markdown" }).then(doc => vscode.window.showTextDocument(doc))

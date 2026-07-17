@@ -16,7 +16,7 @@ export const customDecorator = (fileDecorator: FileDecorator) => {
 
 
 export const setupDecoratorTree = (fileDecorator: FileDecorator) => {
-  fileDecorator.onCreatedDecoratorFile = (filepath: string) => treeProvider.refresh(fileDecorator)
+  fileDecorator.onCreatedDecoratorFile = (filepath: vscode.Uri) => treeProvider.refresh(fileDecorator)
 
   const treeProvider = new DecoratorsTreeviewProvider()
   const tree = vscode.window.createTreeView("swissknife-decorators-tree", { treeDataProvider: treeProvider })
