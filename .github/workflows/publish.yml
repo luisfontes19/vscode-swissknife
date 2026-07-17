@@ -27,15 +27,20 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           version: 10
 
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Configure git
         run: |
@@ -86,7 +91,7 @@ jobs:
         run: pnpm install -g @vscode/vsce ovsx
 
       - name: Package extension
-        run: pnpm run vscode:package
+        run: pnpm run package
 
       - name: Commit changelog and version bump
         run: |
@@ -96,7 +101,7 @@ jobs:
       - name: Create and push tag
         run: |
           git tag ${{ steps.bump.outputs.version }}
-          git push origin main
+          git push origin master
           git push origin ${{ steps.bump.outputs.version }}
 
       - name: Create GitHub release

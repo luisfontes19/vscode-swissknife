@@ -135,13 +135,18 @@ export const saveNotesToFile = async (folder: vscode.WorkspaceFolder) => {
   await vscode.workspace.fs.createDirectory(vscodeFolderUri(folder.uri))
 
   const folderNotes = notes[keyFor(folder)] ?? []
-  const _notes = folderNotes.map(note => ({
-    id: note.id,
-    body: note.body,
-    file: relativePathForUri(note.parent!.uri),
-    line: note.parent!.range.start.line,
-    author: note.author.name
-  }))
+  const _notes = folderNotes.flatMap(note => {
+    const parent = note.parent
+    if (!parent?.range) return []
+
+    return [{
+      id: note.id,
+      body: note.body,
+      file: relativePathForUri(parent.uri),
+      line: parent.range.start.line,
+      author: note.author.name
+    }]
+  })
 
   await vscode.workspace.fs.writeFile(getNotesFileUri(folder), Buffer.from(JSON.stringify(_notes, null, 2), 'utf-8'))
 }
@@ -159,8 +164,11 @@ export const generateNotesDoc = () => {
     if (multiRoot) md += `## ${folder.name}\n\n`
 
     folderNotes.forEach(note => {
-      const path = relativePathForUri(note.parent!.uri)
-      md += `${multiRoot ? '###' : '##'} ${path}#${note.parent?.range.start.line}\n\n`
+      const parent = note.parent
+      if (!parent?.range) return
+
+      const path = relativePathForUri(parent.uri)
+      md += `${multiRoot ? '###' : '##'} ${path}#${parent.range.start.line}\n\n`
       md += `${note.body}\n\n`
     })
   })

@@ -34,7 +34,10 @@ export const bip39 = () => {
 
 export const generateSelfSignedCertificate = (domain: string): any => {
   const attrs = [{ name: 'commonName', value: domain }]
-  return selfsigned.generate(attrs, { days: 365, keySize: 2048 })
+  const notAfterDate = new Date()
+  notAfterDate.setDate(notAfterDate.getDate() + 365)
+
+  return selfsigned.generate(attrs, { notAfterDate, keySize: 2048 })
 }
 
 //TODO: double check why i disabled this... does it drop a binary? does it create conflicts in the build?
