@@ -32,3 +32,29 @@ export const slugify = (text: string): string => {
     .replace(/[\s_-]+/g, '-')
     .replace(/^-+|-+$/g, '')
 }
+
+export const unescapeSingleQuotes = (text: string): string => {
+  return text
+    .replace(/\\'/g, "'")
+    .replace(/\\\\/g, "\\")
+    .replace(/\\n/g, "\n")
+    .replace(/\\r/g, "\r")
+    .replace(/\\t/g, "\t")
+    .replace(/\\b/g, "\b")
+    .replace(/\\f/g, "\f")
+    .replace(/\\v/g, "\v")
+    .replace(/\\0/g, "\0")
+}
+
+export const unescapeDoubleQuotes = (text: string): string => {
+  return text
+    .replace(/\\"/g, '"')
+    .replace(/\\\\/g, "\\")
+    .replace(/\\n/g, "\n")
+    .replace(/\\r/g, "\r")
+    .replace(/\\t/g, "\t")
+    .replace(/\\b/g, "\b")
+    .replace(/\\f/g, "\f")
+    .replace(/\\v/g, "\v")
+    .replace(/\\0/g, "\0")
+}
