@@ -76,11 +76,6 @@ export class FileDecorator implements FileDecorationProvider {
 
     uris.forEach((uri, i) => {
       const relativePath = relativePathForUri(uri)
-
-      const decoratedFile = decorators.find(f => f.file === relativePathForUri(uri))
-      const fileIsDecorated = decoratedFile ? true : false // just for sugar syntax :)
-      const fileHasSameDecorator = (decoratedFile && decorator === decoratedFile.decorator) || false
-
       const entry = { file: relativePath, decorator } as DecoratorEntry
 
       if (!folder) op = this.determinateDecorateOperationForUri(decorators, uri, decorator)
