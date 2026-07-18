@@ -98,19 +98,39 @@ jobs:
           git add CHANGELOG.md package.json
           git commit -m "Release ${{ steps.bump.outputs.version }}"
 
-      - name: Create and push tag
+      - name: Create and push tag (if missing)
+        id: tag
         run: |
-          git tag ${{ steps.bump.outputs.version }}
-          git push origin master
-          git push origin ${{ steps.bump.outputs.version }}
+          TAG=${{ steps.bump.outputs.version }}
 
-      - name: Create GitHub release
+          # Prevent reruns from failing if a previous run already created the tag.
+          if git rev-parse -q --verify "refs/tags/${TAG}" >/dev/null 2>&1 \
+            || git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
+            echo "Tag ${TAG} already exists. Skipping tag creation."
+            echo "created=false" >> $GITHUB_OUTPUT
+          else
+            git tag "${TAG}"
+            git push origin master
+            git push origin "${TAG}"
+            echo "created=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create or update GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create ${{ steps.bump.outputs.version }} *.vsix \
-            --title "${{ steps.bump.outputs.version }}" \
-            --notes "${{ steps.changelog.outputs.notes }}"
+          TAG=${{ steps.bump.outputs.version }}
+
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            gh release upload "${TAG}" *.vsix --clobber
+            gh release edit "${TAG}" \
+              --title "${TAG}" \
+              --notes "${{ steps.changelog.outputs.notes }}"
+          else
+            gh release create "${TAG}" *.vsix \
+              --title "${TAG}" \
+              --notes "${{ steps.changelog.outputs.notes }}"
+          fi
 
       - name: Azure login (OIDC)
         uses: azure/login@v2
