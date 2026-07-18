@@ -97,9 +97,11 @@ export const expressRequestToRawString = (req: Request) => {
     Object.keys(req.headers).forEach(k => data += `${k}: ${req.headers[k]}\n`)
 
   data += `\n`
-  const hasBody = Object.keys(req.body).length > 0
+  const body = req.body as any
+  const hasBody = body !== undefined && body !== null
+    && (!(typeof body === 'object') || Object.keys(body).length > 0)
 
-  if (hasBody) data += `${req.body.toString()}`
+  if (hasBody) data += `${body.toString()}`
 
   return data
 }
