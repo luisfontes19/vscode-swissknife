@@ -1,5 +1,16 @@
 # Change Log
 
+## [1.8.2]
+
+- Update github workflows
+- Update github workflows
+- Fix multiple path issues due to 'fs' usage instead of vscode native apis
+- Unescape string script
+- Add IP format convertions
+- Fix unicode decode
+- feat: add text basic -> slugify
+- Fix some color scripts
+
 All notable changes to the "swissknife" extension will be documented in this file.
 
 ## 1.8.1
