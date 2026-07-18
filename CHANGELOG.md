@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.8.4]
+
+- Release v1.8.2
+
 ## [1.8.3]
 
 - Release v1.8.2
