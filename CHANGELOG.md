@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.8.9]
+
+- Fix http server errors
+
 ## [1.8.8]
 
 - Release v1.8.7
